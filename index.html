@@ -208,6 +208,54 @@ input,select,button{font-family:inherit}
 .wbt.item{background:linear-gradient(#5fd07a,#23884a)}
 .wbt.item.on{background:#0a0a14}
 .hudpill.sd{background:linear-gradient(#ff6b5a,#c81d12)}
+/* ---------- shop ---------- */
+.shopcard{display:flex;align-items:center;gap:12px;width:100%;margin-top:12px;cursor:pointer;text-align:left;color:#fff;border:3px solid #5a2a00;border-radius:16px;padding:10px 14px;
+  background:linear-gradient(#ffcf3a,#ff8a00);box-shadow:inset 0 3px 0 rgba(255,255,255,.5),0 5px 0 #5a2a00;transition:transform .08s}
+.shopcard:hover{transform:translateY(-2px)}
+.shopcard:active{transform:translateY(3px);box-shadow:inset 0 3px 0 rgba(255,255,255,.5),0 2px 0 #5a2a00}
+.shopcard .cart{font-size:clamp(28px,3vw,40px);animation:bob 1.4s ease-in-out infinite}
+.shopcard b{display:block;font-family:'Luckiest Guy',Impact,sans-serif;font-weight:400;font-size:clamp(17px,1.7vw,24px);white-space:nowrap;text-shadow:0 2px 0 #5a1f00}
+.shopcard small{display:block;font-weight:900;color:#5a2a00;font-size:13px}
+.shopcard .go{margin-left:auto;font-size:22px;text-shadow:0 2px 0 #5a1f00}
+.shopbox{width:min(1100px,100%);height:min(760px,100%);display:flex;flex-direction:column;padding:12px}
+.shophead{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.shophead .ph{margin:0;flex:1;text-align:left}
+.shopbody{flex:1;min-height:0;display:grid;grid-template-columns:260px 1fr;gap:12px}
+.shopprev{display:flex;flex-direction:column;gap:8px;align-items:stretch;background:#0b2560;border-radius:14px;padding:10px;min-height:0}
+#shopCv{width:100%;flex:1;min-height:160px;background:radial-gradient(circle at 50% 60%,#2f7fe0,#0b2560 70%);border-radius:10px}
+.shopsel{text-align:center}
+.shopsel b{display:block;font-family:'Luckiest Guy',Impact,sans-serif;font-weight:400;font-size:19px}
+.shopsel small{display:block;font-weight:900;color:#9fc0ff;font-size:12px}
+.shopacts{display:flex;flex-direction:column;gap:4px;text-align:center}
+.shopacts small{color:#ffb4ab;font-weight:900;font-size:12px}
+.shopmain{display:flex;flex-direction:column;gap:8px;min-height:0;min-width:0}
+.shoptabs{display:flex;gap:5px;overflow-x:auto;flex:none}
+.shoptabs button{flex:none;cursor:pointer;border:3px solid #0a2a6b;border-radius:12px;padding:6px 10px;background:#0f3f95;color:#cfe0ff;font-weight:900;font-size:14px;white-space:nowrap}
+.shoptabs button small{color:#9fc0ff;font-size:11px}
+.shoptabs button.on{background:linear-gradient(#ffcf3a,#ff8a00);color:#fff;border-color:#5a2a00}
+.shoptabs button.on small{color:#5a2a00}
+.shopfilters{display:flex;gap:6px;flex-wrap:wrap;flex:none}
+.shopfilters input,.shopfilters select{padding:7px 10px;border-radius:10px;border:3px solid #0a2a6b;background:#eaf2ff;color:#10204a;font-weight:800;min-width:0}
+#shopSearch{flex:1;min-width:140px}
+.ownchk{display:flex;align-items:center;gap:4px;font-weight:900;font-size:13px}
+.shopgrid{flex:1;min-height:0;overflow-y:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:8px;align-content:start;padding:2px}
+.scard{position:relative;cursor:pointer;border:3px solid var(--r);border-radius:12px;background:linear-gradient(#e8f0ff,#c7d8f7);color:#10204a;padding:4px 4px 6px;display:flex;flex-direction:column;align-items:center;gap:1px;box-shadow:0 3px 0 rgba(0,0,0,.25)}
+.scard canvas{width:100%;aspect-ratio:128/110;height:auto;border-radius:8px;background:radial-gradient(circle at 50% 70%,#ffffff,#b9cdf0)}
+.scard.sel{outline:4px solid #ffe14d;transform:translateY(-2px)}
+.scard.eq{background:linear-gradient(#fff3b0,#ffd54a)}
+.sr{position:absolute;top:6px;left:6px;background:var(--r);color:#10204a;border-radius:6px;padding:0 5px;font-size:9px;font-weight:900}
+.sn{font-weight:900;font-size:11px;line-height:1.15;text-align:center;min-height:26px;display:flex;align-items:center}
+.sp{font-family:'Luckiest Guy',Impact,sans-serif;font-size:14px;color:#0f3f95}
+.shoppager{display:flex;align-items:center;justify-content:center;gap:12px;font-weight:900;flex:none}
+@media (max-width:760px){
+  .shopbody{grid-template-columns:1fr;grid-template-rows:auto 1fr}
+  .shopprev{flex-direction:row;flex-wrap:wrap;align-items:center}
+  #shopCv{flex:none;width:120px;height:120px;min-height:0}
+  .shopsel{flex:1;min-width:120px;text-align:left}
+  .shopacts,#shopReset{flex:1 1 100%}
+  .shopgrid{grid-template-columns:repeat(auto-fill,minmax(96px,1fr))}
+  .shopbox{height:100%}
+}
 /* ---------- phones & tablets ---------- */
 button,.btn,.tbtn,.wbt,.iconbtn{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 body{-webkit-touch-callout:none;overscroll-behavior:none}
@@ -295,11 +343,12 @@ body{-webkit-touch-callout:none;overscroll-behavior:none}
         <div class="chatlog" id="chatLog"></div>
         <form class="chatform" id="chatForm"><input id="chatIn" maxlength="120" autocomplete="off" placeholder="Say hi to everyone…"><button class="btn small" type="submit">SEND</button></form>
       </div>
+      <button class="shopcard" id="shopBtn" type="button"><span class="cart">🛒</span><span><b>COSTUME SHOP</b><small id="shopCount">1,000+ costumes &amp; weapon skins</small></span><span class="go">▶</span></button>
     </aside>
     <main class="stage">
       <canvas id="previewCv"></canvas>
       <div class="sel"><button class="iconbtn" id="petPrev" type="button">◀</button><div class="lbl"><span id="petName">DOG</span><small id="petLock"></small></div><button class="iconbtn" id="petNext" type="button">▶</button></div>
-      <div class="sel"><button class="iconbtn" id="hatPrev" type="button">◀</button><div class="lbl"><span id="hatName">NO HAT</span><small id="hatLock"></small></div><button class="iconbtn" id="hatNext" type="button">▶</button></div>
+      <div class="sel"><button class="btn orange wbtn" id="wardrobeBtn" type="button">👕 MY WARDROBE</button></div>
       <button class="btn orange" id="buyBtn" type="button" hidden>BUY</button>
       <div class="modes">
         <button class="mode on" type="button" data-mode="duel"><b>DUEL</b><small>1 vs 1</small></button>
@@ -380,6 +429,34 @@ body{-webkit-touch-callout:none;overscroll-behavior:none}
     <ul class="lb" id="mmList"></ul>
     <p class="note" id="mmNote"></p>
     <div class="endbtns"><button class="btn" id="mmStart" type="button" hidden>START NOW</button><button class="btn red" id="mmCancel" type="button">CANCEL</button></div>
+  </div>
+</div>
+<div id="shopOv" class="modal" hidden>
+  <div class="panel shopbox">
+    <div class="shophead">
+      <h3 class="ph">🛒 COSTUME SHOP</h3>
+      <div class="chip">🪙 <b id="shopCoins">0</b></div>
+      <button class="iconbtn" id="shopClose" type="button" title="Close">✕</button>
+    </div>
+    <div class="shopbody">
+      <div class="shopprev">
+        <canvas id="shopCv"></canvas>
+        <div class="shopsel" id="shopSel"></div>
+        <div class="shopacts" id="shopActs"></div>
+        <button class="btn blue small" id="shopReset" type="button">TAKE OFF ALL</button>
+      </div>
+      <div class="shopmain">
+        <div class="shoptabs" id="shopTabs"></div>
+        <div class="shopfilters">
+          <input id="shopSearch" placeholder="🔍 Search items…" autocomplete="off">
+          <select id="shopRarity"><option value="">All rarities</option><option value="common">Common</option><option value="rare">Rare</option><option value="epic">Epic</option><option value="legendary">Legendary</option></select>
+          <select id="shopSort"><option value="">Featured</option><option value="low">Price: low → high</option><option value="high">Price: high → low</option><option value="name">Name</option></select>
+          <label class="ownchk"><input type="checkbox" id="shopOwned"> Owned only</label>
+        </div>
+        <div class="shopgrid" id="shopGrid"></div>
+        <div class="shoppager"><button class="iconbtn" id="shopPrev" type="button">◀</button><span id="shopPage"></span><button class="iconbtn" id="shopNext" type="button">▶</button></div>
+      </div>
+    </div>
   </div>
 </div>
 <div id="rotateOv" hidden>
@@ -617,38 +694,7 @@ function drawTail(g, S, t, walking) {
   g.restore();
 }
 
-function drawHat(g, hat, hx, hy, t) {
-  g.lineWidth = 2;
-  if (hat === 'cap') {
-    g.beginPath(); g.arc(hx, hy - 4, 13, Math.PI, 0); g.closePath(); fs(g, '#2f6fe0');
-    g.beginPath(); g.roundRect(hx + 4, hy - 7, 17, 4, 2); fs(g, '#1d4fb0');
-    ell(g, hx, hy - 17, 2.5, 2); fs(g, '#ffe14d');
-  } else if (hat === 'ninja') {
-    g.beginPath(); g.rect(hx - 13, hy - 10, 26, 5); fs(g, '#e0302a');
-    const w = Math.sin(t * 10) * 3;
-    g.beginPath(); g.moveTo(hx - 12, hy - 9); g.quadraticCurveTo(hx - 22, hy - 12 + w, hx - 28, hy - 6 + w); g.lineTo(hx - 26, hy - 2 + w); g.quadraticCurveTo(hx - 20, hy - 6, hx - 12, hy - 6); g.closePath(); fs(g, '#e0302a');
-  } else if (hat === 'santa') {
-    const sw = Math.sin(t * 3) * 3;
-    g.beginPath(); g.moveTo(hx - 12, hy - 8); g.quadraticCurveTo(hx - 2, hy - 34, hx - 16 + sw, hy - 30); g.quadraticCurveTo(hx + 4, hy - 26, hx + 13, hy - 8); g.closePath(); fs(g, '#e0302a');
-    g.beginPath(); g.roundRect(hx - 14, hy - 11, 28, 6, 3); fs(g, '#fff');
-    ell(g, hx - 16 + sw, hy - 30, 4, 4); fs(g, '#fff');
-  } else if (hat === 'viking') {
-    g.beginPath(); g.moveTo(hx - 10, hy - 10); g.quadraticCurveTo(hx - 20, hy - 14, hx - 18, hy - 28); g.quadraticCurveTo(hx - 14, hy - 18, hx - 6, hy - 14); g.closePath(); fs(g, '#fff3d6');
-    g.beginPath(); g.moveTo(hx + 10, hy - 10); g.quadraticCurveTo(hx + 20, hy - 14, hx + 18, hy - 28); g.quadraticCurveTo(hx + 14, hy - 18, hx + 6, hy - 14); g.closePath(); fs(g, '#fff3d6');
-    g.beginPath(); g.arc(hx, hy - 5, 13, Math.PI, 0); g.closePath(); fs(g, '#9aa3b5');
-    g.beginPath(); g.rect(hx - 13, hy - 7, 26, 4); fs(g, '#c9a227');
-  } else if (hat === 'tophat') {
-    g.beginPath(); g.rect(hx - 8, hy - 34, 16, 22); fs(g, '#222');
-    g.beginPath(); g.rect(hx - 8, hy - 18, 16, 4); fs(g, '#e0302a');
-    g.beginPath(); g.roundRect(hx - 15, hy - 13, 30, 4, 2); fs(g, '#222');
-  } else if (hat === 'crown') {
-    g.beginPath(); g.moveTo(hx - 11, hy - 9); g.lineTo(hx - 12, hy - 24); g.lineTo(hx - 6, hy - 16); g.lineTo(hx, hy - 27); g.lineTo(hx + 6, hy - 16); g.lineTo(hx + 12, hy - 24); g.lineTo(hx + 11, hy - 9); g.closePath(); fs(g, '#ffc21e');
-    ell(g, hx, hy - 14, 2.2, 2.2); fs(g, '#e0302a');
-    g.fillStyle = 'rgba(255,255,255,' + (.5 + Math.sin(t * 6) * .5) + ')'; g.fillRect(hx - 9, hy - 21, 2, 2);
-  }
-}
-
-function drawWeaponArm(g, S, weapon, t, fireAnim) {
+function drawWeaponArm(g, S, weapon, t, fireAnim, skin) {
   const kick = fireAnim ? -fireAnim * .6 : 0;
   g.translate(kick, 0);
   switch (weapon) {
@@ -665,7 +711,9 @@ function drawWeaponArm(g, S, weapon, t, fireAnim) {
     case 'airstrike':
       g.beginPath(); g.roundRect(0, -4, 16, 8, 2); fs(g, '#444'); ell(g, 16, 0, 3, 3); g.fillStyle = (t * 4 | 0) % 2 ? '#ff3030' : '#600'; g.fill(); break;
     default: // bazooka
-      g.beginPath(); g.roundRect(-8, -5, 36, 10, 3); fs(g, '#6b7a3a');
+      g.beginPath(); g.roundRect(-8, -5, 36, 10, 3);
+      if (skin) { paintSkin(g, skin, -8, -5, 36, 10, t); g.beginPath(); g.roundRect(-8, -5, 36, 10, 3); g.stroke(); }
+      else fs(g, '#6b7a3a');
       g.beginPath(); g.rect(24, -6, 6, 12); fs(g, '#4d5a28');
       g.beginPath(); g.rect(-10, -4, 4, 8); fs(g, '#4d5a28');
       g.beginPath(); g.rect(6, -9, 6, 4); fs(g, '#333');
@@ -709,7 +757,10 @@ function drawTomb(g) {
 
 // o: {x,y,t,facing,elev,weapon,hat,walking,hurt,dead,scale,fireAnim,onGround}
 function drawPet(g, sp, o) {
-  const S = SPECIES[sp] || SPECIES.dog, t = o.t || 0, f = o.facing || 1, sc = o.scale || 1;
+  const L = getLook(o.hat);
+  let S = SPECIES[sp] || SPECIES.dog;
+  if (L.fur) S = Object.assign({}, S, { body: L.fur.body, leg: S.leg === '#222222' ? S.leg : L.fur.leg, ear: S.ear === '#222222' || sp === 'dog' ? S.ear : L.fur.body, tailC: S.tailC });
+  const t = o.t || 0, f = o.facing || 1, sc = o.scale || 1;
   g.save(); g.translate(o.x, o.y); g.scale(sc * f, sc);
   g.lineWidth = 2.2; g.strokeStyle = OUT; g.lineJoin = 'round';
   if (o.dead) { drawTomb(g); g.restore(); return; }
@@ -717,6 +768,7 @@ function drawPet(g, sp, o) {
   const bob = walking ? -Math.abs(Math.sin(ph)) * 2.5 : Math.sin(t * 3) * 1.2;
   const air = o.onGround === false;
   g.fillStyle = 'rgba(0,0,0,.18)'; ell(g, 0, 1, 13, 3.5); g.fill();
+  if (L.neck && L.neck.s === 'cape') drawCape(g, L.neck, bob, t);
   // tail
   g.save(); g.translate(-9, -11 + bob); drawTail(g, S, t, walking); g.restore();
   // legs
@@ -775,12 +827,14 @@ function drawPet(g, sp, o) {
   if (S.teeth && !o.hurt) { g.fillStyle = '#fff'; g.fillRect(hx + 9, hy + 8, 3, 3); g.strokeRect(hx + 9, hy + 8, 3, 3); }
   g.fillStyle = 'rgba(255,120,150,.45)'; ell(g, hx + 3, hy + 5, 2.5, 1.6); g.fill();
   g.lineWidth = 2.2;
-  if (S.collar) { g.beginPath(); g.roundRect(hx - 9, hy + 9, 18, 4, 2); fs(g, S.collar); ell(g, hx + 3, hy + 14, 2, 2); fs(g, '#ffc21e'); }
-  if (o.hat && o.hat !== 'none') drawHat(g, o.hat, hx, hy - 4, t);
+  if (S.collar && !L.neck) { g.beginPath(); g.roundRect(hx - 9, hy + 9, 18, 4, 2); fs(g, S.collar); ell(g, hx + 3, hy + 14, 2, 2); fs(g, '#ffc21e'); }
+  if (L.neck) drawNeck(g, L.neck, hx, hy, t);
+  if (L.eye && !o.hurt) drawGlasses(g, L.eye, hx, hy);
+  if (L.hat) drawHat(g, L.hat.s, hx, hy - 4, t, L.hat.c);
   g.lineWidth = 2.2; g.strokeStyle = OUT;
   // arm + weapon
   g.save(); g.translate(1, -15 + bob); g.rotate(-(o.elev || 0));
-  if (o.weapon) drawWeaponArm(g, S, o.weapon, t, o.fireAnim || 0);
+  if (o.weapon) drawWeaponArm(g, S, o.weapon, t, o.fireAnim || 0, L.wsk);
   else { ell(g, 7, 3, 4, 3.6); fs(g, S.body); }
   g.restore();
   g.restore();
@@ -1402,7 +1456,7 @@ function projTrail(o) {
 }
 // ================= MATCH FLOW =================
 function botSlot(names) {
-  return { ctrl: 'bot', name: (pick(TAGS) + ' ' + names.pop()).trim(), pet: pick(PETS), hat: pick(HATS) };
+  return { ctrl: 'bot', name: (pick(TAGS) + ' ' + names.pop()).trim(), pet: pick(PETS), hat: randomLook() };
 }
 function startOffline() {
   const names = [...BOT_NAMES].sort(() => Math.random() - .5);
@@ -2532,6 +2586,400 @@ function onInput(d) {
       break;
   }
 }
+// ================= COSTUME SHOP =================
+// A "look" is stored in profile.hat as "hat:crown.3|fur:12|eye:shades.5|neck:cape.2|wsk:camo.7"
+const PAL = [['Classic', null], ['Red', '#e0302a'], ['Orange', '#ff8a1e'], ['Gold', '#ffc21e'], ['Lime', '#9be22d'], ['Green', '#2fae4a'],
+  ['Mint', '#5fe0b0'], ['Teal', '#16a29a'], ['Cyan', '#26d7ff'], ['Sky', '#6fb8ff'], ['Blue', '#2f6fe0'], ['Navy', '#1c2f7a'],
+  ['Purple', '#7a4bd6'], ['Violet', '#b06bff'], ['Pink', '#ff7ab8'], ['Hot Pink', '#ff2d95'], ['Rose', '#c2185b'], ['Brown', '#8a5a2b'],
+  ['Tan', '#d9b07a'], ['Black', '#222222'], ['Gray', '#8d93a3'], ['White', '#f4f4f4'], ['Lava', '#ff4a12'], ['Ice', '#bfefff']];
+const HAT_SHAPES = {
+  cap: ['Cool Cap', '#2f6fe0'], ninja: ['Ninja Band', '#e0302a'], santa: ['Santa Hat', '#e0302a'], viking: ['Viking Helm', '#9aa3b5'],
+  tophat: ['Top Hat', '#222222'], crown: ['Royal Crown', '#ffc21e'], beanie: ['Beanie', '#7a4bd6'], cowboy: ['Cowboy Hat', '#9a5b2a'],
+  wizard: ['Wizard Hat', '#3b3bb5'], party: ['Party Hat', '#ff5ab4'], pirate: ['Pirate Hat', '#222222'], halo: ['Angel Halo', '#ffe14d'],
+  chef: ['Chef Hat', '#f4f4f4'], helmet: ['Army Helmet', '#3c6b2a'], headphones: ['Headphones', '#e0302a'], flower: ['Flower Crown', '#ff7ab8'],
+  horns: ['Devil Horns', '#c81d12'], propeller: ['Propeller Cap', '#2fb3e0']
+};
+const EYE_SHAPES = { round: 'Round Specs', shades: 'Cool Shades', star: 'Star Glasses', heart: 'Heart Glasses', visor: 'Cyber Visor', monocle: 'Monocle' };
+const NECK_SHAPES = { scarf: ['Scarf', '#e0302a'], cape: ['Hero Cape', '#7a1fa0'], bowtie: ['Bow Tie', '#222222'], medal: ['Gold Medal', '#ffc21e'] };
+const PATTERNS = { solid: 'Solid', stripes: 'Striped', camo: 'Camo', tiger: 'Tiger', dots: 'Polka', checker: 'Checker', flames: 'Flame', neon: 'Neon', galaxy: 'Galaxy', gold: 'Golden' };
+const FUR_HUES = [['Crimson', 355], ['Coral', 12], ['Amber', 32], ['Honey', 45], ['Lemon', 56], ['Olive', 70], ['Lime', 90], ['Jade', 130], ['Emerald', 150],
+  ['Seafoam', 165], ['Aqua', 180], ['Azure', 200], ['Cobalt', 218], ['Indigo', 235], ['Iris', 255], ['Plum', 275], ['Magenta', 300], ['Bubblegum', 320], ['Ruby', 340], ['Cocoa', 25]];
+const FUR_TONES = [['Pastel', 70, 80], ['Bright', 75, 58], ['Deep', 50, 36]];
+const RARITY = { common: ['COMMON', '#b8c4d8'], rare: ['RARE', '#4fa0ff'], epic: ['EPIC', '#b06bff'], legendary: ['LEGENDARY', '#ffb21e'] };
+const CAT_NAME = { hat: '🎩 Hats', fur: '🎨 Fur', eye: '🕶️ Glasses', neck: '🧣 Neckwear', wsk: '🚀 Bazooka Skins' };
+
+function hashStr(s) { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+function wskColors(k) { const a = 1 + k % 23; let b = 1 + (k * 7 + 3) % 23; if (b === a) b = 1 + (b % 23); return [PAL[a], PAL[b]]; }
+function furColor(i) {
+  const [hn, h] = FUR_HUES[Math.floor(i / 3) % 20], [tn, s, l] = FUR_TONES[i % 3];
+  return { name: tn + ' ' + hn, body: `hsl(${h},${s}%,${l}%)`, leg: `hsl(${h},${s}%,${l - 8}%)` };
+}
+
+const CATALOG = [];
+(function buildCatalog() {
+  const add = (id, cat, name, boost) => {
+    const h = hashStr(id), r = (h % 100) + (boost || 0);
+    const rarity = r >= 96 ? 'legendary' : r >= 83 ? 'epic' : r >= 55 ? 'rare' : 'common';
+    const base = { common: [40, 80], rare: [150, 150], epic: [400, 400], legendary: [1000, 1500] }[rarity];
+    CATALOG.push({ id, cat, name, rarity, price: Math.round((base[0] + (h >>> 8) % base[1]) / 5) * 5 });
+  };
+  for (const s in HAT_SHAPES) PAL.forEach((c, i) => add('hat:' + s + '.' + i, 'hat', (i ? c[0] + ' ' : '') + HAT_SHAPES[s][0], (s === 'crown' || s === 'halo' || s === 'wizard') ? 12 : 0));
+  for (let i = 0; i < 60; i++) add('fur:' + i, 'fur', furColor(i).name + ' Fur', i % 3 === 2 ? 5 : 0);
+  for (const s in EYE_SHAPES) for (let i = 1; i <= 20; i++) add('eye:' + s + '.' + i, 'eye', PAL[i][0] + ' ' + EYE_SHAPES[s], s === 'visor' ? 8 : 0);
+  for (const s in NECK_SHAPES) PAL.forEach((c, i) => add('neck:' + s + '.' + i, 'neck', (i ? c[0] + ' ' : '') + NECK_SHAPES[s][0], s === 'cape' ? 8 : 0));
+  for (const p in PATTERNS) for (let k = 0; k < 36; k++) {
+    const [a, b] = wskColors(k);
+    add('wsk:' + p + '.' + k, 'wsk', PATTERNS[p] + ' ' + a[0] + (k >= 23 ? '/' + b[0] : '') + ' Bazooka', (p === 'gold' || p === 'galaxy' || p === 'neon') ? 15 : 0);
+  }
+})();
+const CAT_BY_ID = new Map(CATALOG.map(it => [it.id, it]));
+const PET_OF_CAT = { hat: 'hat', fur: 'fur', eye: 'eye', neck: 'neck', wsk: 'wsk' };
+
+// ---------- looks ----------
+const lookCache = new Map();
+function getLook(str) {
+  str = String(str || '');
+  let L = lookCache.get(str);
+  if (L) return L;
+  L = {};
+  if (str && !str.includes(':')) { if (HAT_SHAPES[str]) L.hat = { s: str, c: 0 }; }
+  else for (const part of str.split('|')) {
+    const [cat, v] = part.split(':'); if (!v) continue;
+    if (cat === 'fur') { const i = v | 0; if (i >= 0 && i < 60) L.fur = furColor(i); continue; }
+    const [s, n] = v.split('.'), i = n | 0;
+    if (cat === 'hat' && HAT_SHAPES[s] && i >= 0 && i < PAL.length) L.hat = { s, c: i };
+    else if (cat === 'eye' && EYE_SHAPES[s] && i >= 1 && i <= 20) L.eye = { s, c: i };
+    else if (cat === 'neck' && NECK_SHAPES[s] && i >= 0 && i < PAL.length) L.neck = { s, c: i };
+    else if (cat === 'wsk' && PATTERNS[s] && i >= 0 && i < 36) L.wsk = { p: s, k: i };
+  }
+  if (lookCache.size > 300) lookCache.clear();
+  lookCache.set(str, L);
+  return L;
+}
+function lookParts(str) {
+  const out = {};
+  const L = getLook(str);
+  if (L.hat) out.hat = 'hat:' + L.hat.s + '.' + L.hat.c;
+  for (const part of String(str || '').split('|')) { const [cat] = part.split(':'); if (cat === 'fur' || cat === 'eye' || cat === 'neck' || cat === 'wsk') out[cat] = part; }
+  return out;
+}
+function lookString(parts) { return ['hat', 'fur', 'eye', 'neck', 'wsk'].filter(k => parts[k]).map(k => parts[k]).join('|') || 'none'; }
+function ownsItem(id) {
+  const u = profile.unlocks;
+  if (u.includes(id)) return true;
+  const m = /^hat:(\w+)\.0$/.exec(id);
+  return !!(m && u.includes(m[1]));
+}
+function randomLook() {
+  const parts = {}, pickCat = c => { const list = CATALOG.filter(i => i.cat === c); return pick(list).id; };
+  if (Math.random() < .75) parts.hat = pickCat('hat');
+  if (Math.random() < .4) parts.fur = pickCat('fur');
+  if (Math.random() < .35) parts.eye = pickCat('eye');
+  if (Math.random() < .35) parts.neck = pickCat('neck');
+  if (Math.random() < .5) parts.wsk = pickCat('wsk');
+  return lookString(parts);
+}
+function colorOf(i, fallback) { return (PAL[i] && PAL[i][1]) || fallback; }
+
+// ---------- costume art ----------
+function drawHat(g, shape, hx, hy, t, ci) {
+  const c = colorOf(ci, HAT_SHAPES[shape] ? HAT_SHAPES[shape][1] : '#888');
+  g.lineWidth = 2; g.strokeStyle = OUT;
+  switch (shape) {
+    case 'cap':
+      g.beginPath(); g.arc(hx, hy - 4, 13, Math.PI, 0); g.closePath(); fs(g, c);
+      g.beginPath(); g.roundRect(hx + 4, hy - 7, 17, 4, 2); fs(g, c); ell(g, hx, hy - 17, 2.5, 2); fs(g, '#ffe14d'); break;
+    case 'ninja': {
+      g.beginPath(); g.rect(hx - 13, hy - 10, 26, 5); fs(g, c);
+      const w = Math.sin(t * 10) * 3;
+      g.beginPath(); g.moveTo(hx - 12, hy - 9); g.quadraticCurveTo(hx - 22, hy - 12 + w, hx - 28, hy - 6 + w); g.lineTo(hx - 26, hy - 2 + w); g.quadraticCurveTo(hx - 20, hy - 6, hx - 12, hy - 6); g.closePath(); fs(g, c); break;
+    }
+    case 'santa': {
+      const sw = Math.sin(t * 3) * 3;
+      g.beginPath(); g.moveTo(hx - 12, hy - 8); g.quadraticCurveTo(hx - 2, hy - 34, hx - 16 + sw, hy - 30); g.quadraticCurveTo(hx + 4, hy - 26, hx + 13, hy - 8); g.closePath(); fs(g, c);
+      g.beginPath(); g.roundRect(hx - 14, hy - 11, 28, 6, 3); fs(g, '#fff'); ell(g, hx - 16 + sw, hy - 30, 4, 4); fs(g, '#fff'); break;
+    }
+    case 'viking':
+      [-1, 1].forEach(d => { g.beginPath(); g.moveTo(hx + 10 * d, hy - 10); g.quadraticCurveTo(hx + 20 * d, hy - 14, hx + 18 * d, hy - 28); g.quadraticCurveTo(hx + 14 * d, hy - 18, hx + 6 * d, hy - 14); g.closePath(); fs(g, '#fff3d6'); });
+      g.beginPath(); g.arc(hx, hy - 5, 13, Math.PI, 0); g.closePath(); fs(g, c); g.beginPath(); g.rect(hx - 13, hy - 7, 26, 4); fs(g, '#c9a227'); break;
+    case 'tophat':
+      g.beginPath(); g.rect(hx - 8, hy - 34, 16, 22); fs(g, c); g.beginPath(); g.rect(hx - 8, hy - 18, 16, 4); fs(g, ci ? '#fff' : '#e0302a');
+      g.beginPath(); g.roundRect(hx - 15, hy - 13, 30, 4, 2); fs(g, c); break;
+    case 'crown':
+      g.beginPath(); g.moveTo(hx - 11, hy - 9); g.lineTo(hx - 12, hy - 24); g.lineTo(hx - 6, hy - 16); g.lineTo(hx, hy - 27); g.lineTo(hx + 6, hy - 16); g.lineTo(hx + 12, hy - 24); g.lineTo(hx + 11, hy - 9); g.closePath(); fs(g, c);
+      ell(g, hx, hy - 14, 2.2, 2.2); fs(g, ci === 1 ? '#2f6fe0' : '#e0302a');
+      g.fillStyle = 'rgba(255,255,255,' + (.5 + Math.sin(t * 6) * .5) + ')'; g.fillRect(hx - 9, hy - 21, 2, 2); break;
+    case 'beanie':
+      g.beginPath(); g.arc(hx, hy - 5, 13.5, Math.PI, 0); g.closePath(); fs(g, c);
+      g.beginPath(); g.roundRect(hx - 14, hy - 8, 28, 5, 2); fs(g, '#fff'); ell(g, hx, hy - 20, 3.5, 3.5); fs(g, '#fff'); break;
+    case 'cowboy':
+      g.beginPath(); g.ellipse(hx, hy - 9, 22, 4, 0, 0, 7); fs(g, c);
+      g.beginPath(); g.moveTo(hx - 10, hy - 10); g.quadraticCurveTo(hx - 11, hy - 26, hx - 3, hy - 22); g.lineTo(hx, hy - 20); g.lineTo(hx + 3, hy - 22); g.quadraticCurveTo(hx + 11, hy - 26, hx + 10, hy - 10); g.closePath(); fs(g, c);
+      g.fillStyle = '#3a2410'; g.fillRect(hx - 10, hy - 13, 20, 2.5); break;
+    case 'wizard': {
+      const sw = Math.sin(t * 2) * 2;
+      g.beginPath(); g.moveTo(hx - 14, hy - 8); g.quadraticCurveTo(hx - 2, hy - 30, hx + 4 + sw, hy - 42); g.quadraticCurveTo(hx + 4, hy - 24, hx + 14, hy - 8); g.closePath(); fs(g, c);
+      g.beginPath(); g.ellipse(hx, hy - 8, 18, 3.5, 0, 0, 7); fs(g, c);
+      g.fillStyle = '#ffe14d'; g.font = '8px sans-serif'; g.textAlign = 'center'; g.fillText('★', hx - 1, hy - 16); g.fillText('✦', hx + 3, hy - 26); break;
+    }
+    case 'party':
+      g.beginPath(); g.moveTo(hx - 9, hy - 9); g.lineTo(hx + 1, hy - 34); g.lineTo(hx + 10, hy - 9); g.closePath(); fs(g, c);
+      g.strokeStyle = '#fff'; g.lineWidth = 2; for (let i = 1; i < 4; i++) { g.beginPath(); g.moveTo(hx - 9 + i * 2.5, hy - 9 - i * 6); g.lineTo(hx + 10 - i * 2.2, hy - 9 - i * 6 + 3); g.stroke(); }
+      g.strokeStyle = OUT; ell(g, hx + 1, hy - 35, 3, 3); fs(g, '#ffe14d'); break;
+    case 'pirate':
+      g.beginPath(); g.moveTo(hx - 18, hy - 9); g.quadraticCurveTo(hx - 12, hy - 28, hx, hy - 24); g.quadraticCurveTo(hx + 12, hy - 28, hx + 18, hy - 9); g.quadraticCurveTo(hx, hy - 13, hx - 18, hy - 9); fs(g, c);
+      g.fillStyle = '#fff'; g.font = 'bold 9px sans-serif'; g.textAlign = 'center'; g.fillText('☠', hx, hy - 13); break;
+    case 'halo':
+      g.save(); g.shadowColor = c; g.shadowBlur = 10; g.strokeStyle = c; g.lineWidth = 3.5;
+      g.beginPath(); g.ellipse(hx, hy - 20 + Math.sin(t * 3) * 1.5, 11, 3.5, 0, 0, 7); g.stroke(); g.restore(); break;
+    case 'chef':
+      g.beginPath(); g.rect(hx - 9, hy - 16, 18, 8); fs(g, c);
+      [[-7, -20, 6], [0, -24, 7], [7, -20, 6]].forEach(([x, y, r]) => { ell(g, hx + x, hy + y, r, r); fs(g, c); });
+      g.fillStyle = c; g.fillRect(hx - 8, hy - 20, 16, 6); break;
+    case 'helmet':
+      g.beginPath(); g.arc(hx, hy - 3, 15, Math.PI, 0); g.closePath(); fs(g, c);
+      g.beginPath(); g.ellipse(hx, hy - 3, 18, 3, 0, 0, 7); fs(g, c);
+      g.fillStyle = 'rgba(0,0,0,.25)'; for (let i = 0; i < 4; i++) { g.beginPath(); g.arc(hx - 8 + i * 5, hy - 10 + (i % 2) * 3, 1.8, 0, 7); g.fill(); } break;
+    case 'headphones':
+      g.lineWidth = 4; g.strokeStyle = OUT; g.beginPath(); g.arc(hx, hy - 1, 14, Math.PI * 1.05, Math.PI * 1.95); g.stroke();
+      g.lineWidth = 2.5; g.strokeStyle = c; g.beginPath(); g.arc(hx, hy - 1, 14, Math.PI * 1.05, Math.PI * 1.95); g.stroke();
+      g.strokeStyle = OUT; g.lineWidth = 2; g.beginPath(); g.roundRect(hx - 18, hy - 6, 7, 12, 3); fs(g, c); g.beginPath(); g.roundRect(hx + 11, hy - 6, 7, 12, 3); fs(g, c); break;
+    case 'flower':
+      for (let i = 0; i < 5; i++) {
+        const x = hx - 12 + i * 6, y = hy - 11 - Math.sin(i / 4 * Math.PI) * 3;
+        g.fillStyle = i % 2 ? '#fff' : c; for (let k = 0; k < 5; k++) { g.beginPath(); g.arc(x + Math.cos(k * 1.26) * 2.6, y + Math.sin(k * 1.26) * 2.6, 2.2, 0, 7); g.fill(); }
+        g.fillStyle = '#ffe14d'; g.beginPath(); g.arc(x, y, 1.6, 0, 7); g.fill();
+      } break;
+    case 'horns':
+      [-1, 1].forEach(d => { g.beginPath(); g.moveTo(hx + 5 * d, hy - 10); g.quadraticCurveTo(hx + 12 * d, hy - 16, hx + 11 * d, hy - 26); g.quadraticCurveTo(hx + 16 * d, hy - 14, hx + 11 * d, hy - 7); g.closePath(); fs(g, c); }); break;
+    case 'propeller': {
+      g.beginPath(); g.arc(hx, hy - 4, 13, Math.PI, 0); g.closePath(); fs(g, c);
+      g.beginPath(); g.rect(hx - 1, hy - 21, 2, 5); fs(g, '#888');
+      const w = Math.cos(t * 25) * 12;
+      g.fillStyle = '#ffe14d'; g.beginPath(); g.ellipse(hx, hy - 21, Math.abs(w) + 1, 2, 0, 0, 7); g.fill(); g.stroke(); break;
+    }
+  }
+  g.lineWidth = 2.2; g.strokeStyle = OUT;
+}
+
+function drawGlasses(g, e, hx, hy) {
+  const c = colorOf(e.c, '#222');
+  g.save(); g.lineWidth = 1.8; g.strokeStyle = OUT;
+  const L = [hx + 5, hy - 2], Rr = [hx + 11.5, hy - 2];
+  switch (e.s) {
+    case 'round':
+      g.strokeStyle = c; g.lineWidth = 2; [L, Rr].forEach(([x, y]) => { g.beginPath(); g.arc(x, y, 4, 0, 7); g.stroke(); });
+      g.beginPath(); g.moveTo(hx + 9, hy - 2); g.lineTo(hx + 7.5, hy - 2); g.stroke(); g.beginPath(); g.moveTo(hx + 1, hy - 2); g.lineTo(hx - 8, hy - 4); g.stroke(); break;
+    case 'shades':
+      g.fillStyle = c; g.beginPath(); g.roundRect(hx + .5, hy - 5.5, 16, 6.5, 3); g.fill(); g.stroke();
+      g.fillStyle = 'rgba(255,255,255,.5)'; g.fillRect(hx + 3, hy - 4.5, 3, 1.5); g.fillRect(hx + 10, hy - 4.5, 3, 1.5);
+      g.strokeStyle = c; g.beginPath(); g.moveTo(hx + 1, hy - 3); g.lineTo(hx - 8, hy - 5); g.stroke(); break;
+    case 'star':
+      g.fillStyle = c; g.font = '11px sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
+      g.fillText('★', L[0], L[1]); g.fillText('★', Rr[0], Rr[1]); break;
+    case 'heart':
+      g.fillStyle = c; g.font = '10px sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
+      g.fillText('❤', L[0], L[1]); g.fillText('❤', Rr[0], Rr[1]); break;
+    case 'visor': {
+      const gr = g.createLinearGradient(hx, 0, hx + 18, 0); gr.addColorStop(0, c); gr.addColorStop(1, '#ffffff');
+      g.globalAlpha = .85; g.fillStyle = gr; g.beginPath(); g.moveTo(hx - 1, hy - 6); g.lineTo(hx + 17, hy - 5); g.lineTo(hx + 16, hy + 1); g.lineTo(hx, hy); g.closePath(); g.fill();
+      g.globalAlpha = 1; g.stroke(); break;
+    }
+    case 'monocle':
+      g.strokeStyle = c; g.lineWidth = 2; g.beginPath(); g.arc(Rr[0], Rr[1], 4.5, 0, 7); g.stroke();
+      g.lineWidth = 1; g.beginPath(); g.moveTo(Rr[0], Rr[1] + 4.5); g.quadraticCurveTo(Rr[0] - 2, hy + 10, Rr[0] - 6, hy + 14); g.stroke(); break;
+  }
+  g.restore();
+}
+
+function drawCape(g, n, bob, t) {
+  const c = colorOf(n.c, NECK_SHAPES.cape[1]);
+  const w = Math.sin(t * 5) * 3;
+  g.beginPath(); g.moveTo(-2, -24 + bob); g.quadraticCurveTo(-16, -14 + bob, -20 + w, 0); g.lineTo(-6 + w * .5, -1); g.quadraticCurveTo(-4, -12 + bob, 4, -22 + bob); g.closePath(); fs(g, c);
+}
+function drawNeck(g, n, hx, hy, t) {
+  const c = colorOf(n.c, NECK_SHAPES[n.s][1]);
+  if (n.s === 'scarf') {
+    g.beginPath(); g.roundRect(hx - 10, hy + 8, 20, 5, 2.5); fs(g, c);
+    const w = Math.sin(t * 7) * 2;
+    g.beginPath(); g.moveTo(hx - 6, hy + 11); g.lineTo(hx - 15 + w, hy + 20); g.lineTo(hx - 10 + w, hy + 22); g.lineTo(hx - 3, hy + 12); g.closePath(); fs(g, c);
+  } else if (n.s === 'cape') {
+    g.beginPath(); g.roundRect(hx - 8, hy + 9, 16, 3.5, 2); fs(g, c);
+    ell(g, hx + 3, hy + 11, 2, 2); fs(g, '#ffc21e');
+  } else if (n.s === 'bowtie') {
+    g.beginPath(); g.moveTo(hx + 3, hy + 11); g.lineTo(hx - 4, hy + 7); g.lineTo(hx - 4, hy + 15); g.closePath(); fs(g, c);
+    g.beginPath(); g.moveTo(hx + 3, hy + 11); g.lineTo(hx + 10, hy + 7); g.lineTo(hx + 10, hy + 15); g.closePath(); fs(g, c);
+    ell(g, hx + 3, hy + 11, 2, 2); fs(g, c);
+  } else if (n.s === 'medal') {
+    g.strokeStyle = '#2f6fe0'; g.lineWidth = 2; g.beginPath(); g.moveTo(hx - 7, hy + 9); g.lineTo(hx + 3, hy + 16); g.lineTo(hx + 9, hy + 9); g.stroke();
+    g.strokeStyle = OUT; g.lineWidth = 1.5; ell(g, hx + 3, hy + 18, 3.5, 3.5); fs(g, c);
+    g.fillStyle = '#fff'; g.font = '5px sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('★', hx + 3, hy + 18);
+  }
+  g.lineWidth = 2.2; g.strokeStyle = OUT;
+}
+
+function paintSkin(g, sk, x, y, w, h, t) {
+  const [[, a0], [, b0]] = wskColors(sk.k);
+  const a = a0, b = b0;
+  g.save(); g.clip();
+  g.fillStyle = a; g.fillRect(x, y, w, h);
+  switch (sk.p) {
+    case 'stripes': g.fillStyle = b; for (let i = 0; i < w; i += 6) g.fillRect(x + i, y, 3, h); break;
+    case 'camo': g.fillStyle = b; [[3, 2, 4], [12, 7, 5], [21, 1, 4], [30, 6, 3], [8, 9, 3]].forEach(([px, py, r]) => { g.beginPath(); g.ellipse(x + px, y + py, r, r * .7, .5, 0, 7); g.fill(); }); break;
+    case 'tiger': g.strokeStyle = b; g.lineWidth = 2; for (let i = 2; i < w; i += 5) { g.beginPath(); g.moveTo(x + i, y); g.quadraticCurveTo(x + i + 3, y + h / 2, x + i - 1, y + h); g.stroke(); } break;
+    case 'dots': g.fillStyle = b; for (let i = 3; i < w; i += 6) for (let j = 2; j < h; j += 5) { g.beginPath(); g.arc(x + i + (j % 2) * 3, y + j, 1.4, 0, 7); g.fill(); } break;
+    case 'checker': g.fillStyle = b; for (let i = 0; i < w; i += 4) for (let j = 0; j < h; j += 4) if (((i + j) / 4) % 2 === 0) g.fillRect(x + i, y + j, 4, 4); break;
+    case 'flames': {
+      g.fillStyle = b; g.beginPath(); g.moveTo(x, y + h);
+      for (let i = 0; i <= w; i += 4) g.lineTo(x + i, y + h * (.2 + .5 * ((i / 4) % 2)) + Math.sin(t * 8 + i) * 1);
+      g.lineTo(x + w, y + h); g.fill(); break;
+    }
+    case 'neon': g.fillStyle = '#10101e'; g.fillRect(x, y, w, h); g.shadowColor = a; g.shadowBlur = 6; g.strokeStyle = a; g.lineWidth = 1.5; g.strokeRect(x + 2, y + 2, w - 4, h - 4); g.strokeStyle = b; g.beginPath(); g.moveTo(x + 4, y + h / 2); g.lineTo(x + w - 4, y + h / 2); g.stroke(); break;
+    case 'galaxy': {
+      const gr = g.createLinearGradient(x, y, x + w, y + h); gr.addColorStop(0, '#12082e'); gr.addColorStop(.5, a); gr.addColorStop(1, '#12082e');
+      g.fillStyle = gr; g.fillRect(x, y, w, h);
+      g.fillStyle = '#fff'; [[4, 3], [11, 7], [17, 2], [24, 6], [30, 3], [8, 8]].forEach(([px, py], i) => { g.globalAlpha = .5 + .5 * Math.sin(t * 4 + i); g.fillRect(x + px, y + py, 1.2, 1.2); }); break;
+    }
+    case 'gold': {
+      const gr = g.createLinearGradient(x, y, x, y + h); gr.addColorStop(0, '#fff3a8'); gr.addColorStop(.5, '#ffc21e'); gr.addColorStop(1, '#b37400');
+      g.fillStyle = gr; g.fillRect(x, y, w, h);
+      g.fillStyle = 'rgba(255,255,255,.8)'; const sx = ((t * 20) % (w + 10)) - 5; g.fillRect(x + sx, y, 2, h);
+      g.fillStyle = b; g.fillRect(x + w - 8, y, 2, h); break;
+    }
+  }
+  g.restore();
+}
+
+// ---------- shop UI ----------
+const SHOP = { tab: 'hat', page: 0, per: 36, sel: null, list: [] };
+function shopLook() {
+  const parts = lookParts(profile.hat);
+  if (SHOP.sel) parts[SHOP.sel.cat] = SHOP.sel.id;
+  return lookString(parts);
+}
+function openShop(owned) {
+  Snd.click();
+  SHOP.sel = null; SHOP.page = 0;
+  $('#shopOwned').checked = !!owned;
+  $('#shopOv').hidden = false;
+  renderShopTabs(); refreshShop();
+}
+function closeShop() { $('#shopOv').hidden = true; SHOP.sel = null; renderLobby(); }
+function renderShopTabs() {
+  const box = $('#shopTabs'); box.innerHTML = '';
+  for (const c in CAT_NAME) {
+    const b = document.createElement('button'); b.type = 'button'; b.className = c === SHOP.tab ? 'on' : '';
+    const owned = CATALOG.filter(i => i.cat === c && ownsItem(i.id)).length, total = CATALOG.filter(i => i.cat === c).length;
+    b.innerHTML = CAT_NAME[c] + ' <small>' + owned + '/' + total + '</small>';
+    b.onclick = () => { SHOP.tab = c; SHOP.page = 0; renderShopTabs(); refreshShop(); Snd.click(); };
+    box.appendChild(b);
+  }
+}
+function refreshShop() {
+  const q = $('#shopSearch').value.trim().toLowerCase(), rar = $('#shopRarity').value, sort = $('#shopSort').value, own = $('#shopOwned').checked;
+  let list = CATALOG.filter(i => i.cat === SHOP.tab && (!q || i.name.toLowerCase().includes(q)) && (!rar || i.rarity === rar) && (!own || ownsItem(i.id)));
+  if (sort === 'low') list.sort((a, b) => a.price - b.price);
+  else if (sort === 'high') list.sort((a, b) => b.price - a.price);
+  else if (sort === 'name') list.sort((a, b) => a.name.localeCompare(b.name));
+  SHOP.list = list;
+  const pages = Math.max(1, Math.ceil(list.length / SHOP.per));
+  SHOP.page = clamp(SHOP.page, 0, pages - 1);
+  $('#shopPage').textContent = 'Page ' + (SHOP.page + 1) + ' / ' + pages + ' · ' + list.length + ' items';
+  $('#shopCoins').textContent = profile.coins;
+  const grid = $('#shopGrid'); grid.innerHTML = '';
+  const eq = lookParts(profile.hat);
+  list.slice(SHOP.page * SHOP.per, (SHOP.page + 1) * SHOP.per).forEach(it => {
+    const card = document.createElement('button'); card.type = 'button';
+    const owned = ownsItem(it.id), equipped = eq[it.cat] === it.id;
+    card.className = 'scard' + (SHOP.sel && SHOP.sel.id === it.id ? ' sel' : '') + (equipped ? ' eq' : '');
+    card.style.setProperty('--r', RARITY[it.rarity][1]);
+    const cvs = document.createElement('canvas'); cvs.width = 128; cvs.height = 110;
+    const nm = document.createElement('span'); nm.className = 'sn'; nm.textContent = it.name;
+    const rr = document.createElement('span'); rr.className = 'sr'; rr.textContent = RARITY[it.rarity][0];
+    const pr = document.createElement('span'); pr.className = 'sp'; pr.textContent = equipped ? '✔ EQUIPPED' : owned ? 'OWNED' : '🪙 ' + it.price;
+    card.append(cvs, rr, nm, pr);
+    card.onclick = () => { SHOP.sel = it; Snd.click(); refreshShop(); };
+    grid.appendChild(card);
+    drawThumb(cvs.getContext('2d'), it);
+  });
+  renderShopSel();
+}
+function drawThumb(g, it) {
+  g.clearRect(0, 0, 128, 110);
+  if (it.cat === 'wsk') {
+    g.save(); g.translate(40, 58); g.scale(2.6, 2.6); g.lineWidth = 2; g.strokeStyle = OUT;
+    g.beginPath(); g.roundRect(-8, -5, 36, 10, 3); paintSkin(g, getLook(it.id).wsk, -8, -5, 36, 10, 0);
+    g.beginPath(); g.roundRect(-8, -5, 36, 10, 3); g.stroke();
+    g.beginPath(); g.rect(24, -6, 6, 12); fs(g, '#4d5a28'); g.beginPath(); g.rect(-10, -4, 4, 8); fs(g, '#4d5a28');
+    g.restore(); return;
+  }
+  const zoom = { fur: 2, hat: 1.9, neck: 2.6, eye: 2.7 }[it.cat], y = { fur: 102, hat: 146, neck: 116, eye: 150 }[it.cat];
+  drawPet(g, profile.pet, { x: 58, y, t: 0, scale: zoom, facing: 1, elev: 0, hat: it.id, onGround: true });
+}
+function renderShopSel() {
+  const box = $('#shopSel'), acts = $('#shopActs'); acts.innerHTML = '';
+  const it = SHOP.sel;
+  if (!it) { box.innerHTML = '<b>Your look</b><small>Tap an item to try it on</small>'; return; }
+  box.innerHTML = '';
+  const b = document.createElement('b'); b.textContent = it.name;
+  const s = document.createElement('small'); s.textContent = RARITY[it.rarity][0] + ' · ' + CAT_NAME[it.cat].replace(/^\S+\s/, '');
+  s.style.color = RARITY[it.rarity][1];
+  box.append(b, s);
+  const eq = lookParts(profile.hat), owned = ownsItem(it.id);
+  const btn = document.createElement('button'); btn.type = 'button';
+  if (!owned) {
+    btn.className = 'btn orange'; btn.textContent = 'BUY · 🪙 ' + it.price;
+    btn.disabled = profile.coins < it.price;
+    if (btn.disabled) btn.title = 'Not enough coins — win matches to earn more!';
+    btn.onclick = () => buyItem(it);
+  } else if (eq[it.cat] === it.id) {
+    btn.className = 'btn blue'; btn.textContent = 'TAKE OFF';
+    btn.onclick = () => { delete eq[it.cat]; setLook(eq); };
+  } else {
+    btn.className = 'btn'; btn.textContent = 'EQUIP';
+    btn.onclick = () => { eq[it.cat] = it.id; setLook(eq); };
+  }
+  acts.appendChild(btn);
+  if (!owned && profile.coins < it.price) { const n = document.createElement('small'); n.textContent = 'Need ' + (it.price - profile.coins) + ' more coins'; acts.appendChild(n); }
+}
+async function buyItem(it) {
+  if (ownsItem(it.id) || profile.coins < it.price) return;
+  profile.coins -= it.price;
+  profile.unlocks.push(it.id);
+  const eq = lookParts(profile.hat); eq[it.cat] = it.id;
+  profile.hat = lookString(eq);
+  Snd.coin(); toast('🛍️ Bought ' + it.name + '!' + (profile.guest ? ' (guest items are not saved)' : ''));
+  renderShopTabs(); refreshShop();
+  await saveProfile();
+}
+async function setLook(parts) {
+  profile.hat = lookString(parts);
+  Snd.click(); refreshShop();
+  await saveProfile();
+  if (NET.lobbyReady && !NET.q && !NET.match) netTrackStatus('idle');
+}
+function renderShopPreview(t) {
+  const c = $('#shopCv'), dpr = Math.min(2, devicePixelRatio || 1);
+  const w = c.clientWidth * dpr | 0, h = c.clientHeight * dpr | 0;
+  if (!w || !h) return;
+  if (c.width !== w || c.height !== h) { c.width = w; c.height = h; }
+  const g = c.getContext('2d'); g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, w, h);
+  const s = Math.min(w / 100, h / 110), cx = w / 2, by = h * .8;
+  g.fillStyle = '#3a8cff'; g.beginPath(); g.ellipse(cx, by, 28 * s, 7 * s, 0, 0, 7); g.fill();
+  g.strokeStyle = '#0a2a6b'; g.lineWidth = 3; g.stroke();
+  const it = SHOP.sel;
+  if (it) drawAura(g, cx, by, RARITY[it.rarity][1].length === 7 ? RARITY[it.rarity][1] : '#ffc21e', t, s);
+  drawPet(g, profile.pet, { x: cx, y: by, t, scale: s, facing: 1, elev: Math.sin(t) * .25 + .15, hat: shopLook(), onGround: true, weapon: 'bazooka' });
+}
+$('#shopClose').onclick = closeShop;
+$('#shopOv').addEventListener('pointerdown', e => { if (e.target.id === 'shopOv') closeShop(); });
+['shopSearch', 'shopRarity', 'shopSort', 'shopOwned'].forEach(id => $('#' + id).addEventListener(id === 'shopSearch' ? 'input' : 'change', () => { SHOP.page = 0; refreshShop(); }));
+$('#shopPrev').onclick = () => { SHOP.page--; refreshShop(); $('#shopGrid').scrollTop = 0; };
+$('#shopNext').onclick = () => { SHOP.page++; refreshShop(); $('#shopGrid').scrollTop = 0; };
+$('#shopReset').onclick = () => { SHOP.sel = null; setLook({}); };
+$('#shopBtn').onclick = () => openShop(false);
+$('#wardrobeBtn').onclick = () => openShop(true);
+$('#shopCount').textContent = CATALOG.length.toLocaleString() + ' costumes & weapon skins';
 // ================= LOGIN =================
 let regMode = false;
 function setAuthMode(reg) {
@@ -2588,11 +3036,11 @@ $('#guestBtn').onclick = () => {
 };
 
 // ================= LOBBY =================
-let selPet = 'dog', selHat = 'none', selMode = 'duel';
+let selPet = 'dog', selMode = 'duel';
 function level(p) { return 1 + Math.floor((p.games * 10 + p.wins * 30 + p.kills * 8) / 120); }
 function openLobby() {
   show('lobby');
-  selPet = profile.pet; selHat = profile.hat;
+  selPet = profile.pet;
   try { Object.assign(settings, JSON.parse(localStorage.getItem('wildjans_settings')) || {}); } catch (e) {}
   try { selMode = localStorage.getItem('wildjans_mode') || selMode; } catch (e) {}
   if (!MODES[selMode]) selMode = 'duel';
@@ -2616,22 +3064,21 @@ function renderLobby() {
   $('#meTag').textContent = 'LV ' + level(profile) + ' · ' + (profile.guest ? 'GUEST (progress not saved)' : (USE_SB ? 'ONLINE MEMBER' : 'MEMBER'));
   $('#stWins').textContent = profile.wins; $('#stGames').textContent = profile.games; $('#stKills').textContent = profile.kills; $('#stTro').textContent = profile.trophies;
   $('#dailyBtn').hidden = !dailyReady();
-  const petOwned = profile.unlocks.includes(selPet), hatOwned = profile.unlocks.includes(selHat);
+  const petOwned = profile.unlocks.includes(selPet);
   $('#petName').textContent = SPECIES[selPet].name;
   $('#petLock').textContent = petOwned ? (selPet === profile.pet ? '✔ EQUIPPED' : 'OWNED') : '🔒 ' + PET_PRICE[selPet] + ' 🪙';
-  $('#hatName').textContent = HAT_NAME[selHat];
-  $('#hatLock').textContent = hatOwned ? (selHat === profile.hat ? '✔ EQUIPPED' : 'OWNED') : '🔒 ' + HAT_PRICE[selHat] + ' 🪙';
-  const locked = !petOwned ? selPet : !hatOwned ? selHat : null;
+  const owned = CATALOG.filter(i => ownsItem(i.id)).length;
+  $('#wardrobeBtn').textContent = '👕 MY WARDROBE (' + owned + ')';
+  const locked = !petOwned ? selPet : null;
   const buy = $('#buyBtn');
   buy.hidden = !locked;
   if (locked) {
-    const price = !petOwned ? PET_PRICE[selPet] : HAT_PRICE[selHat];
-    buy.textContent = 'BUY ' + (!petOwned ? SPECIES[selPet].name : HAT_NAME[selHat]) + ' — ' + price + ' 🪙';
+    const price = PET_PRICE[selPet];
+    buy.textContent = 'BUY ' + SPECIES[selPet].name + ' — ' + price + ' 🪙';
     buy.disabled = profile.coins < price;
     buy.onclick = async () => {
       if (profile.coins < price) return;
-      profile.coins -= price; profile.unlocks.push(locked);
-      if (!petOwned) profile.pet = selPet; else profile.hat = selHat;
+      profile.coins -= price; profile.unlocks.push(locked); profile.pet = selPet;
       Snd.coin(); await saveProfile(); renderLobby();
     };
   }
@@ -2658,13 +3105,10 @@ function cycle(list, cur, d) { return list[(list.indexOf(cur) + d + list.length)
 function equipIfOwned() {
   let ch = false;
   if (profile.unlocks.includes(selPet) && profile.pet !== selPet) { profile.pet = selPet; ch = true; }
-  if (profile.unlocks.includes(selHat) && profile.hat !== selHat) { profile.hat = selHat; ch = true; }
   if (ch) saveProfile();
 }
 $('#petPrev').onclick = () => { selPet = cycle(PETS, selPet, -1); Snd.click(); equipIfOwned(); renderLobby(); };
 $('#petNext').onclick = () => { selPet = cycle(PETS, selPet, 1); Snd.click(); equipIfOwned(); renderLobby(); };
-$('#hatPrev').onclick = () => { selHat = cycle(HATS, selHat, -1); Snd.click(); equipIfOwned(); renderLobby(); };
-$('#hatNext').onclick = () => { selHat = cycle(HATS, selHat, 1); Snd.click(); equipIfOwned(); renderLobby(); };
 ['setBots', 'setDiff', 'setMap', 'setMins', 'setTurn'].forEach(id => $('#' + id).onchange = () => {
   settings = { bots: +$('#setBots').value, diff: $('#setDiff').value, map: $('#setMap').value, mins: +$('#setMins').value, turn: +$('#setTurn').value };
   try { localStorage.setItem('wildjans_settings', JSON.stringify(settings)); } catch (e) {}
@@ -2703,7 +3147,7 @@ $('#muteBtn').onclick = () => { Snd.muted = !Snd.muted; $('#muteBtn').textConten
 
 // ================= MENU BACKGROUND =================
 const mb = $('#menuBg'), mbx = mb.getContext('2d');
-const menuPets = PETS.map((sp, i) => ({ sp, x: rand(0, 1), dir: Math.random() < .5 ? 1 : -1, speed: rand(.0006, .0012), hat: pick(HATS), jump: 0, vy: 0 }));
+const menuPets = PETS.map((sp, i) => ({ sp, x: rand(0, 1), dir: Math.random() < .5 ? 1 : -1, speed: rand(.0006, .0012), hat: randomLook(), jump: 0, vy: 0 }));
 function renderMenu(t) {
   const dpr = Math.min(2, devicePixelRatio || 1), w = innerWidth * dpr, h = innerHeight * dpr;
   if (mb.width !== w || mb.height !== h) { mb.width = w; mb.height = h; }
@@ -2738,7 +3182,7 @@ function renderPreview(t) {
   g.fillStyle = '#3a8cff'; g.beginPath(); g.ellipse(cx, by, 30 * s, 8 * s, 0, 0, 7); g.fill();
   g.strokeStyle = '#0a2a6b'; g.lineWidth = 3; g.stroke();
   drawAura(g, cx, by, '#ffc21e', t, s);
-  drawPet(g, selPet, { x: cx, y: by, t, scale: s, facing: 1, elev: Math.sin(t) * .3 + .2, hat: selHat, onGround: true, weapon: 'bazooka' });
+  drawPet(g, selPet, { x: cx, y: by, t, scale: s, facing: 1, elev: Math.sin(t) * .3 + .2, hat: profile.hat, onGround: true, weapon: 'bazooka' });
   if (!profile.unlocks.includes(selPet)) { g.globalAlpha = .55; g.fillStyle = '#0b2560'; g.fillRect(0, 0, w, h); g.globalAlpha = 1; outlineText(g, '🔒', cx, h * .4, '#fff', 60 * dpr); }
   const me = $('#meCv').getContext('2d'); me.setTransform(1, 0, 0, 1, 0, 0); me.clearRect(0, 0, 112, 112);
   drawPet(me, profile.pet, { x: 52, y: 106, t, scale: 2.1, facing: 1, elev: 0, hat: profile.hat, onGround: true });
@@ -2759,7 +3203,9 @@ function frame(ts) {
     if (!$('#endOv').hidden) renderWinner(t);
   } else {
     renderMenu(t);
-    if (!$('#lobby').hidden && profile) renderPreview(t);
+    if (!$('#lobby').hidden && profile) {
+      if ($('#shopOv').hidden) renderPreview(t); else renderShopPreview(t);
+    }
   }
 }
 // Background tabs pause requestAnimationFrame and throttle timers. A tiny worker keeps
