@@ -1,0 +1,19 @@
+{
+  "name": "Wild Jans – Battle Stadium",
+  "short_name": "Wild Jans",
+  "description": "A Wild Ones–inspired pet artillery battle game. Play online or vs bots.",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "display_override": ["fullscreen", "standalone"],
+  "orientation": "landscape",
+  "background_color": "#0b2560",
+  "theme_color": "#0b2560",
+  "categories": ["games", "entertainment"],
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

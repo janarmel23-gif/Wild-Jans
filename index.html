@@ -8,6 +8,10 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Wild Jans">
+<meta name="description" content="Wild Jans – a Wild Ones–inspired pet artillery battle game. Play online or vs bots.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
 <title>Wild Jans – Battle Stadium</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
@@ -36,6 +40,10 @@
 
     3. Paste your Project URL and anon public key into SUPABASE_URL / SUPABASE_ANON_KEY below
        (search for "SUPABASE CONFIG"). The anon key is meant to be public; RLS protects the data.
+    4. Then run supabase-setup.sql (next to this file). It moves coins, trophies, the shop,
+       daily missions and the battle pass onto the server so players can't edit them.
+
+  APP (PWA): upload manifest.webmanifest, sw.js, icon-192.png and icon-512.png next to index.html.
 -->
 <style>
 :root{--blue:#1d5fc9;--blue2:#0f3f95;--navy:#0b2560;--gold:#ffc21e;--orange:#ff8a00;--green:#3fc43a;--red:#e8322b;--ink:#15122a}
@@ -46,7 +54,7 @@ input,select,button{font-family:inherit}
 .lg{font-family:'Luckiest Guy','Impact',sans-serif;letter-spacing:.5px;font-weight:400}
 .screen{position:fixed;inset:0;display:flex}
 #menuBg{position:fixed;inset:0;width:100%;height:100%;z-index:0}
-.over{position:relative;z-index:1}
+.over{z-index:1}
 
 /* ---------- logo ---------- */
 .logo{text-align:center;line-height:.9;filter:drop-shadow(0 6px 0 rgba(0,0,0,.35))}
@@ -70,7 +78,8 @@ input,select,button{font-family:inherit}
 .iconbtn{cursor:pointer;background:linear-gradient(#4fa0ff,#1c5fd0);border:3px solid #0a2a6b;border-radius:50%;width:42px;height:42px;font-size:20px;color:#fff;box-shadow:0 3px 0 #0a2a6b}
 
 /* ---------- login ---------- */
-#login{align-items:center;justify-content:center;flex-direction:column;gap:18px;padding:16px;overflow:auto}
+#login{align-items:center;justify-content:flex-start;flex-direction:column;gap:18px;padding:16px;overflow-y:auto}
+#login>:first-child{margin-top:auto}#login>:last-child{margin-bottom:auto}
 .auth{width:min(400px,100%)}
 .tabs{display:flex;gap:6px;margin-bottom:12px}
 .tabs button{flex:1;cursor:pointer;border:3px solid #0a2a6b;border-radius:12px;padding:8px;background:#0f3f95;color:#9fc0ff;font-family:'Luckiest Guy',Impact,sans-serif;font-size:18px}
@@ -159,8 +168,8 @@ input,select,button{font-family:inherit}
 @media (max-height:520px){#hud{height:92px}.pcard{width:100px}.pcard canvas{width:56px;height:56px}.wbt{width:70px}.wbt .ic{font-size:24px;line-height:34px}.bigw{width:86px;font-size:15px}#snackBtn{width:74px}#tCircle{width:52px;height:52px}#tCircle b{font-size:24px}}
 
 /* ---------- end screen ---------- */
-#endOv{position:absolute;inset:0;z-index:5;background:rgba(5,15,50,.72);display:flex;align-items:center;justify-content:center;padding:16px;overflow:auto}
-.endbox{width:min(760px,100%);display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:center}
+#endOv{position:fixed;inset:0;z-index:20;background:rgba(5,15,50,.78);display:flex;align-items:flex-start;justify-content:center;padding:16px;overflow-y:auto;overflow-x:hidden}
+.endbox{margin:auto;width:min(760px,100%);display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:center}
 @media (max-width:640px){.endbox{grid-template-columns:1fr}}
 #congrats{grid-column:1/-1;text-align:center;font-family:'Luckiest Guy',Impact,sans-serif;font-size:clamp(30px,6vw,58px);color:#ffe14d;
   text-shadow:-3px -3px 0 #5a1f00,3px -3px 0 #5a1f00,-3px 3px 0 #5a1f00,3px 3px 0 #5a1f00,0 6px 0 #5a1f00;animation:bob 1.2s ease-in-out infinite}
@@ -180,7 +189,8 @@ input,select,button{font-family:inherit}
 .playrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center}
 .roomrow{display:flex;gap:6px;width:100%;max-width:400px}
 .roomrow input{flex:1;min-width:0;padding:8px 10px;border-radius:10px;border:3px solid #0a2a6b;font-weight:900;text-transform:uppercase;letter-spacing:2px;background:#eaf2ff;color:#10204a}
-.modal{position:fixed;inset:0;z-index:30;background:rgba(5,15,50,.78);display:flex;align-items:center;justify-content:center;padding:16px}
+.modal{position:fixed;inset:0;z-index:30;background:rgba(5,15,50,.78);display:flex;align-items:flex-start;justify-content:center;padding:16px;overflow-y:auto}
+.modal>.panel{margin:auto}
 .mmbox{width:min(420px,100%);text-align:center}
 .mmtimer{font-family:'Luckiest Guy',Impact,sans-serif;font-size:56px;color:#ffe14d;margin:0 0 10px;text-shadow:-3px -3px 0 #5a1f00,3px -3px 0 #5a1f00,-3px 3px 0 #5a1f00,3px 3px 0 #5a1f00}
 .chat{margin-top:12px}
@@ -222,7 +232,7 @@ input,select,button{font-family:inherit}
 .shophead .ph{margin:0;flex:1;text-align:left}
 .shopbody{flex:1;min-height:0;display:grid;grid-template-columns:260px 1fr;gap:12px}
 .shopprev{display:flex;flex-direction:column;gap:8px;align-items:stretch;background:#0b2560;border-radius:14px;padding:10px;min-height:0}
-#shopCv{width:100%;flex:1;min-height:160px;background:radial-gradient(circle at 50% 60%,#2f7fe0,#0b2560 70%);border-radius:10px}
+#shopCv,#petCv{width:100%;flex:1;min-height:160px;background:radial-gradient(circle at 50% 60%,#2f7fe0,#0b2560 70%);border-radius:10px}
 .shopsel{text-align:center}
 .shopsel b{display:block;font-family:'Luckiest Guy',Impact,sans-serif;font-weight:400;font-size:19px}
 .shopsel small{display:block;font-weight:900;color:#9fc0ff;font-size:12px}
@@ -247,14 +257,81 @@ input,select,button{font-family:inherit}
 .sn{font-weight:900;font-size:11px;line-height:1.15;text-align:center;min-height:26px;display:flex;align-items:center}
 .sp{font-family:'Luckiest Guy',Impact,sans-serif;font-size:14px;color:#0f3f95}
 .shoppager{display:flex;align-items:center;justify-content:center;gap:12px;font-weight:900;flex:none}
-@media (max-width:760px){
+@media (max-width:760px) and (min-height:521px){
   .shopbody{grid-template-columns:1fr;grid-template-rows:auto 1fr}
   .shopprev{flex-direction:row;flex-wrap:wrap;align-items:center}
-  #shopCv{flex:none;width:120px;height:120px;min-height:0}
+  #shopCv,#petCv{flex:none;width:120px;height:120px;min-height:0}
   .shopsel{flex:1;min-width:120px;text-align:left}
   .shopacts,#shopReset{flex:1 1 100%}
   .shopgrid{grid-template-columns:repeat(auto-fill,minmax(96px,1fr))}
   .shopbox{height:100%}
+}
+/* ---------- missions & battle pass ---------- */
+.metabtn{position:relative}
+.passbtn{background:linear-gradient(#ff7ad8,#b02a9a);border-color:#4a0a40;box-shadow:inset 0 3px 0 rgba(255,255,255,.45),0 5px 0 #4a0a40}
+.badge{position:absolute;top:-8px;right:-8px;min-width:22px;height:22px;border-radius:11px;background:#ff2d2d;border:2px solid #fff;font-family:Nunito,sans-serif;font-weight:900;font-size:12px;line-height:18px;padding:0 5px;animation:pulse .6s infinite alternate}
+.mbox{width:min(560px,100%);max-height:100%;overflow:auto}
+.pbox{width:min(1000px,100%);height:min(760px,100%);display:flex;flex-direction:column}
+.resetchip{display:inline-block;margin:0 0 10px}
+.mrow{display:flex;align-items:center;gap:12px;background:#0b2560;border-radius:14px;padding:10px 12px;margin-bottom:8px}
+.mrow.done{opacity:.6}
+.mrow.gift{background:linear-gradient(#5a3a00,#3a2400);border:2px solid #ffc21e}
+.minfo{flex:1;min-width:0}
+.minfo b{display:block;font-family:'Luckiest Guy',Impact,sans-serif;font-weight:400;font-size:19px}
+.minfo small{display:block;font-weight:900;color:#9fc0ff;font-size:12px;margin-top:3px}
+.xpbar{height:12px;background:#051640;border:2px solid #0a2a6b;border-radius:8px;overflow:hidden;margin-top:5px}
+.xpbar i{display:block;height:100%;background:linear-gradient(90deg,#ffe14d,#ff8a00);transition:width .4s}
+.xpbar.big{height:18px;flex:1;min-width:120px}
+.note.warn{color:#ffb4ab;font-weight:900}
+.passxp{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:#0b2560;border-radius:14px;padding:10px 12px;margin-bottom:10px}
+.passxp b{font-family:'Luckiest Guy',Impact,sans-serif;font-weight:400;font-size:24px;color:#ffe14d}
+.passxp small{font-weight:900;color:#cfe0ff}
+.passgrid{flex:1;min-height:0;overflow-y:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;align-content:start;padding:2px}
+.pcell{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:space-between;gap:4px;background:linear-gradient(#1f6ae0,#0e3a8f);border:3px solid #0a2a6b;border-radius:12px;padding:8px 6px;min-height:120px;text-align:center}
+.pcell.big{background:linear-gradient(#7a2cff,#3a0e8f);border-color:#ff5ad2}
+.pcell.ready{border-color:#ffe14d;box-shadow:0 0 12px #ffe14d}
+.pcell.claimed{opacity:.55}
+.pcell canvas{width:100%;aspect-ratio:128/110;height:auto;border-radius:8px;background:radial-gradient(circle at 50% 70%,#ffffff,#d6b9ff)}
+.pcell small{font-weight:900;font-size:11px;line-height:1.15}
+.pn{position:absolute;top:4px;left:6px;font-family:'Luckiest Guy',Impact,sans-serif;font-size:16px;text-shadow:0 2px 0 #000}
+.pcoin{flex:1;display:flex;align-items:center;font-family:'Luckiest Guy',Impact,sans-serif;font-size:22px;color:#ffe14d;text-shadow:0 2px 0 #5a1f00}
+.shoptabs.weapons button{font-size:12px;padding:4px 8px}
+/* ---------- pets ---------- */
+.wardsel .btn{flex:1;min-width:0;font-size:16px;padding:8px 6px}
+.petsbtn{background:linear-gradient(#ff9a5a,#e0482a);border-color:#4a1405;box-shadow:inset 0 3px 0 rgba(255,255,255,.45),0 5px 0 #4a1405}
+.petsbtn small{font-family:Nunito,sans-serif;font-weight:900;font-size:11px;opacity:.9}
+.petsel .lbl{cursor:pointer}
+.petsel .lbl small{font-size:10px}
+.petbox{gap:6px}
+.petbox>.shoptabs{flex:none}
+.petstats{display:flex;flex-direction:column;gap:3px}
+.pstat{font-weight:900;font-size:12px;color:#cfe0ff;text-align:center}
+.sp.small{font-size:11px;line-height:1.1;text-align:center}
+.groupbar{margin:0;padding:6px 10px;flex:none}
+.groupbar .btn{flex:none}
+.petpane{flex:1;min-height:0;overflow-y:auto;padding:2px}
+.eggcard{display:flex;align-items:center;gap:12px;background:linear-gradient(#5a2ab0,#2a0e6a);border:3px solid #ffc21e;border-radius:14px;padding:10px 12px;margin-bottom:8px}
+.eggicon{font-size:48px;line-height:1;animation:bob 1.6s ease-in-out infinite}
+.eggcard .minfo small{margin-top:4px;line-height:1.3}
+.hatchstage{display:flex;flex-direction:column;align-items:center;gap:6px;background:radial-gradient(circle at 50% 55%,#4a7cff,#0b2560 70%);border-radius:14px;padding:8px;margin-bottom:8px}
+#hatchCv{width:min(100%,420px);height:auto;aspect-ratio:3/2}
+#hatchText{font-family:'Luckiest Guy',Impact,sans-serif;font-weight:400;font-size:22px;color:#ffe14d;text-align:center;text-shadow:0 2px 0 #5a1f00}
+.achpet{width:64px;height:55px;flex:none;border-radius:8px;background:radial-gradient(circle at 50% 70%,#fff,#b9cdf0)}
+.achcoin{width:64px;height:55px;flex:none;display:grid;place-items:center;font-size:30px;background:#0f3f95;border-radius:8px}
+#petCol .shopprev{overflow-y:auto;min-height:0}
+@media (max-height:520px){
+  #petActs .btn{font-size:13px;padding:5px 8px}
+  .pstat{font-size:11px}
+  #petCol .shopsel b{font-size:15px}
+  .eggcard{padding:6px 10px}
+  .eggicon{font-size:34px}
+  #hatchCv{width:min(100%,300px)}
+}
+@media (max-width:420px){
+  .wardsel .btn{font-size:13px;padding:7px 4px}
+  .eggcard{flex-wrap:wrap}
+  .eggcard .btn{width:100%}
+  .achpet,.achcoin{width:48px;height:42px}
 }
 /* ---------- phones & tablets ---------- */
 button,.btn,.tbtn,.wbt,.iconbtn{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
@@ -292,6 +369,157 @@ body{-webkit-touch-callout:none;overscroll-behavior:none}
   #socialBtns{top:46px}#socialBtns .iconbtn{width:36px;height:36px;font-size:16px}
   #gameChat{top:40px}
 }
+/* ---------- phone layouts (portrait & landscape) ---------- */
+@supports (height:100dvh){.screen,.modal{height:100dvh;bottom:auto}}
+.shoptabs,#weapons,#hud{scrollbar-width:none}
+.shoptabs::-webkit-scrollbar,#weapons::-webkit-scrollbar,#hud::-webkit-scrollbar{display:none}
+#lobby{-webkit-overflow-scrolling:touch}
+@media (max-width:900px),(max-height:520px){
+  #lobby{padding:8px 10px 14px;gap:8px}
+  .lobby-grid{flex:none;gap:8px}
+  .topbar{flex-wrap:wrap;justify-content:center;gap:8px 6px;padding:6px 8px;border-radius:12px;flex:none}
+  .topbar>*{flex:none}
+  .hide-sm{display:none}
+  .logo-sm{order:-1;flex:1 1 100%;min-width:0;font-size:22px;line-height:1}
+  .chip{padding:3px 9px;font-size:13px}
+  .topbar .btn.small{font-size:13px;padding:5px 9px}
+  .topbar .iconbtn{width:34px;height:34px;font-size:15px}
+  .badge{top:-6px;right:-6px;min-width:18px;height:18px;line-height:14px;font-size:10px}
+  .panel{padding:12px;border-radius:14px}
+  .ph{font-size:19px;margin-bottom:6px}
+  .lb{max-height:180px}
+  .chatlog{height:110px}
+  .btn.big{font-size:24px;padding:9px 20px}
+  .stage{gap:6px}
+  .modes,.roomrow,.sel{max-width:none}
+  .shopcard{padding:8px 12px;margin-top:10px}
+  .modal{padding:6px}
+  .shopbox,.pbox{height:100%;padding:8px}
+  .mmtimer{font-size:40px}
+}
+@media (max-width:900px) and (min-height:521px){
+  #previewCv{min-height:170px;max-height:230px}
+}
+@media (max-width:420px){
+  .modes .mode b{font-size:15px}
+  .mode small{font-size:10px}
+  .btn.big{font-size:21px;padding:9px 14px}
+  .playrow .btn.blue{font-size:17px}
+  .roomrow .btn{font-size:13px}
+  .sel .lbl{font-size:17px}
+  #wardrobeBtn,#skinBtn,#petsBtn{font-size:15px;padding:8px 6px}
+  .stats b{font-size:16px}
+  .shopprev #shopCv,.shopprev #petCv{width:96px;height:96px}
+  .shopgrid,.passgrid{grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:6px}
+  .sn{font-size:10px}
+  .mrow{flex-wrap:wrap}
+  .mrow .btn{width:100%}
+  #congrats{font-size:30px}
+}
+/* phones held sideways */
+@media (max-height:520px) and (min-width:560px){
+  .lobby-grid{grid-template-columns:minmax(0,1.15fr) minmax(0,1fr)}
+  .logo-sm{display:none}
+  .topbar{padding:4px 8px}
+  .stage{order:-1;grid-row:span 2;display:grid;grid-template-columns:130px minmax(0,1fr);
+    grid-template-areas:"cv pet" "cv ward" "cv buy" "modes modes" "play play" "room room";
+    align-items:center;align-content:start;align-self:start;position:sticky;top:0;z-index:2}
+  #previewCv{grid-area:cv;min-height:110px;max-height:150px;height:100%;align-self:stretch}
+  .petsel{grid-area:pet}.wardsel{grid-area:ward}#buyBtn{grid-area:buy;font-size:14px;padding:5px 8px}
+  .modes{grid-area:modes}.playrow{grid-area:play}.roomrow{grid-area:room}
+  #wardrobeBtn,#skinBtn,#petsBtn{font-size:13px;padding:6px 6px}
+  .playrow{flex-wrap:nowrap}
+  .playrow .btn.blue{font-size:16px;padding:8px 10px}
+  .sel .lbl{font-size:16px;padding:3px}
+  .sel .iconbtn{width:34px;height:34px;font-size:15px}
+  .mode{padding:3px 2px}
+  .modes .mode b{font-size:15px}
+  .help{display:none}
+  .field{margin-bottom:6px}
+  .field input,.field select{padding:7px 10px;font-size:15px}
+  /* login side by side */
+  #login{flex-direction:row;justify-content:center;gap:24px;padding:10px 16px}
+  #login>:first-child,#login>:last-child{margin:auto 0}
+  .logo .t1{font-size:52px}
+  .logo .t2{font-size:18px}
+  .auth{padding:12px}
+  .tabs{margin-bottom:8px}
+  .tabs button{padding:5px;font-size:16px}
+  .msg{min-height:0;margin:2px 2px 6px}
+  .or{margin:6px 0}
+  .auth .note{margin-top:6px}
+  /* shop / pass / missions */
+  .shophead{margin-bottom:4px}
+  .shophead .ph{font-size:18px}
+  .shopbody{grid-template-columns:150px minmax(0,1fr);gap:8px}
+  .shopprev{padding:6px;gap:5px}
+  #shopCv,#petCv{min-height:70px}
+  .shopsel b{font-size:15px}
+  .shopacts .btn{font-size:14px;padding:6px 8px}
+  #shopReset{font-size:12px;padding:4px 6px}
+  .shopmain{gap:5px}
+  .shoptabs button{padding:4px 8px;font-size:12px}
+  .shopfilters input,.shopfilters select{padding:4px 8px;font-size:13px}
+  .shopgrid{grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:6px}
+  .sn{font-size:10px;min-height:22px}
+  .passxp{padding:6px 8px;margin-bottom:6px}
+  .passxp b{font-size:18px}
+  .passgrid{grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:6px}
+  .pcell{min-height:92px;padding:6px 4px}
+  .resetchip{margin-bottom:6px}
+  .mrow{padding:6px 10px;margin-bottom:6px}
+  .minfo b{font-size:16px}
+  .note{font-size:11px;margin-top:4px}
+  /* results */
+  #endOv{padding:8px}
+  .endbox{gap:8px}
+  #congrats{font-size:30px}
+  #winCv{max-width:min(230px,55dvh)}
+  .endbox .lb{max-height:110px}
+  .rewards{margin:6px 0}
+  .rewards .chip{font-size:14px}
+  .endbtns{margin-top:4px}
+  .endbtns .btn{font-size:16px;padding:6px 12px}
+}
+@media (max-width:640px){
+  #winCv{max-width:min(220px,55vw)}
+}
+/* very short landscape screens (small Android phones) */
+@media (max-height:400px) and (min-width:560px){
+  #lobby{padding-top:4px;gap:6px}
+  .mode small{display:none}
+  .mode{padding:4px 2px}
+  .btn.big{font-size:19px;padding:6px 12px}
+  .playrow .btn.blue{font-size:14px;padding:6px 8px}
+  .roomrow input{padding:5px 8px}
+  .roomrow .btn{padding:4px 8px}
+  #previewCv{min-height:96px;max-height:120px}
+  .sel .lbl small{display:none}
+  .shopprev #shopCv,.shopprev #petCv{min-height:56px}
+  .shopsel small{display:none}
+  .shopfilters .ownchk{display:none}
+  .shoppager .iconbtn{width:30px;height:30px;font-size:13px}
+  .shophead .iconbtn{width:32px;height:32px;font-size:14px}
+  .passxp small{display:none}
+  .pbox>.note:not(.warn),.mbox>.note:not(.warn){display:none}
+}
+/* compact shop on phones held upright */
+@media (max-width:760px) and (min-height:521px){
+  .shopprev{flex-wrap:wrap;gap:6px;padding:6px}
+  .shopprev #shopCv,.shopprev #petCv{width:84px;height:84px}
+  .shopsel{flex:1;min-width:0}
+  #shopReset{flex:0 0 auto;align-self:center;font-size:11px;padding:4px 7px;order:1}
+  .shopacts{order:2}
+  .shopacts:empty{display:none}
+  .shopacts .btn{padding:6px 10px;font-size:16px}
+  .shopacts small{font-size:11px}
+  .shopfilters{gap:5px}
+  .shopfilters input,.shopfilters select{padding:5px 8px;font-size:13px}
+  #shopSearch{flex:1 1 100%}
+  .shopfilters select{flex:1 1 0;min-width:0}
+  .ownchk{font-size:12px}
+  .shoppager .iconbtn{width:34px;height:34px;font-size:15px}
+}
 #loading{position:fixed;inset:0;z-index:60;display:grid;place-items:center;background:#0b2560;font-family:'Luckiest Guy',Impact,sans-serif;font-size:32px;color:#ffe14d}
 </style>
 </head>
@@ -324,8 +552,11 @@ body{-webkit-touch-callout:none;overscroll-behavior:none}
     <div class="chip">🪙 <b id="lbCoins">0</b></div>
     <div class="chip">🏆 <b id="lbTrophies">0</b></div>
     <div class="logo-sm">WILD JANS</div>
-    <div class="chip">🟢 ONLINE: <b id="lbOnline">1</b></div>
-    <button class="btn orange small" id="dailyBtn" type="button" hidden>🎁 DAILY +100</button>
+    <div class="chip" title="Players online">🟢 <span class="hide-sm">ONLINE: </span><b id="lbOnline">1</b></div>
+    <button class="btn orange small" id="dailyBtn" type="button" hidden>🎁 <span class="hide-sm">DAILY </span>+100</button>
+    <button class="btn blue small metabtn" id="missionBtn" type="button">🎯 <span class="hide-sm">MISSIONS</span><span class="badge" id="missionBadge" hidden>0</span></button>
+    <button class="btn small metabtn passbtn" id="passBtn" type="button">🎖️ <span id="passLabel">PASS</span><span class="badge" id="passBadge" hidden>0</span></button>
+    <button class="btn small" id="installBtn" type="button" hidden>📲 INSTALL</button>
     <button class="iconbtn" id="muteBtn" type="button" title="Sound">🔊</button>
     <button class="iconbtn fsbtn" type="button" title="Full screen">⛶</button>
     <button class="btn red small" id="logoutBtn" type="button">LOG OUT</button>
@@ -347,8 +578,8 @@ body{-webkit-touch-callout:none;overscroll-behavior:none}
     </aside>
     <main class="stage">
       <canvas id="previewCv"></canvas>
-      <div class="sel"><button class="iconbtn" id="petPrev" type="button">◀</button><div class="lbl"><span id="petName">DOG</span><small id="petLock"></small></div><button class="iconbtn" id="petNext" type="button">▶</button></div>
-      <div class="sel"><button class="btn orange wbtn" id="wardrobeBtn" type="button">👕 MY WARDROBE</button></div>
+      <div class="sel petsel"><button class="iconbtn" id="petPrev" type="button">◀</button><div class="lbl"><span id="petName">DOG</span><small id="petLock"></small></div><button class="iconbtn" id="petNext" type="button">▶</button></div>
+      <div class="sel wardsel"><button class="btn metabtn petsbtn" id="petsBtn" type="button">🐾 PETS <small id="petsCount"></small><span class="badge" id="petsBadge" hidden>0</span></button><button class="btn orange" id="wardrobeBtn" type="button">👕 WARDROBE</button><button class="btn blue" id="skinBtn" type="button">🔫 SKINS</button></div>
       <button class="btn orange" id="buyBtn" type="button" hidden>BUY</button>
       <div class="modes">
         <button class="mode on" type="button" data-mode="duel"><b>DUEL</b><small>1 vs 1</small></button>
@@ -407,7 +638,8 @@ body{-webkit-touch-callout:none;overscroll-behavior:none}
         <div class="panel">
           <h3 class="ph" id="endTitle">RESULTS</h3>
           <ul class="lb" id="endList"></ul>
-          <div class="rewards"><div class="chip">🪙 +<b id="rwCoins">0</b></div><div class="chip">🏆 <b id="rwTro">0</b></div></div>
+          <div class="rewards"><div class="chip">🪙 +<b id="rwCoins">0</b></div><div class="chip">🏆 <b id="rwTro">0</b></div><div class="chip">⭐ +<b id="rwXp">0</b> XP</div></div>
+          <p class="note" id="rwNote"></p>
           <div class="endbtns"><button class="btn" id="againBtn" type="button">PLAY AGAIN</button><button class="btn blue" id="lobbyBtn" type="button">LOBBY</button></div>
         </div>
       </div>
@@ -447,6 +679,7 @@ body{-webkit-touch-callout:none;overscroll-behavior:none}
       </div>
       <div class="shopmain">
         <div class="shoptabs" id="shopTabs"></div>
+        <div class="shoptabs weapons" id="shopWeapons" hidden></div>
         <div class="shopfilters">
           <input id="shopSearch" placeholder="🔍 Search items…" autocomplete="off">
           <select id="shopRarity"><option value="">All rarities</option><option value="common">Common</option><option value="rare">Rare</option><option value="epic">Epic</option><option value="legendary">Legendary</option></select>
@@ -457,6 +690,63 @@ body{-webkit-touch-callout:none;overscroll-behavior:none}
         <div class="shoppager"><button class="iconbtn" id="shopPrev" type="button">◀</button><span id="shopPage"></span><button class="iconbtn" id="shopNext" type="button">▶</button></div>
       </div>
     </div>
+  </div>
+</div>
+<div id="missionOv" class="modal" hidden>
+  <div class="panel mbox">
+    <div class="shophead"><h3 class="ph">🎯 DAILY MISSIONS</h3><button class="iconbtn" id="missionClose" type="button" title="Close">✕</button></div>
+    <div class="chip resetchip" id="missionReset"></div>
+    <div id="missionList"></div>
+    <div class="mrow gift">
+      <div class="minfo"><b>🎁 Daily Login Gift</b><small>+100 coins every day</small></div>
+      <button class="btn orange" id="dailyClaim" type="button">CLAIM +100</button>
+    </div>
+    <p class="note">Missions reset every day at 8:00 AM PH time (00:00 UTC). Each mission also gives +50 Battle Pass XP.</p>
+    <p class="note warn" id="missionGuest" hidden>Guest progress is not saved — register to keep your rewards!</p>
+  </div>
+</div>
+<div id="passOv" class="modal" hidden>
+  <div class="panel pbox">
+    <div class="shophead"><h3 class="ph">🎖️ BATTLE PASS</h3><button class="iconbtn" id="passClose" type="button" title="Close">✕</button></div>
+    <div class="chip resetchip" id="passSeason"></div>
+    <div class="passxp">
+      <b id="passTier">TIER 0</b>
+      <div class="xpbar big"><i id="passBar"></i></div>
+      <small id="passXp"></small>
+      <button class="btn orange small" id="passClaimAll" type="button">CLAIM ALL</button>
+    </div>
+    <div class="passgrid" id="passGrid"></div>
+    <p class="note">Earn XP: every match +40 · each K.O. +10 · win +60 · online match +20 · mission +50. Every 5th tier is an exclusive item you can't buy in the shop! The pass resets each month.</p>
+    <p class="note warn" id="passGuest" hidden>Guest progress is not saved — register to keep your rewards!</p>
+  </div>
+</div>
+<div id="petOv" class="modal" hidden>
+  <div class="panel shopbox petbox">
+    <div class="shophead">
+      <h3 class="ph">🐾 MY PETS</h3>
+      <div class="chip">🪙 <b id="petCoins">0</b></div>
+      <button class="iconbtn" id="petClose" type="button" title="Close">✕</button>
+    </div>
+    <div class="shoptabs" id="petTabs"></div>
+    <div class="shopbody" id="petCol">
+      <div class="shopprev">
+        <canvas id="petCv"></canvas>
+        <div class="shopsel" id="petSel"></div>
+        <div class="petstats" id="petStats"></div>
+        <div class="shopacts" id="petActs"></div>
+      </div>
+      <div class="shopmain">
+        <div class="shoptabs" id="petGroups"></div>
+        <div class="mrow groupbar" id="groupBar" hidden></div>
+        <div class="shopgrid" id="petGrid"></div>
+      </div>
+    </div>
+    <div class="petpane" id="petEggs" hidden>
+      <div id="eggList"></div>
+      <div class="hatchstage" id="hatchStage" hidden><canvas id="hatchCv" width="480" height="320"></canvas><b id="hatchText"></b></div>
+      <p class="note" id="eggNote"></p>
+    </div>
+    <div class="petpane" id="petAch" hidden><div id="achList"></div></div>
   </div>
 </div>
 <div id="rotateOv" hidden>
@@ -535,20 +825,25 @@ const Snd = {
 };
 
 // ================= DATABASE =================
-const PETS = ['dog', 'cat', 'bunny', 'monkey', 'raccoon', 'panda'];
-const PET_PRICE = { dog: 0, cat: 0, bunny: 0, monkey: 100, raccoon: 150, panda: 250 };
 const HATS = ['none', 'cap', 'ninja', 'santa', 'viking', 'tophat', 'crown'];
 const HAT_NAME = { none: 'NO HAT', cap: 'COOL CAP', ninja: 'NINJA BAND', santa: 'SANTA HAT', viking: 'VIKING HELM', tophat: 'TOP HAT', crown: 'ROYAL CROWN' };
 const HAT_PRICE = { none: 0, cap: 50, ninja: 120, santa: 150, viking: 200, tophat: 250, crown: 400 };
-const DEFAULT_PROFILE = () => ({ coins: 150, trophies: 0, wins: 0, games: 0, kills: 0, pet: 'dog', hat: 'none', unlocks: ['dog', 'cat', 'bunny', 'none'] });
-const PROFILE_KEYS = ['coins', 'trophies', 'wins', 'games', 'kills', 'pet', 'hat', 'unlocks'];
+const DEFAULT_PROFILE = () => ({ coins: 150, trophies: 0, wins: 0, games: 0, kills: 0, pet: 'dog', hat: 'none', unlocks: ['dog', 'cat', 'bunny', 'none'],
+  xp: 0, pass_season: null, pass_claimed: [], missions: null, last_daily: null, pet_stats: {} });
+const PROFILE_KEYS = ['coins', 'trophies', 'wins', 'games', 'kills', 'pet', 'hat', 'unlocks', 'xp', 'pass_season', 'pass_claimed', 'missions', 'last_daily', 'pet_stats'];
 let profile = null;
 
 function normalize(row) {
-  const p = Object.assign(DEFAULT_PROFILE(), {});
+  const p = DEFAULT_PROFILE();
   p.username = row.username;
   PROFILE_KEYS.forEach(k => { if (row[k] !== undefined && row[k] !== null) p[k] = row[k]; });
   if (!Array.isArray(p.unlocks)) p.unlocks = DEFAULT_PROFILE().unlocks;
+  if (!Array.isArray(p.pass_claimed)) p.pass_claimed = [];
+  if (p.missions && typeof p.missions === 'object' && p.missions.d != null) {
+    p.missions = { d: +p.missions.d, prog: p.missions.prog || {}, claimed: (p.missions.claimed || []).map(Number) };
+  } else p.missions = null;
+  if (p.last_daily) p.last_daily = String(p.last_daily).slice(0, 10);
+  if (!p.pet_stats || typeof p.pet_stats !== 'object' || Array.isArray(p.pet_stats)) p.pet_stats = {};
   return p;
 }
 function randHex(n = 16) { const a = new Uint8Array(n); crypto.getRandomValues(a); return [...a].map(b => b.toString(16).padStart(2, '0')).join(''); }
@@ -636,18 +931,17 @@ const SupaDB = {
     if (error) throw error;
     if (!data) {
       const name = username || (user.user_metadata && user.user_metadata.username) || user.email.split('@')[0].replace(/[^A-Za-z0-9_]/g, '').slice(0, 16);
-      const r = await sb.from('profiles').insert(Object.assign({ id: user.id, username: name }, DEFAULT_PROFILE())).select().single();
+      const r = await sb.from('profiles').insert({ id: user.id, username: name }).select().single();
       if (r.error) throw r.error;
       data = r.data;
     }
     this.uid = user.id;
     return normalize(data);
   },
+  // coins, trophies & unlocks are server-controlled (see supabase-setup.sql); players only save pet + outfit
   async save(p) {
-    const row = { updated_at: new Date().toISOString() };
-    PROFILE_KEYS.forEach(k => row[k] = p[k]);
-    const { error } = await sb.from('profiles').update(row).eq('id', this.uid);
-    if (error) toast('Save failed: ' + error.message);
+    const { error } = await sb.from('profiles').update({ pet: p.pet, hat: p.hat, updated_at: new Date().toISOString() }).eq('id', this.uid);
+    if (error) throw new Error(error.message);
   },
   async leaderboard() {
     const { data } = await sb.from('profiles').select('username,trophies,wins').order('trophies', { ascending: false }).limit(20);
@@ -656,69 +950,566 @@ const SupaDB = {
   async logout() { await sb.auth.signOut(); }
 };
 const DB = USE_SB ? SupaDB : LocalDB;
-async function saveProfile() { if (profile && !profile.guest) await DB.save(profile); }
+async function saveProfile(strict) {
+  if (!profile || profile.guest) return;
+  try { await DB.save(profile); }
+  catch (e) { if (strict) throw e; toast('Save failed: ' + e.message); }
+}
 // ================= ART: PETS =================
+// Every pet is built from parts (ears, tail, snout, horns, wings…) so adding a pet is one line of data.
+// Pet ids, rarity, source and price are mirrored by wj_pets() in supabase-setup.sql.
 const OUT = '#1c1530';
-const SPECIES = {
-  dog:     { name: 'DOG',     body: '#f4f1ea', belly: '#ffffff', ear: '#c9a27a', leg: '#e6dfd2', nose: '#222', ears: 'flop',  tail: 'short', collar: '#e0302a' },
-  cat:     { name: 'CAT',     body: '#f39a3c', belly: '#ffe2b8', ear: '#f39a3c', leg: '#e88a2c', nose: '#e0607a', ears: 'point', tail: 'long', inner: '#ffb3c1', stripes: '#c46a1c' },
-  bunny:   { name: 'BUNNY',   body: '#8fc3ff', belly: '#e6f2ff', ear: '#8fc3ff', leg: '#7ab2f0', nose: '#ff7a9a', ears: 'long',  tail: 'ball', inner: '#ffb3c1', teeth: true },
-  monkey:  { name: 'MONKEY',  body: '#8a5a33', belly: '#f0c89a', ear: '#8a5a33', leg: '#7a4c28', nose: '#4a2a14', ears: 'side',  tail: 'curl', face: '#f0c89a' },
-  raccoon: { name: 'RACCOON', body: '#8d8f99', belly: '#d9dbe2', ear: '#8d8f99', leg: '#55575f', nose: '#111', ears: 'point', tail: 'bushy', inner: '#55575f', mask: true },
-  panda:   { name: 'PANDA',   body: '#f7f7f7', belly: '#ffffff', ear: '#222222', leg: '#222222', nose: '#111', ears: 'round', tail: 'ball', tailC: '#222', patch: true }
-};
+const PET_GROUPS = { original: '⭐ Originals', classic: '🏡 Classic', wild: '🦁 Wild', birds: '🐦 Birds', sea: '🌊 Sea', fantasy: '✨ Fantasy' };
+const PET_RARITY = { common: ['COMMON', '#b8c4d8'], rare: ['RARE', '#4fa0ff'], epic: ['EPIC', '#b06bff'], legendary: ['LEGENDARY', '#ffb21e'] };
+function P(id, name, grp, rar, src, price, L, extra) { L.id = id; return Object.assign({ id, name, grp, rar, src, price }, extra || {}, { L }); }
+const PET_DEFS = [
+  // originals
+  P('dog', 'Dog', 'original', 'common', 'free', 0, { body: '#f4f1ea', belly: '#ffffff', ear: '#c9a27a', leg: '#e6dfd2', nose: '#222', ears: 'flop', tail: 'short', collar: '#e0302a' }),
+  P('cat', 'Cat', 'original', 'common', 'free', 0, { body: '#f39a3c', belly: '#ffe2b8', ear: '#f39a3c', leg: '#e88a2c', nose: '#e0607a', ears: 'point', tail: 'long', inner: '#ffb3c1', stripes: '#c46a1c', whisk: 1 }),
+  P('bunny', 'Bunny', 'original', 'common', 'free', 0, { body: '#8fc3ff', belly: '#e6f2ff', ear: '#8fc3ff', leg: '#7ab2f0', nose: '#ff7a9a', ears: 'long', tail: 'ball', inner: '#ffb3c1', teeth: 1 }),
+  P('monkey', 'Monkey', 'original', 'common', 'shop', 100, { body: '#8a5a33', belly: '#f0c89a', ear: '#8a5a33', leg: '#7a4c28', nose: '#4a2a14', ears: 'side', tail: 'curl', face: '#f0c89a' }),
+  P('raccoon', 'Raccoon', 'original', 'rare', 'shop', 150, { body: '#8d8f99', belly: '#d9dbe2', ear: '#8d8f99', leg: '#55575f', nose: '#111', ears: 'point', tail: 'bushy', inner: '#55575f', mask: 1, whisk: 1 }),
+  P('panda', 'Panda', 'original', 'rare', 'shop', 250, { body: '#f7f7f7', belly: '#ffffff', ear: '#222222', leg: '#222222', nose: '#111', ears: 'round', tail: 'ball', tailC: '#222222', patch: 1 }),
+  // classic
+  P('fox', 'Fox', 'classic', 'common', 'shop', 120, { body: '#f07a2a', belly: '#fff4e6', ear: '#f07a2a', inner: '#3a2418', leg: '#3a2418', nose: '#222', ears: 'point', tail: 'fluffy', tailTip: '#fff4e6', face: '#fff4e6', whisk: 1 }),
+  P('wolf', 'Wolf', 'classic', 'rare', 'shop', 200, { body: '#8e97a8', belly: '#e3e7ee', ear: '#8e97a8', inner: '#5c6372', leg: '#6c7486', nose: '#111', ears: 'point', tail: 'fluffy', tailTip: '#e3e7ee', face: '#e3e7ee', fangs: 1 }),
+  P('bear', 'Bear', 'classic', 'common', 'shop', 150, { body: '#8a5a33', belly: '#c99a6a', ear: '#8a5a33', inner: '#c99a6a', leg: '#6e4526', nose: '#2a1a0a', ears: 'round', tail: 'ball', tailC: '#8a5a33', snout: 'muzzle', face: '#c99a6a' }),
+  P('koala', 'Koala', 'classic', 'rare', 'egg', 0, { body: '#a6adb8', belly: '#e8ebef', ear: '#a6adb8', inner: '#f4f4f4', leg: '#8a919c', nose: '#2a2a2a', bigNose: 1, ears: 'bigfluff', tail: 'none' }),
+  P('pig', 'Piggy', 'classic', 'common', 'shop', 100, { body: '#ffb3c6', belly: '#ffd1dc', ear: '#ff9ab3', inner: '#ff7fa0', leg: '#ff9ab3', ears: 'point', tail: 'curly', snout: 'pig' }),
+  P('hamster', 'Hamster', 'classic', 'common', 'egg', 0, { body: '#e8b06a', belly: '#fff3dc', ear: '#e8b06a', inner: '#ffb3c1', leg: '#d8a05a', nose: '#ff7a9a', ears: 'tiny', tail: 'none', cheeks: '#fff0dc', teeth: 1, whisk: 1 }),
+  P('sheep', 'Sheep', 'classic', 'common', 'egg', 0, { body: '#f6f3ea', head: '#3a3030', belly: '#f6f3ea', ear: '#3a3030', leg: '#3a3030', nose: '#111', ears: 'flop', tail: 'ball', tailC: '#f6f3ea', shape: 'fluffy', wool: 1 }),
+  P('cow', 'Cow', 'classic', 'common', 'shop', 120, { body: '#ffffff', belly: '#ffffff', ear: '#ffffff', inner: '#ffb3c6', leg: '#ffffff', spots: '#2a2a2a', ears: 'side', horn: 'cow', snout: 'muzzle', face: '#ffc2d1', tail: 'lion', tailTip: '#2a2a2a', legs: 'hoof' }),
+  P('mouse', 'Mouse', 'classic', 'common', 'egg', 0, { body: '#b8bcc8', belly: '#f0f0f5', ear: '#b8bcc8', inner: '#ffb3c6', leg: '#ffb3c6', nose: '#ff7a9a', ears: 'biground', tail: 'thin', tailC: '#ffb3c6', whisk: 1, teeth: 1 }),
+  P('frog', 'Froggy', 'classic', 'rare', 'egg', 0, { body: '#6fcf4a', belly: '#e6f7a8', leg: '#5ab83a', ears: 'none', tail: 'none', eyesTop: 1, wideMouth: 1, noNose: 1 }),
+  // wild
+  P('lion', 'Lion', 'wild', 'epic', 'shop', 600, { body: '#e8a84a', belly: '#fbe3b0', ear: '#e8a84a', inner: '#fbe3b0', leg: '#d8983a', nose: '#6a3a1a', mane: '#a0521e', ears: 'round', tail: 'lion', tailTip: '#a0521e', snout: 'muzzle', face: '#fbe3b0', whisk: 1 }),
+  P('tiger', 'Tiger', 'wild', 'epic', 'shop', 500, { body: '#ff9a2a', belly: '#ffffff', ear: '#ff9a2a', inner: '#ffffff', leg: '#ef8a1a', nose: '#e0607a', bstripes: '#2a2a2a', stripes: '#2a2a2a', ears: 'round', tail: 'long', tailRings: '#2a2a2a', snout: 'muzzle', face: '#ffffff', whisk: 1 }),
+  P('zebra', 'Zebra', 'wild', 'rare', 'egg', 0, { body: '#ffffff', belly: '#ffffff', ear: '#ffffff', inner: '#ff9ab3', leg: '#ffffff', bstripes: '#2a2a2a', stripes: '#2a2a2a', mane: '#2a2a2a', maneStyle: 'mohawk', ears: 'point', snout: 'muzzle', face: '#6a6a6a', tail: 'lion', tailTip: '#2a2a2a', legs: 'hoof' }),
+  P('giraffe', 'Giraffe', 'wild', 'rare', 'egg', 0, { body: '#f2c14e', belly: '#f7dca0', ear: '#f2c14e', inner: '#f7dca0', leg: '#f2c14e', spots: '#b8742a', ears: 'side', horn: 'giraffe', snout: 'muzzle', face: '#f7dca0', tail: 'lion', tailTip: '#8a5a2a', legs: 'hoof', neck: 9 }),
+  P('hippo', 'Hippo', 'wild', 'common', 'shop', 180, { body: '#9a8fb8', belly: '#c7bfdc', ear: '#9a8fb8', inner: '#ffb3c6', leg: '#8a80a8', ears: 'tiny', snout: 'hippo', face: '#b8aed4', teeth: 1, tail: 'short' }),
+  P('kangaroo', 'Kangaroo', 'wild', 'rare', 'egg', 0, { body: '#c98a4e', belly: '#f0d2a8', ear: '#c98a4e', inner: '#f0b8a0', leg: '#b87a3e', nose: '#3a2418', ears: 'long', tail: 'thick', pouch: 1 }),
+  P('elephant', 'Elephant', 'wild', 'epic', 'egg', 0, { body: '#9aa3b5', belly: '#b8c0d0', ear: '#9aa3b5', inner: '#ffb3c6', leg: '#8a93a6', ears: 'elephant', snout: 'trunk', tusks: 1, tail: 'short', legs: 'hoof' }),
+  P('croc', 'Crocodile', 'wild', 'rare', 'shop', 300, { body: '#4f9a4a', belly: '#c8e6a0', leg: '#3f8a3a', ears: 'none', snout: 'long', crest: '#3a7a36', tail: 'croc', eyesTop: 1 }),
+  // birds
+  P('penguin', 'Penguin', 'birds', 'common', 'shop', 150, { body: '#2a2d3a', belly: '#ffffff', head: '#2a2d3a', faceWhite: 1, beak: '#ff9a1e', feet: '#ff9a1e', wings: '#2a2d3a', ears: 'none', tail: 'none', snout: 'beak', legs: 'feet' }),
+  P('owl', 'Owl', 'birds', 'rare', 'egg', 0, { body: '#9a6a3a', belly: '#e8d2a8', ear: '#9a6a3a', beak: '#ffb21e', feet: '#ffb21e', wings: '#7a522a', ears: 'tuft', eyes: 'big', snout: 'beak', legs: 'feet', tail: 'feather', feathers: 1 }),
+  P('duck', 'Duck', 'birds', 'common', 'egg', 0, { body: '#ffffff', belly: '#f4f4f4', beak: '#ff9a1e', feet: '#ff9a1e', wings: '#e6e6e6', ears: 'none', snout: 'bill', legs: 'feet', tail: 'feather' }),
+  P('chick', 'Chick', 'birds', 'common', 'egg', 0, { body: '#ffe14d', belly: '#fff3a8', beak: '#ff9a1e', feet: '#ff9a1e', wings: '#ffd21e', ears: 'tuftsmall', snout: 'beak', legs: 'feet', tail: 'feather' }),
+  P('parrot', 'Parrot', 'birds', 'epic', 'egg', 0, { body: '#2fb34a', belly: '#ffe14d', head: '#e0302a', beak: '#fff3d6', feet: '#666666', wings: '#2f6fe0', crest: '#ffe14d', ears: 'none', snout: 'hook', legs: 'feet', tail: 'parrot' }),
+  P('flamingo', 'Flamingo', 'birds', 'rare', 'egg', 0, { body: '#ff8fb8', belly: '#ffb8d2', beak: '#2a2a2a', feet: '#ff6fa0', wings: '#ff6fa0', ears: 'none', snout: 'hook', legs: 'stilt', lift: 8, tail: 'feather' }),
+  // sea
+  P('shark', 'Shark', 'sea', 'epic', 'egg', 0, { body: '#6f86a8', belly: '#f0f4f8', leg: '#5f7698', fin: '#6f86a8', ears: 'none', snout: 'shark', tail: 'fish', legs: 'flipper', noNose: 1 }),
+  P('octopus', 'Octopus', 'sea', 'rare', 'egg', 0, { body: '#b04ad8', belly: '#c870e8', leg: '#b04ad8', spots: '#d88af0', ears: 'none', tail: 'none', legs: 'tentacle', headR: 15, noNose: 1 }),
+  P('axolotl', 'Axolotl', 'sea', 'legendary', 'egg', 0, { body: '#ffb8d8', belly: '#ffe0ee', leg: '#ff9ac8', gills: '#ff5a9a', ears: 'none', tail: 'fish', wideMouth: 1, noNose: 1 }),
+  P('turtle', 'Turtle', 'sea', 'common', 'shop', 150, { body: '#8ac85a', belly: '#e6f0a8', leg: '#7ab84a', shell: '#6a4a2a', shellLine: '#a07a4a', ears: 'none', tail: 'short', noNose: 1 }),
+  P('seal', 'Seal', 'sea', 'common', 'egg', 0, { body: '#9aa8b8', belly: '#dfe6ee', leg: '#8a98a8', nose: '#222', ears: 'none', legs: 'flipper', snout: 'muzzle', face: '#dfe6ee', whisk: 1, tail: 'fish' }),
+  // fantasy
+  P('dragon', 'Dragon', 'fantasy', 'legendary', 'ach', 0, { body: '#e0302a', belly: '#ffd24a', leg: '#c02020', wings: '#b01a1a', wingStyle: 'bat', horn: 'dragon', crest: '#ffd24a', tail: 'dragon', ears: 'none', snout: 'long', glow: '#ff6a1e' }, { ach: 'wins50' }),
+  P('unicorn', 'Unicorn', 'fantasy', 'legendary', 'ach', 0, { body: '#ffffff', belly: '#fff0f8', ear: '#ffffff', inner: '#ffb3c6', leg: '#ffffff', mane: 'rainbow', horn: 'unicorn', ears: 'point', legs: 'hoof', tail: 'rainbow', snout: 'muzzle', face: '#ffe8f0', glow: '#ff9af0' }, { ach: 'tro500' }),
+  P('dino', 'Dino', 'fantasy', 'epic', 'ach', 0, { body: '#4fc36a', belly: '#d8f5a8', leg: '#3fb35a', crest: '#ff8a1e', ears: 'none', tail: 'dino', teeth: 1, noNose: 1 }, { ach: 'ko50' }),
+  P('phoenix', 'Phoenix', 'fantasy', 'legendary', 'pass', 0, { body: '#ff6a1e', belly: '#ffe14d', beak: '#ffd21e', feet: '#ffd21e', wings: '#ff3a1a', crest: '#ffe14d', ears: 'none', snout: 'beak', legs: 'feet', tail: 'flame', glow: '#ffae00' }),
+  P('yeti', 'Yeti', 'fantasy', 'epic', 'ach', 0, { body: '#f0f6ff', head: '#f0f6ff', belly: '#f0f6ff', face: '#9ab8e0', leg: '#e0eaf8', ears: 'none', horn: 'ram', shape: 'fluffy', fangs: 1, tail: 'none', snout: 'yeti' }, { ach: 'games25' }),
+  P('slime', 'Slime', 'fantasy', 'rare', 'egg', 0, { body: '#5ad8a0', belly: '#8af0c0', shape: 'slime', legs: 'none', ears: 'none', tail: 'none', glow: '#5ad8a0', wideMouth: 1, noNose: 1 }),
+  P('ghost', 'Ghost', 'fantasy', 'epic', 'egg', 0, { body: '#f4f6ff', belly: '#f4f6ff', shape: 'ghost', legs: 'none', ears: 'none', tail: 'none', glow: '#c8d8ff', eyes: 'dark', noNose: 1, oMouth: 1 })
+];
+const PET_BY_ID = Object.fromEntries(PET_DEFS.map(p => [p.id, p]));
+const PETS = PET_DEFS.map(p => p.id);
+const PET_PRICE = Object.fromEntries(PET_DEFS.filter(p => p.src === 'shop').map(p => [p.id, p.price]));
+const FREE_PETS = PET_DEFS.filter(p => p.src === 'free').map(p => p.id);
+const SHINY_PRICE = { common: 500, rare: 900, epic: 1500, legendary: 2500 };
+const petName = id => (PET_BY_ID[String(id).split(/[:|]/)[0]] || PET_BY_ID.dog).name;
+const petStage = m => m >= 30 ? 3 : m >= 10 ? 2 : 1;
+const STAGE_NAME = ['', 'BABY', 'ADULT', 'LEGENDARY'];
+
+function mixHex(a, b, t) {
+  if (!/^#[0-9a-f]{6}$/i.test(a)) return a;
+  const x = hexRgb(a), y = hexRgb(b);
+  return '#' + x.map((v, i) => Math.round(v + (y[i] - v) * t).toString(16).padStart(2, '0')).join('');
+}
+const SHINY_KEYS = ['body', 'ear', 'leg', 'head', 'tailC', 'wings', 'fin', 'shell', 'crest', 'belly'];
+function shinyLook(L) {
+  const S = Object.assign({}, L, { shiny: 1 });
+  SHINY_KEYS.forEach(k => { if (S[k]) S[k] = mixHex(S[k], '#ffd84a', k === 'belly' ? .25 : .45); });
+  if (S.mane && S.mane !== 'rainbow') S.mane = mixHex(S.mane, '#ffd84a', .4);
+  return S;
+}
+// pet "spec" strings: "fox", "fox:shiny", or "fox|1|3" (id | shiny | evolution stage)
+const specCache = new Map();
+function parsePet(spec) {
+  spec = String(spec || 'dog');
+  let r = specCache.get(spec);
+  if (r) return r;
+  const [a, s, st] = spec.split('|'), [id0, sh] = a.split(':');
+  const def = PET_BY_ID[id0] || PET_BY_ID.dog;
+  r = { id: def.id, def, shiny: s === '1' || sh === 'shiny', stage: clamp(+st || 2, 1, 3) };
+  r.S = r.shiny ? shinyLook(def.L) : def.L;
+  if (specCache.size > 300) specCache.clear();
+  specCache.set(spec, r);
+  return r;
+}
 
 function ell(g, x, y, rx, ry, r = 0) { g.beginPath(); g.ellipse(x, y, rx, ry, r, 0, Math.PI * 2); }
 function fs(g, fill) { g.fillStyle = fill; g.fill(); g.stroke(); }
+function shade(g, x, y, rx, ry) {
+  g.save();
+  g.fillStyle = 'rgba(255,255,255,.28)'; ell(g, x - rx * .35, y - ry * .45, rx * .42, ry * .26, -.4); g.fill();
+  g.fillStyle = 'rgba(20,10,40,.10)'; ell(g, x + rx * .1, y + ry * .55, rx * .75, ry * .3); g.fill();
+  g.restore();
+}
+function starShape(g, x, y, r) {
+  g.beginPath();
+  for (let i = 0; i < 8; i++) { const a = i * Math.PI / 4, rr = i % 2 ? r * .38 : r; g.lineTo(x + Math.cos(a) * rr, y + Math.sin(a) * rr); }
+  g.closePath();
+}
+function strokeTube(g, path, w, color) {
+  g.save(); g.lineCap = 'round'; g.lineJoin = 'round';
+  g.lineWidth = w + 3; g.strokeStyle = OUT; path(); g.stroke();
+  g.lineWidth = w; g.strokeStyle = color; path(); g.stroke();
+  g.restore();
+}
 
 function drawTail(g, S, t, walking) {
   const w = Math.sin(t * (walking ? 16 : 7)) * .35;
   g.save(); g.rotate(-.5 + w);
-  if (S.tail === 'ball') { ell(g, -2, 0, 5, 5); fs(g, S.tailC || '#fff'); g.restore(); return; }
-  const path = () => {
-    g.beginPath(); g.moveTo(0, 0);
-    if (S.tail === 'short') g.quadraticCurveTo(-8, -2, -9, -12);
-    else if (S.tail === 'long') g.bezierCurveTo(-10, 2, -14, -10, -8, -20);
-    else if (S.tail === 'curl') { g.bezierCurveTo(-14, 4, -20, -12, -12, -18); g.quadraticCurveTo(-6, -20, -8, -14); }
-  };
-  if (S.tail === 'bushy') {
-    ell(g, -9, -8, 6, 12, -.5); fs(g, S.body);
-    g.strokeStyle = '#3a3b42'; g.lineWidth = 3;
-    for (let i = 0; i < 3; i++) { g.beginPath(); g.moveTo(-14 + i * 3, -12 + i * 6); g.lineTo(-6 + i * 3, -16 + i * 6); g.stroke(); }
-    g.strokeStyle = OUT; g.lineWidth = 2.2; g.restore(); return;
+  const body = S.body;
+  switch (S.tail) {
+    case 'none': break;
+    case 'ball': ell(g, -2, 0, 5, 5); fs(g, S.tailC || '#fff'); break;
+    case 'short': strokeTube(g, () => { g.beginPath(); g.moveTo(0, 0); g.quadraticCurveTo(-8, -2, -9, -12); }, 4.5, body); break;
+    case 'long':
+      strokeTube(g, () => { g.beginPath(); g.moveTo(0, 0); g.bezierCurveTo(-10, 2, -14, -10, -8, -20); }, 4.5, body);
+      if (S.tailRings) { g.save(); g.strokeStyle = S.tailRings; g.lineWidth = 4.5; g.setLineDash([2.5, 4]); g.beginPath(); g.moveTo(0, 0); g.bezierCurveTo(-10, 2, -14, -10, -8, -20); g.stroke(); g.restore(); }
+      break;
+    case 'curl': strokeTube(g, () => { g.beginPath(); g.moveTo(0, 0); g.bezierCurveTo(-14, 4, -20, -12, -12, -18); g.quadraticCurveTo(-6, -20, -8, -14); }, 4.5, body); break;
+    case 'curly': strokeTube(g, () => { g.beginPath(); g.moveTo(0, 0); g.arc(-4, -2, 3.5, 0, Math.PI * 1.7); }, 2.5, body); break;
+    case 'thin': strokeTube(g, () => { g.beginPath(); g.moveTo(0, 0); g.bezierCurveTo(-12, 4, -18, -4, -22, -14); }, 1.8, S.tailC || body); break;
+    case 'bushy':
+      ell(g, -9, -8, 6, 12, -.5); fs(g, body);
+      g.strokeStyle = '#3a3b42'; g.lineWidth = 3;
+      for (let i = 0; i < 3; i++) { g.beginPath(); g.moveTo(-14 + i * 3, -12 + i * 6); g.lineTo(-6 + i * 3, -16 + i * 6); g.stroke(); }
+      g.strokeStyle = OUT; g.lineWidth = 2.2; break;
+    case 'fluffy':
+      ell(g, -9, -9, 7.5, 13, -.6); fs(g, body);
+      g.save(); ell(g, -9, -9, 7.5, 13, -.6); g.clip(); g.fillStyle = S.tailTip || '#fff'; ell(g, -15, -19, 7, 6); g.fill(); g.restore();
+      ell(g, -9, -9, 7.5, 13, -.6); g.stroke(); break;
+    case 'lion':
+      strokeTube(g, () => { g.beginPath(); g.moveTo(0, 0); g.bezierCurveTo(-10, 4, -14, -8, -12, -16); }, 2.5, body);
+      ell(g, -12, -18, 3.5, 4.5); fs(g, S.tailTip || body); break;
+    case 'thick': case 'croc': case 'dragon': case 'dino': {
+      g.beginPath(); g.moveTo(2, -6); g.quadraticCurveTo(-14, -8, -22, 2); g.quadraticCurveTo(-12, 2, 2, 5); g.closePath(); fs(g, body);
+      if (S.tail === 'dragon' || S.tail === 'croc') {
+        g.fillStyle = S.crest || body;
+        for (let i = 0; i < 3; i++) { const x = -4 - i * 6; g.beginPath(); g.moveTo(x, -7 + i); g.lineTo(x - 2, -12 + i); g.lineTo(x - 4, -6 + i); g.closePath(); g.fill(); g.stroke(); }
+      }
+      if (S.tail === 'dragon') { g.beginPath(); g.moveTo(-22, 2); g.lineTo(-28, -3); g.lineTo(-27, 5); g.closePath(); fs(g, S.crest || body); }
+      break;
+    }
+    case 'feather':
+      for (let i = -1; i <= 1; i++) { ell(g, -6, -4 + i * 3, 7, 2.6, -.3 + i * .35); fs(g, S.wings || body); }
+      break;
+    case 'parrot':
+      [['#2f6fe0', -.2], ['#e0302a', .05], ['#ffe14d', .3]].forEach(([c, r]) => { ell(g, -10, 2, 12, 2.6, r); fs(g, c); });
+      break;
+    case 'fish':
+      g.beginPath(); g.moveTo(0, 0); g.lineTo(-10, -2); g.lineTo(-16, -9); g.lineTo(-14, 0); g.lineTo(-16, 8); g.lineTo(-10, 3); g.closePath(); fs(g, body); break;
+    case 'rainbow': {
+      const cols = ['#ff5a5a', '#ffae3a', '#ffe14d', '#5ad86a', '#4aa8ff', '#b06bff'];
+      cols.forEach((c, i) => strokeTube(g, () => { g.beginPath(); g.moveTo(0, i * 1.2 - 3); g.bezierCurveTo(-10, -4 + i, -14, 6 + i * 1.5, -22 + Math.sin(t * 5 + i) * 2, 2 + i * 2); }, 2, c));
+      break;
+    }
+    case 'flame':
+      g.save(); g.globalCompositeOperation = 'lighter';
+      for (let i = 0; i < 4; i++) {
+        const fl = Math.sin(t * 14 + i * 1.7) * 2;
+        g.fillStyle = i % 2 ? '#ffe14d' : '#ff6a1e';
+        g.beginPath(); g.moveTo(0, -2 + i); g.quadraticCurveTo(-10, -10 - i * 2 + fl, -22 - i * 2, -6 + i * 3 + fl); g.quadraticCurveTo(-12, 2 + i, 0, 3); g.fill();
+      }
+      g.restore(); break;
   }
-  g.lineCap = 'round';
-  g.lineWidth = 7.5; g.strokeStyle = OUT; path(); g.stroke();
-  g.lineWidth = 4.5; g.strokeStyle = S.body; path(); g.stroke();
-  g.lineWidth = 2.2; g.strokeStyle = OUT;
   g.restore();
 }
 
-function drawWeaponArm(g, S, weapon, t, fireAnim, skin) {
-  const kick = fireAnim ? -fireAnim * .6 : 0;
-  g.translate(kick, 0);
-  switch (weapon) {
-    case 'grenade': ell(g, 13, 0, 5.5, 5.5); fs(g, '#3c6b2a'); g.beginPath(); g.rect(11, -8, 4, 3); fs(g, '#888'); break;
-    case 'cluster': ell(g, 13, 0, 6, 6); fs(g, '#9b7fd8'); g.fillStyle = '#fff'; g.fillRect(11, -3, 2, 2); g.fillRect(14, 1, 2, 2); break;
-    case 'bone': g.save(); g.translate(14, 0); g.rotate(t * 2); drawBone(g, 1); g.restore(); break;
-    case 'shotgun':
-      g.beginPath(); g.roundRect(-4, -3, 12, 7, 2); fs(g, '#7a4a22');
-      g.beginPath(); g.rect(6, -3, 22, 4); fs(g, '#555c66');
-      g.beginPath(); g.rect(10, 1, 12, 3); fs(g, '#3a3f46'); break;
-    case 'teleport':
-      g.beginPath(); g.rect(0, -1.5, 20, 3); fs(g, '#6b3fa0');
-      g.save(); g.globalCompositeOperation = 'lighter'; ell(g, 22, 0, 5 + Math.sin(t * 12), 5 + Math.sin(t * 12)); g.fillStyle = '#b388ff'; g.fill(); g.restore(); break;
-    case 'airstrike':
-      g.beginPath(); g.roundRect(0, -4, 16, 8, 2); fs(g, '#444'); ell(g, 16, 0, 3, 3); g.fillStyle = (t * 4 | 0) % 2 ? '#ff3030' : '#600'; g.fill(); break;
-    default: // bazooka
-      g.beginPath(); g.roundRect(-8, -5, 36, 10, 3);
-      if (skin) { paintSkin(g, skin, -8, -5, 36, 10, t); g.beginPath(); g.roundRect(-8, -5, 36, 10, 3); g.stroke(); }
-      else fs(g, '#6b7a3a');
-      g.beginPath(); g.rect(24, -6, 6, 12); fs(g, '#4d5a28');
-      g.beginPath(); g.rect(-10, -4, 4, 8); fs(g, '#4d5a28');
-      g.beginPath(); g.rect(6, -9, 6, 4); fs(g, '#333');
+function drawLegs(g, S, lk, ly, t) {
+  const leg = S.leg || S.body;
+  switch (S.legs) {
+    case 'none': return;
+    case 'feet': case 'stilt': {
+      const lift = S.legs === 'stilt' ? (S.lift || 8) : 0;
+      [[-4 - lk], [5 + lk]].forEach(([x]) => {
+        if (lift) { g.save(); g.strokeStyle = S.feet; g.lineWidth = 2.5; g.beginPath(); g.moveTo(x, -3); g.lineTo(x, -lift - 6); g.stroke(); g.restore(); }
+        g.beginPath(); g.moveTo(x - 4.5, ly); g.lineTo(x + 5, ly); g.lineTo(x, ly - 5); g.closePath(); fs(g, S.feet || '#ff9a1e');
+      });
+      return;
+    }
+    case 'flipper':
+      ell(g, -7 - lk * .5, -2 + ly, 6.5, 2.6, -.2); fs(g, leg);
+      ell(g, 7 + lk * .5, -2 + ly, 6.5, 2.6, .2); fs(g, leg);
+      return;
+    case 'tentacle':
+      for (let i = 0; i < 5; i++) {
+        const x = -10 + i * 5, wv = Math.sin(t * 6 + i) * 2.5;
+        strokeTube(g, () => { g.beginPath(); g.moveTo(x, -8); g.quadraticCurveTo(x + wv, -3, x + wv * 1.5 + (i - 2) * 1.5, 0); }, 3.5, leg);
+      }
+      return;
+    default:
+      ell(g, -5 - lk, -3 + ly, 4, 4.5); fs(g, leg);
+      ell(g, 5 + lk, -3 + ly, 4, 4.5); fs(g, leg);
+      if (S.legs === 'hoof') { g.fillStyle = '#3a2a2a'; g.fillRect(-9 - lk, -1 + ly, 8, 2.5); g.fillRect(1 + lk, -1 + ly, 8, 2.5); }
   }
-  ell(g, 6, 3, 4, 3.6); fs(g, S.body);
+}
+
+function bodyPath(g, S, bob, t) {
+  if (S.shape === 'slime') {
+    const w = Math.sin(t * 4) * 1.5;
+    g.beginPath(); g.moveTo(-16 - w, 0); g.bezierCurveTo(-18, -30, -10, -46 + w, 2, -46 + w); g.bezierCurveTo(16, -46 + w, 22, -28, 18 + w, 0); g.closePath();
+  } else if (S.shape === 'ghost') {
+    g.beginPath(); g.moveTo(-14, -6 + bob); g.bezierCurveTo(-16, -40 + bob, 20, -40 + bob, 18, -6 + bob);
+    for (let i = 0; i < 4; i++) { const x = 18 - i * 8; g.quadraticCurveTo(x - 2, -1 + bob + Math.sin(t * 6 + i) * 2, x - 4, -6 + bob); g.quadraticCurveTo(x - 6, -11 + bob, x - 8, -6 + bob); }
+    g.closePath();
+  } else ell(g, 0, -14 + bob, 11.5, 11);
+}
+
+function drawBody(g, S, bob, t) {
+  if (S.shape === 'fluffy') {
+    g.fillStyle = S.body;
+    const pts = [[0, -14, 11]];
+    for (let i = 0; i < 8; i++) { const a = i * Math.PI / 4; pts.push([Math.cos(a) * 9, -14 + Math.sin(a) * 8.5, 5.2]); }
+    pts.forEach(([x, y, r]) => { g.beginPath(); g.arc(x, y + bob, r, 0, 7); g.stroke(); });
+    pts.forEach(([x, y, r]) => { g.beginPath(); g.arc(x, y + bob, r, 0, 7); g.fill(); });
+    shade(g, 0, -14 + bob, 13, 12);
+    return;
+  }
+  bodyPath(g, S, bob, t); fs(g, S.body);
+  if (S.shape === 'slime') {
+    g.save(); g.globalAlpha = .35; g.fillStyle = '#ffffff'; ell(g, -6, -32, 4, 7, .4); g.fill(); ell(g, -9, -18, 1.8, 3, .4); g.fill(); g.restore();
+    return;
+  }
+  if (S.shape === 'ghost') { shade(g, 2, -22 + bob, 16, 16); return; }
+  // markings clipped to the body
+  g.save(); bodyPath(g, S, bob, t); g.clip();
+  if (S.belly) { g.fillStyle = S.belly; ell(g, 3, -12 + bob, 6.5, 7); g.fill(); }
+  if (S.pouch) { g.strokeStyle = OUT; g.lineWidth = 1.2; g.beginPath(); g.arc(3, -9 + bob, 4.5, .2, Math.PI - .2); g.stroke(); }
+  if (S.feathers) { g.strokeStyle = 'rgba(90,50,20,.45)'; g.lineWidth = 1.2; for (let i = 0; i < 3; i++) { g.beginPath(); g.arc(1 + i * 3, -14 + bob + (i % 2) * 3, 1.8, 0, Math.PI); g.stroke(); } }
+  if (S.bstripes) { g.strokeStyle = S.bstripes; g.lineWidth = 2.2; [-7, -2].forEach(x => { g.beginPath(); g.moveTo(x - 2, -25 + bob); g.quadraticCurveTo(x + 2, -16 + bob, x - 1, -8 + bob); g.stroke(); }); g.beginPath(); g.moveTo(8, -24 + bob); g.lineTo(6, -18 + bob); g.stroke(); }
+  if (S.spots) { g.fillStyle = S.spots; [[-6, -18, 3.5], [-2, -9, 2.6], [6, -21, 2.4], [-8, -10, 2]].forEach(([x, y, r]) => { ell(g, x, y + bob, r, r * .8, .5); g.fill(); }); }
+  if (S.patch) { g.fillStyle = '#222'; ell(g, 0, -20 + bob, 11, 4); g.fill(); }
+  g.restore();
+  bodyPath(g, S, bob, t); g.stroke();
+  shade(g, 0, -14 + bob, 11.5, 11);
+  if (S.fin) { g.beginPath(); g.moveTo(-6, -22 + bob); g.quadraticCurveTo(-8, -36 + bob, 2, -38 + bob); g.quadraticCurveTo(0, -30 + bob, 4, -23 + bob); g.closePath(); fs(g, S.fin); }
+  if (S.shell) {
+    g.beginPath(); g.ellipse(-3, -16 + bob, 12, 11, -.2, Math.PI * .55, Math.PI * 1.95); g.closePath(); fs(g, S.shell);
+    g.save(); g.strokeStyle = S.shellLine; g.lineWidth = 1.4;
+    g.beginPath(); g.moveTo(-10, -18 + bob); g.lineTo(-4, -22 + bob); g.lineTo(2, -18 + bob); g.moveTo(-4, -22 + bob); g.lineTo(-4, -14 + bob); g.moveTo(-12, -12 + bob); g.lineTo(-4, -14 + bob); g.stroke();
+    g.restore();
+  }
+  if (S.crest && S.tail !== 'parrot') {
+    g.fillStyle = S.crest;
+    for (let i = 0; i < 4; i++) { const a = Math.PI * (1.15 + i * .13), x = Math.cos(a) * 11.5, y = -14 + bob + Math.sin(a) * 11; g.beginPath(); g.moveTo(x - 2, y + 1); g.lineTo(x + Math.cos(a) * 5, y + Math.sin(a) * 5); g.lineTo(x + 2.5, y + 1.5); g.closePath(); g.fill(); g.stroke(); }
+  }
+}
+
+function drawBackWings(g, S, bob, t) {
+  if (!S.wings) return;
+  const flap = Math.sin(t * (S.wingStyle === 'bat' ? 5 : 9)) * .25;
+  g.save(); g.translate(-5, -20 + bob); g.rotate(-.6 + flap);
+  if (S.wingStyle === 'bat') {
+    g.beginPath(); g.moveTo(0, 0); g.lineTo(-6, -20); g.quadraticCurveTo(-10, -12, -16, -14); g.quadraticCurveTo(-14, -6, -20, -4); g.quadraticCurveTo(-12, 0, 0, 4); g.closePath(); fs(g, S.wings);
+  } else if (S.id !== 'penguin') {
+    ell(g, -7, -3, 10, 5, -.3); fs(g, S.wings);
+    if (S.tail === 'flame') { g.save(); g.globalCompositeOperation = 'lighter'; g.fillStyle = 'rgba(255,200,60,.6)'; ell(g, -12, -6 + Math.sin(t * 12), 6, 3, -.4); g.fill(); g.restore(); }
+  }
+  g.restore();
+}
+
+function drawMane(g, S, hx, hy, t) {
+  if (!S.mane) return;
+  if (S.mane === 'rainbow') {
+    const cols = ['#ff5a5a', '#ffae3a', '#ffe14d', '#5ad86a', '#4aa8ff', '#b06bff'];
+    cols.forEach((c, i) => { ell(g, hx - 9 - i * .6, hy - 6 + i * 3.2, 5, 3.2, -.6 + Math.sin(t * 3 + i) * .08); fs(g, c); });
+    return;
+  }
+  if (S.maneStyle === 'mohawk') {
+    g.fillStyle = S.mane;
+    for (let i = 0; i < 5; i++) { const a = Math.PI * (1.2 + i * .12), x = hx + Math.cos(a) * 12, y = hy + Math.sin(a) * 12; g.beginPath(); g.moveTo(x - 2, y + 2); g.lineTo(x + Math.cos(a) * 5, y + Math.sin(a) * 5); g.lineTo(x + 2, y + 2); g.fill(); }
+    return;
+  }
+  for (let i = 0; i < 12; i++) {
+    const a = i * Math.PI / 6 + Math.sin(t * 2) * .03;
+    ell(g, hx + Math.cos(a) * 14, hy + Math.sin(a) * 13.5, 5.5, 5.5); fs(g, S.mane);
+  }
+  g.fillStyle = S.mane; ell(g, hx, hy, 15, 14.5); g.fill();
+}
+
+function drawEarsBack(g, S, hx, hy, earW) {
+  const ear = S.ear || S.head || S.body;
+  switch (S.ears) {
+    case 'point':
+      [[-9, -6, -12, -21, -1, -12], [3, -12, 8, -23, 11, -8]].forEach(e => {
+        g.beginPath(); g.moveTo(hx + e[0], hy + e[1]); g.lineTo(hx + e[2], hy + e[3]); g.lineTo(hx + e[4], hy + e[5]); g.closePath(); fs(g, ear);
+      });
+      if (S.inner) { g.fillStyle = S.inner; g.beginPath(); g.moveTo(hx + 5, hy - 12); g.lineTo(hx + 8, hy - 19); g.lineTo(hx + 9, hy - 10); g.fill(); }
+      break;
+    case 'long':
+      ell(g, hx - 5, hy - 19, 4.5, 13, -.25 + earW); fs(g, ear);
+      ell(g, hx + 4, hy - 20, 4.5, 13, .15 - earW); fs(g, ear);
+      if (S.inner) { g.fillStyle = S.inner; ell(g, hx + 4, hy - 20, 2, 9, .15 - earW); g.fill(); }
+      break;
+    case 'round':
+      ell(g, hx - 9, hy - 10, 5.5, 5.5); fs(g, ear); ell(g, hx + 9, hy - 10, 5.5, 5.5); fs(g, ear);
+      if (S.inner) { g.fillStyle = S.inner; ell(g, hx + 9, hy - 10, 2.6, 2.6); g.fill(); }
+      break;
+    case 'tiny':
+      ell(g, hx - 7, hy - 11, 3.2, 3.2); fs(g, ear); ell(g, hx + 7, hy - 11.5, 3.2, 3.2); fs(g, ear);
+      break;
+    case 'biground':
+      ell(g, hx - 9, hy - 11, 7.5, 7.5); fs(g, ear); ell(g, hx + 8, hy - 12, 7.5, 7.5); fs(g, ear);
+      g.fillStyle = S.inner; ell(g, hx + 8, hy - 12, 4.5, 4.5); g.fill();
+      break;
+    case 'bigfluff':
+      ell(g, hx - 11, hy - 8, 8, 8); fs(g, ear); ell(g, hx + 10, hy - 9, 8, 8); fs(g, ear);
+      g.fillStyle = S.inner; ell(g, hx + 10, hy - 9, 4.5, 4.5); g.fill();
+      break;
+    case 'side':
+      ell(g, hx - 13, hy, 5, 5.5); fs(g, ear); g.fillStyle = S.inner || S.face || ear; ell(g, hx - 13, hy, 2.5, 3); g.fill();
+      break;
+    case 'elephant':
+      ell(g, hx - 10, hy + 1, 10, 13, .2 + earW); fs(g, ear);
+      g.fillStyle = S.inner; ell(g, hx - 10, hy + 1, 5.5, 8, .2 + earW); g.fill();
+      break;
+    case 'tuft':
+      [[-10, -1], [10, 1]].forEach(([dx, s]) => { g.beginPath(); g.moveTo(hx + dx - 4 * s, hy - 8); g.lineTo(hx + dx + 1, hy - 19); g.lineTo(hx + dx + 4 * s, hy - 9); g.closePath(); fs(g, ear); });
+      break;
+  }
+}
+
+function drawHorns(g, S, hx, hy, t) {
+  switch (S.horn) {
+    case 'unicorn': {
+      g.save(); g.shadowColor = '#fff6a8'; g.shadowBlur = 6;
+      g.beginPath(); g.moveTo(hx + 1, hy - 10); g.lineTo(hx + 8, hy - 30); g.lineTo(hx + 7, hy - 9); g.closePath(); fs(g, '#ffd84a');
+      g.restore();
+      g.strokeStyle = '#c99a1e'; g.lineWidth = 1; g.beginPath(); g.moveTo(hx + 3, hy - 14); g.lineTo(hx + 7, hy - 16); g.moveTo(hx + 4, hy - 19); g.lineTo(hx + 7.5, hy - 21); g.stroke();
+      g.strokeStyle = OUT; g.lineWidth = 2.2; break;
+    }
+    case 'dragon':
+      [[-6, 0], [4, 1]].forEach(([dx]) => { g.beginPath(); g.moveTo(hx + dx - 2, hy - 9); g.quadraticCurveTo(hx + dx - 8, hy - 18, hx + dx - 12, hy - 20); g.quadraticCurveTo(hx + dx - 5, hy - 12, hx + dx + 3, hy - 10); g.closePath(); fs(g, '#fff3d6'); });
+      break;
+    case 'cow':
+      [[-9, -1], [11, 1]].forEach(([dx, s]) => { g.beginPath(); g.moveTo(hx + dx - 2, hy - 9); g.quadraticCurveTo(hx + dx + 3 * s, hy - 15, hx + dx + 5 * s, hy - 17); g.quadraticCurveTo(hx + dx + 1 * s, hy - 11, hx + dx + 2, hy - 8); g.closePath(); fs(g, '#fff3d6'); });
+      break;
+    case 'ram':
+      [[-5, -1], [7, 1]].forEach(([dx, s]) => strokeTube(g, () => {
+        g.beginPath(); g.moveTo(hx + dx, hy - 11);
+        g.bezierCurveTo(hx + dx - 9 * s, hy - 22, hx + dx - 16 * s, hy - 10, hx + dx - 9 * s, hy - 5);
+      }, 3.2, '#c8d0e0'));
+      break;
+    case 'giraffe':
+      [[-4], [5]].forEach(([dx]) => { g.save(); g.strokeStyle = OUT; g.lineWidth = 3.5; g.beginPath(); g.moveTo(hx + dx, hy - 10); g.lineTo(hx + dx - 1, hy - 18); g.stroke(); g.restore(); ell(g, hx + dx - 1, hy - 19, 2.8, 2.8); fs(g, '#8a5a2a'); });
+      break;
+  }
+}
+
+const BEAKLESS = { beak: 1, hook: 1, bill: 1, pig: 1, trunk: 1, long: 1, hippo: 1, shark: 1, yeti: 0 };
+function drawSnout(g, S, hx, hy, t, hurt) {
+  switch (S.snout) {
+    case 'muzzle': ell(g, hx + 10, hy + 4, 6.5, 5); fs(g, S.face || '#fff'); break;
+    case 'yeti': ell(g, hx + 7, hy + 3, 8, 7); g.fillStyle = S.face; g.fill(); break;
+    case 'pig': ell(g, hx + 14, hy + 3, 4.2, 3.6); fs(g, S.inner || '#ff7fa0'); g.fillStyle = '#7a2a3a'; ell(g, hx + 13, hy + 3, .9, 1.4); g.fill(); ell(g, hx + 15.5, hy + 3, .9, 1.4); g.fill(); break;
+    case 'beak': g.beginPath(); g.moveTo(hx + 10, hy); g.lineTo(hx + 19, hy + 3); g.lineTo(hx + 10, hy + 6); g.closePath(); fs(g, S.beak); break;
+    case 'hook': g.beginPath(); g.moveTo(hx + 9, hy - 2); g.quadraticCurveTo(hx + 20, hy - 2, hx + 18, hy + 8); g.quadraticCurveTo(hx + 14, hy + 4, hx + 9, hy + 5); g.closePath(); fs(g, S.beak); break;
+    case 'bill': ell(g, hx + 15, hy + 3, 6.5, 2.8); fs(g, S.beak); g.beginPath(); g.moveTo(hx + 10, hy + 3); g.lineTo(hx + 20, hy + 3); g.stroke(); break;
+    case 'trunk':
+      strokeTube(g, () => { g.beginPath(); g.moveTo(hx + 10, hy + 2); g.quadraticCurveTo(hx + 20, hy + 4, hx + 19 + Math.sin(t * 3) * 2, hy + 15); }, 5, S.body);
+      if (S.tusks) { g.beginPath(); g.moveTo(hx + 8, hy + 7); g.quadraticCurveTo(hx + 12, hy + 12, hx + 15, hy + 11); g.lineTo(hx + 10, hy + 7); g.closePath(); fs(g, '#fffbe8'); }
+      break;
+    case 'long':
+      g.beginPath(); g.roundRect(hx + 4, hy - 1, 19, 9, 4); fs(g, S.body);
+      g.fillStyle = OUT; ell(g, hx + 20, hy + 1, .9, .9); g.fill();
+      if (!hurt) { g.fillStyle = '#fff'; for (let i = 0; i < 4; i++) { g.beginPath(); g.moveTo(hx + 9 + i * 3.5, hy + 5); g.lineTo(hx + 10.5 + i * 3.5, hy + 8); g.lineTo(hx + 12 + i * 3.5, hy + 5); g.fill(); } }
+      g.beginPath(); g.moveTo(hx + 8, hy + 5); g.lineTo(hx + 22, hy + 5); g.stroke();
+      break;
+    case 'hippo':
+      ell(g, hx + 9, hy + 5, 9.5, 6.5); fs(g, S.face);
+      g.fillStyle = OUT; ell(g, hx + 12, hy + 2, 1.1, 1.5); g.fill(); ell(g, hx + 16, hy + 2, 1.1, 1.5); g.fill();
+      break;
+    case 'shark':
+      g.fillStyle = '#fff'; g.beginPath(); g.moveTo(hx + 3, hy + 5); g.quadraticCurveTo(hx + 10, hy + 11, hx + 17, hy + 4); g.closePath(); g.fill(); g.stroke();
+      g.beginPath(); for (let i = 0; i < 4; i++) { g.moveTo(hx + 5 + i * 3, hy + 5.5); g.lineTo(hx + 6.5 + i * 3, hy + 8); } g.stroke();
+      break;
+  }
+}
+
+function drawEyes(g, S, hx, hy, o, t, blink) {
+  const le = (o.elev || 0) * -1.2;
+  const ex1 = hx + 5, ex2 = hx + 11, ey = hy - 2 - (S.eyesTop ? 8 : 0);
+  if (S.eyesTop) { ell(g, ex1, ey, 4.5, 4.2); fs(g, S.body); ell(g, ex2, ey, 4.3, 4); fs(g, S.body); }
+  if (S.faceWhite) { g.save(); g.fillStyle = '#fff'; ell(g, hx + 7, hy, 8, 7); g.fill(); g.restore(); }
+  g.lineWidth = 1.5; g.strokeStyle = OUT;
+  if (o.hurt) {
+    g.lineWidth = 2;
+    [[ex1, ey], [ex2, ey]].forEach(([x, y]) => { g.beginPath(); g.moveTo(x - 2, y - 2); g.lineTo(x + 2, y + 2); g.moveTo(x + 2, y - 2); g.lineTo(x - 2, y + 2); g.stroke(); });
+  } else if (blink) {
+    g.beginPath(); g.moveTo(ex1 - 2, ey); g.lineTo(ex1 + 2, ey); g.moveTo(ex2 - 2, ey); g.lineTo(ex2 + 2, ey); g.stroke();
+  } else if (S.eyes === 'dark') {
+    g.fillStyle = '#1a1a2a'; ell(g, ex1, ey, 2.6, 3.8); g.fill(); ell(g, ex2, ey, 2.4, 3.6); g.fill();
+    g.fillStyle = '#fff'; ell(g, ex1 - .6, ey - 1.5, .8, .8); g.fill(); ell(g, ex2 - .6, ey - 1.5, .8, .8); g.fill();
+  } else {
+    const big = S.eyes === 'big';
+    if (big) { g.fillStyle = '#ffd24a'; ell(g, ex1 - .5, ey, 5.3, 5.3); g.fill(); ell(g, ex2 + .5, ey, 5, 5); g.fill(); }
+    ell(g, ex1, ey, big ? 3.8 : 3.2, big ? 3.8 : 4); fs(g, '#fff'); ell(g, ex2, ey, big ? 3.6 : 3, big ? 3.6 : 3.8); fs(g, '#fff');
+    g.fillStyle = '#111'; ell(g, ex1 + 1, ey + .5 + le, big ? 2.2 : 1.7, 2); g.fill(); ell(g, ex2 + 1, ey + .5 + le, big ? 2 : 1.6, 2); g.fill();
+    g.fillStyle = '#fff'; ell(g, ex1 + .4, ey - .6 + le, .6, .6); g.fill(); ell(g, ex2 + .4, ey - .6 + le, .6, .6); g.fill();
+    g.lineWidth = 1.8; g.beginPath();
+    if (o.sad) { g.moveTo(ex1 - 3, ey - 5); g.lineTo(ex1 + 2, ey - 7); g.moveTo(ex2 + 3, ey - 5); g.lineTo(ex2 - 2, ey - 7); }
+    else if (!o.happy) { g.moveTo(ex1 - 3, ey - 6); g.lineTo(ex1 + 2, ey - 4); g.moveTo(ex2 + 3, ey - 6); g.lineTo(ex2 - 1, ey - 4); }
+    g.stroke();
+  }
+  g.lineWidth = 2.2;
+}
+
+function drawMouth(g, S, hx, hy, o) {
+  const beakless = BEAKLESS[S.snout];
+  if (!beakless && !S.noNose) { ell(g, hx + 14, hy + 3, S.bigNose ? 3.8 : 2.6, S.bigNose ? 3 : 2); g.fillStyle = S.nose || '#222'; g.fill(); }
+  if (S.snout === 'beak' || S.snout === 'hook' || S.snout === 'bill' || S.snout === 'shark') return;
+  g.lineWidth = 1.5; g.strokeStyle = OUT; g.beginPath();
+  const my = hy + (S.snout === 'hippo' ? 9 : 6);
+  if (S.oMouth) { ell(g, hx + 8, my + 1, 2, 2.6); g.fillStyle = '#1a1a2a'; g.fill(); }
+  else if (o.hurt || o.sad) g.arc(hx + 10, my + 3, 2.5, Math.PI + .2, -.2);
+  else if (S.wideMouth || o.happy) g.arc(hx + 8, my - 1, 5, .2, Math.PI - .4);
+  else g.arc(hx + 10, my, 3, .2, Math.PI - .2);
+  g.stroke();
+  if ((S.teeth || S.fangs) && !o.hurt) {
+    g.fillStyle = '#fff';
+    if (S.fangs) { [[7], [11]].forEach(([dx]) => { g.beginPath(); g.moveTo(hx + dx, my + 1.5); g.lineTo(hx + dx + 1, my + 4.5); g.lineTo(hx + dx + 2, my + 1.5); g.fill(); g.stroke(); }); }
+    else { g.fillRect(hx + 9, my + 2, 3, 3); g.strokeRect(hx + 9, my + 2, 3, 3); }
+  }
+  g.lineWidth = 2.2;
+}
+
+function drawFaceExtras(g, S, hx, hy, t) {
+  if (S.cheeks) { ell(g, hx + 3, hy + 5, 5.5, 4.5); fs(g, S.cheeks); ell(g, hx - 7, hy + 5, 4.5, 4); fs(g, S.cheeks); }
+  if (S.whisk) {
+    g.save(); g.strokeStyle = 'rgba(30,20,40,.7)'; g.lineWidth = .9;
+    g.beginPath(); g.moveTo(hx + 12, hy + 4); g.lineTo(hx + 20, hy + 2); g.moveTo(hx + 12, hy + 5); g.lineTo(hx + 20, hy + 6); g.stroke();
+    g.restore();
+  }
+  if (!S.shiny) { g.fillStyle = 'rgba(255,120,150,.45)'; ell(g, hx + 3, hy + 5, 2.5, 1.6); g.fill(); }
+}
+
+function drawSparkles(g, t, gold, legend) {
+  g.save(); g.globalCompositeOperation = 'lighter';
+  const n = legend ? 3 : 0;
+  for (let i = 0; i < n; i++) {
+    const a = t * 1.8 + i * 2.09;
+    g.fillStyle = 'rgba(255,225,90,.95)';
+    starShape(g, Math.cos(a) * 17, -22 + Math.sin(a) * 7, 2.4 + Math.sin(t * 6 + i) * .6); g.fill();
+  }
+  if (gold) {
+    for (let i = 0; i < 4; i++) {
+      const ph = (t * .7 + i * .25) % 1, x = Math.sin(i * 7.3) * 14, y = -34 + Math.cos(i * 3.1) * 12 - ph * 6;
+      g.globalAlpha = Math.sin(ph * Math.PI);
+      g.fillStyle = i % 2 ? '#ffffff' : '#ffe14d';
+      starShape(g, x, y, 2.8); g.fill();
+    }
+  }
+  g.restore();
+}
+
+// o: {x,y,t,facing,elev,weapon,hat,walking,hurt,dead,scale,fireAnim,onGround,vy,squash,sad,dance,wave,happy}
+function drawPet(g, spec, o) {
+  const PP = parsePet(spec), L = getLook(o.hat), t = o.t || 0, f = o.facing || 1;
+  let S = PP.S;
+  if (L.fur && !S.shape) {
+    const hue = (t * 70) % 360;
+    const body = L.fur.rainbow ? `hsl(${hue},80%,64%)` : L.fur.body, leg = L.fur.rainbow ? `hsl(${hue},80%,54%)` : L.fur.leg;
+    S = Object.assign({}, S, { body, head: S.head ? S.head : undefined, leg: S.leg === '#222222' ? S.leg : leg, ear: S.ear === '#222222' || PP.id === 'dog' ? S.ear : body });
+  }
+  const baby = PP.stage === 1, legend = PP.stage === 3;
+  const sc = (o.scale || 1) * (baby ? .86 : 1);
+  g.save(); g.translate(o.x, o.y);
+  let sx = 1, sy = 1;
+  if (o.squash) { sx = 1 + .22 * o.squash; sy = 1 - .22 * o.squash; }
+  else if (o.onGround === false && (o.vy || 0) < -1.5) { sx = .93; sy = 1.08; }
+  if (o.hurt && !o.dead) g.translate(Math.sin(t * 70) * 1.4 * sc, 0);
+  g.scale(sc * f * sx, sc * sy);
+  g.lineWidth = 2.2; g.strokeStyle = OUT; g.lineJoin = 'round';
+  if (o.dead) { drawTomb(g); g.restore(); return; }
+  const floaty = S.shape === 'ghost', blobby = S.shape === 'slime' || floaty;
+  const walking = o.walking && !floaty, ph = t * 14;
+  let bob = walking ? -Math.abs(Math.sin(ph)) * 2.5 : Math.sin(t * 3) * 1.2;
+  if (floaty) bob = -5 + Math.sin(t * 3) * 3;
+  if (o.dance) { bob = -Math.abs(Math.sin(t * 7)) * 7; g.rotate(Math.sin(t * 3.5) * .12); }
+  const air = o.onGround === false;
+  g.fillStyle = 'rgba(0,0,0,.18)'; ell(g, 0, 1, floaty ? 10 : 13, 3.5); g.fill();
+  const glow = S.glow || (legend ? '#ffd24a' : null);
+  if (glow) {
+    g.save(); g.globalCompositeOperation = 'lighter';
+    const rg = g.createRadialGradient(0, -22 + bob, 4, 0, -22 + bob, 30);
+    rg.addColorStop(0, glow + '55'); rg.addColorStop(1, glow + '00');
+    g.fillStyle = rg; g.beginPath(); g.arc(0, -22 + bob, 30, 0, 7); g.fill(); g.restore();
+  }
+  if (L.neck && (L.neck.s === 'cape' || L.neck.s === 'wings')) drawCape(g, L.neck, bob, t);
+  drawBackWings(g, S, bob, t);
+  const lift = S.legs === 'stilt' ? (S.lift || 8) : 0;
+  const lk = walking ? Math.sin(ph) * 4 : 0, ly = air ? -3 : 0;
+  if (!blobby) drawLegs(g, S, lk, ly, t);
+  g.translate(0, -lift);
+  if (!blobby) { g.save(); g.translate(-9, -11 + bob); drawTail(g, S, t, walking); g.restore(); }
+  drawBody(g, S, bob, t);
+  const neck = S.neck || 0;
+  if (neck) { g.beginPath(); g.roundRect(-2, -30 + bob - neck, 9, neck + 8, 4); fs(g, S.body); if (S.spots) { g.fillStyle = S.spots; ell(g, 2, -26 + bob - neck / 2, 2, 2.4); g.fill(); } }
+  const hx = 3, hy = (blobby ? (floaty ? -26 : -28) : -32) + bob - neck;
+  const headS = baby ? 1.14 : 1;
+  g.save(); g.translate(hx, hy); g.scale(headS, headS); g.translate(-hx, -hy);
+  const earW = Math.sin(t * 4) * .08;
+  if (!blobby) {
+    drawMane(g, S, hx, hy, t);
+    drawEarsBack(g, S, hx, hy, earW);
+    if (S.gills) { g.save(); for (let s = -1; s <= 1; s++) { g.strokeStyle = S.gills; g.lineWidth = 3; g.lineCap = 'round'; g.beginPath(); g.moveTo(hx - 9, hy - 2 + s * 5); g.lineTo(hx - 17, hy - 4 + s * 8 + Math.sin(t * 5 + s) * 1.5); g.stroke(); } g.restore(); }
+    const hr = S.headR || 13;
+    ell(g, hx, hy, hr, hr - .5); fs(g, S.head || S.body);
+    shade(g, hx, hy, hr, hr - .5);
+    if (S.face && !S.snout) { g.save(); ell(g, hx + 5, hy + 2, 8, 8.5); g.fillStyle = S.face; g.fill(); g.restore(); }
+    if (S.spots && !neck) { g.save(); g.fillStyle = S.spots; ell(g, hx - 6, hy - 5, 2.6, 2); g.fill(); ell(g, hx - 3, hy + 6, 1.8, 1.5); g.fill(); g.restore(); }
+    if (S.stripes) { g.save(); g.strokeStyle = S.stripes; g.lineWidth = 2; for (let i = -1; i <= 1; i++) { g.beginPath(); g.moveTo(hx + i * 4, hy - 12); g.lineTo(hx + i * 4, hy - 7); g.stroke(); } g.restore(); }
+    if (S.mask) { g.save(); ell(g, hx + 7, hy - 2, 9, 4.5); g.fillStyle = '#34353c'; g.fill(); g.restore(); }
+    if (S.patch) { g.save(); g.fillStyle = '#222'; ell(g, hx + 5, hy - 2, 3.5, 4.5, .3); g.fill(); ell(g, hx + 11, hy - 2, 3.2, 4.3, -.3); g.fill(); g.restore(); }
+    if (S.wool) { g.save(); g.fillStyle = S.body; [[-6, -11], [0, -13], [6, -11]].forEach(([dx, dy]) => { g.beginPath(); g.arc(hx + dx, hy + dy, 4.2, 0, 7); g.fill(); g.stroke(); }); g.restore(); }
+    if (S.ears === 'flop') { ell(g, hx - 7, hy - 3, 4.5, 9, .45 + earW); fs(g, S.ear); }
+    if (S.ears === 'tuftsmall') { g.save(); g.lineWidth = 1.6; g.beginPath(); g.moveTo(hx, hy - 12); g.quadraticCurveTo(hx - 3, hy - 18, hx - 1, hy - 20); g.moveTo(hx + 2, hy - 12); g.quadraticCurveTo(hx + 3, hy - 18, hx + 6, hy - 19); g.stroke(); g.restore(); }
+    drawHorns(g, S, hx, hy, t);
+    if (S.crest && S.tail === 'parrot') { g.fillStyle = S.crest; for (let i = 0; i < 3; i++) { g.beginPath(); g.moveTo(hx - 4 + i * 3, hy - 11); g.lineTo(hx - 8 + i * 3, hy - 20 - i); g.lineTo(hx - 1 + i * 3, hy - 12); g.closePath(); g.fill(); g.stroke(); } }
+    if (S.crest && S.tail === 'flame') { g.save(); g.globalCompositeOperation = 'lighter'; for (let i = 0; i < 3; i++) { g.fillStyle = i % 2 ? '#ffe14d' : '#ff8a1e'; g.beginPath(); g.moveTo(hx - 4 + i * 4, hy - 10); g.quadraticCurveTo(hx - 6 + i * 4, hy - 20 + Math.sin(t * 12 + i) * 2, hx - 2 + i * 4, hy - 24); g.quadraticCurveTo(hx + i * 4, hy - 16, hx + 1 + i * 4, hy - 10); g.fill(); } g.restore(); }
+    drawSnout(g, S, hx, hy, t, o.hurt);
+  }
+  const blink = (t % 3.7) < .12;
+  drawEyes(g, S, hx, hy, o, t, blink);
+  drawMouth(g, S, hx, hy, o);
+  if (!blobby) drawFaceExtras(g, S, hx, hy, t);
+  else if (!S.shiny) { g.fillStyle = 'rgba(255,120,150,.45)'; ell(g, hx + 2, hy + 5, 2.5, 1.6); g.fill(); ell(g, hx + 13, hy + 5, 2.5, 1.6); g.fill(); }
+  g.lineWidth = 2.2;
+  if (S.collar && !L.neck) { g.beginPath(); g.roundRect(hx - 9, hy + 9, 18, 4, 2); fs(g, S.collar); ell(g, hx + 3, hy + 14, 2, 2); fs(g, '#ffc21e'); }
+  if (L.neck && !blobby) drawNeck(g, L.neck, hx, hy, t);
+  if (L.eye && !o.hurt) drawGlasses(g, L.eye, hx, hy - (S.eyesTop ? 8 : 0));
+  if (L.hat) drawHat(g, L.hat.s, hx, hy - 4 - (S.eyesTop ? 4 : 0), t, L.hat.c);
+  g.restore();
+  g.lineWidth = 2.2; g.strokeStyle = OUT;
+  // arm + weapon
+  const armY = (blobby ? -12 : -15) + bob - (neck ? 2 : 0);
+  const armS = Object.assign({}, S, { body: S.wings && S.id !== 'dragon' ? S.wings : (S.leg && S.legs === 'tentacle' ? S.leg : S.body) });
+  g.save(); g.translate(1, armY);
+  if (o.dance || o.wave) {
+    g.rotate(-(o.dance ? 1.9 + Math.sin(t * 14) * .5 : 1.4 + Math.sin(t * 10) * .45));
+    ell(g, 6, 0, 5, 3.6); fs(g, armS.body);
+  } else {
+    g.rotate(-(o.elev || 0));
+    if (o.weapon) drawWeaponArm(g, armS, o.weapon, t, o.fireAnim || 0, L.skins);
+    else if (!blobby) { ell(g, 7, 3, 4, 3.6); fs(g, armS.body); }
+  }
+  g.restore();
+  if (legend || PP.shiny) drawSparkles(g, t, PP.shiny, legend);
+  g.restore();
 }
 
 function drawBone(g, s) {
@@ -753,91 +1544,6 @@ function drawTomb(g) {
   g.fillStyle = 'rgba(0,0,0,.2)'; ell(g, 0, 1, 12, 3); g.fill();
   g.beginPath(); g.moveTo(-11, 0); g.lineTo(-11, -18); g.arc(0, -18, 11, Math.PI, 0); g.lineTo(11, 0); g.closePath(); fs(g, '#9aa0ad');
   g.fillStyle = '#5b606b'; g.fillRect(-1.5, -24, 3, 12); g.fillRect(-5, -20, 10, 3);
-}
-
-// o: {x,y,t,facing,elev,weapon,hat,walking,hurt,dead,scale,fireAnim,onGround}
-function drawPet(g, sp, o) {
-  const L = getLook(o.hat);
-  let S = SPECIES[sp] || SPECIES.dog;
-  if (L.fur) S = Object.assign({}, S, { body: L.fur.body, leg: S.leg === '#222222' ? S.leg : L.fur.leg, ear: S.ear === '#222222' || sp === 'dog' ? S.ear : L.fur.body, tailC: S.tailC });
-  const t = o.t || 0, f = o.facing || 1, sc = o.scale || 1;
-  g.save(); g.translate(o.x, o.y); g.scale(sc * f, sc);
-  g.lineWidth = 2.2; g.strokeStyle = OUT; g.lineJoin = 'round';
-  if (o.dead) { drawTomb(g); g.restore(); return; }
-  const walking = o.walking, ph = t * 14;
-  const bob = walking ? -Math.abs(Math.sin(ph)) * 2.5 : Math.sin(t * 3) * 1.2;
-  const air = o.onGround === false;
-  g.fillStyle = 'rgba(0,0,0,.18)'; ell(g, 0, 1, 13, 3.5); g.fill();
-  if (L.neck && L.neck.s === 'cape') drawCape(g, L.neck, bob, t);
-  // tail
-  g.save(); g.translate(-9, -11 + bob); drawTail(g, S, t, walking); g.restore();
-  // legs
-  const lk = walking ? Math.sin(ph) * 4 : 0, ly = air ? -3 : 0;
-  ell(g, -5 - lk, -3 + ly, 4, 4.5); fs(g, S.leg);
-  ell(g, 5 + lk, -3 + ly, 4, 4.5); fs(g, S.leg);
-  // body
-  ell(g, 0, -14 + bob, 11.5, 11); fs(g, S.body);
-  g.save(); g.lineWidth = 0; ell(g, 3, -12 + bob, 6.5, 7); g.fillStyle = S.belly; g.fill(); g.restore();
-  if (S.patch) { g.save(); ell(g, 0, -20 + bob, 11, 4); g.fillStyle = '#222'; g.fill(); g.restore(); }
-  const hx = 3, hy = -32 + bob;
-  const earW = Math.sin(t * 4) * .08;
-  // ears behind head
-  if (S.ears === 'point') {
-    [[-9, -6, -12, -21, -1, -12], [3, -12, 8, -23, 11, -8]].forEach(e => {
-      g.beginPath(); g.moveTo(hx + e[0], hy + e[1]); g.lineTo(hx + e[2], hy + e[3]); g.lineTo(hx + e[4], hy + e[5]); g.closePath(); fs(g, S.ear);
-    });
-    g.fillStyle = S.inner; g.beginPath(); g.moveTo(hx + 5, hy - 12); g.lineTo(hx + 8, hy - 19); g.lineTo(hx + 9, hy - 10); g.fill();
-  } else if (S.ears === 'long') {
-    ell(g, hx - 5, hy - 19, 4.5, 13, -.25 + earW); fs(g, S.ear);
-    ell(g, hx + 4, hy - 20, 4.5, 13, .15 - earW); fs(g, S.ear);
-    g.fillStyle = S.inner; ell(g, hx + 4, hy - 20, 2, 9, .15 - earW); g.fill();
-  } else if (S.ears === 'round') {
-    ell(g, hx - 9, hy - 10, 5.5, 5.5); fs(g, S.ear); ell(g, hx + 9, hy - 10, 5.5, 5.5); fs(g, S.ear);
-  } else if (S.ears === 'side') {
-    ell(g, hx - 13, hy, 5, 5.5); fs(g, S.ear); g.fillStyle = S.face; ell(g, hx - 13, hy, 2.5, 3); g.fill();
-  }
-  // head
-  ell(g, hx, hy, 13, 12.5); fs(g, S.body);
-  if (S.face) { g.save(); ell(g, hx + 5, hy + 2, 8, 8.5); g.fillStyle = S.face; g.fill(); g.restore(); }
-  if (S.stripes) { g.strokeStyle = S.stripes; g.lineWidth = 2; for (let i = -1; i <= 1; i++) { g.beginPath(); g.moveTo(hx + i * 4, hy - 12); g.lineTo(hx + i * 4, hy - 7); g.stroke(); } g.strokeStyle = OUT; g.lineWidth = 2.2; }
-  if (S.mask) { g.save(); ell(g, hx + 7, hy - 2, 9, 4.5); g.fillStyle = '#34353c'; g.fill(); g.restore(); }
-  if (S.patch) { g.save(); g.fillStyle = '#222'; ell(g, hx + 5, hy - 2, 3.5, 4.5, .3); g.fill(); ell(g, hx + 11, hy - 2, 3.2, 4.3, -.3); g.fill(); g.restore(); }
-  if (S.ears === 'flop') { ell(g, hx - 7, hy - 3, 4.5, 9, .45 + earW); fs(g, S.ear); }
-  // eyes
-  const blink = (t % 3.7) < .12;
-  g.lineWidth = 1.5;
-  if (o.hurt) {
-    g.strokeStyle = OUT; g.lineWidth = 2;
-    [[5, -2], [11, -2]].forEach(([ex, ey]) => { g.beginPath(); g.moveTo(hx + ex - 2, hy + ey - 2); g.lineTo(hx + ex + 2, hy + ey + 2); g.moveTo(hx + ex + 2, hy + ey - 2); g.lineTo(hx + ex - 2, hy + ey + 2); g.stroke(); });
-  } else if (blink) {
-    g.beginPath(); g.moveTo(hx + 3, hy - 2); g.lineTo(hx + 7, hy - 2); g.moveTo(hx + 9, hy - 2); g.lineTo(hx + 13, hy - 2); g.stroke();
-  } else {
-    ell(g, hx + 5, hy - 2, 3.2, 4); fs(g, '#fff'); ell(g, hx + 11, hy - 2, 3, 3.8); fs(g, '#fff');
-    const le = (o.elev || 0) * -1.2;
-    g.fillStyle = '#111'; ell(g, hx + 6, hy - 1.5 + le, 1.7, 2); g.fill(); ell(g, hx + 12, hy - 1.5 + le, 1.6, 2); g.fill();
-    // angry brows
-    g.lineWidth = 1.8; g.beginPath(); g.moveTo(hx + 2, hy - 8); g.lineTo(hx + 7, hy - 6); g.moveTo(hx + 14, hy - 8); g.lineTo(hx + 10, hy - 6); g.stroke();
-  }
-  g.lineWidth = 2.2; g.strokeStyle = OUT;
-  // nose & mouth
-  ell(g, hx + 14, hy + 3, 2.6, 2); g.fillStyle = S.nose; g.fill();
-  g.lineWidth = 1.5; g.beginPath();
-  if (o.hurt) { g.arc(hx + 10, hy + 9, 2.5, Math.PI, 0); } else { g.arc(hx + 10, hy + 6, 3, .2, Math.PI - .2); }
-  g.stroke();
-  if (S.teeth && !o.hurt) { g.fillStyle = '#fff'; g.fillRect(hx + 9, hy + 8, 3, 3); g.strokeRect(hx + 9, hy + 8, 3, 3); }
-  g.fillStyle = 'rgba(255,120,150,.45)'; ell(g, hx + 3, hy + 5, 2.5, 1.6); g.fill();
-  g.lineWidth = 2.2;
-  if (S.collar && !L.neck) { g.beginPath(); g.roundRect(hx - 9, hy + 9, 18, 4, 2); fs(g, S.collar); ell(g, hx + 3, hy + 14, 2, 2); fs(g, '#ffc21e'); }
-  if (L.neck) drawNeck(g, L.neck, hx, hy, t);
-  if (L.eye && !o.hurt) drawGlasses(g, L.eye, hx, hy);
-  if (L.hat) drawHat(g, L.hat.s, hx, hy - 4, t, L.hat.c);
-  g.lineWidth = 2.2; g.strokeStyle = OUT;
-  // arm + weapon
-  g.save(); g.translate(1, -15 + bob); g.rotate(-(o.elev || 0));
-  if (o.weapon) drawWeaponArm(g, S, o.weapon, t, o.fireAnim || 0, L.wsk);
-  else { ell(g, 7, 3, 4, 3.6); fs(g, S.body); }
-  g.restore();
-  g.restore();
 }
 
 // ================= ART: SCENERY =================
@@ -1191,7 +1897,7 @@ function explode(x, y, r, dmg, owner, nuke) {
 function makePet(i, ctrl, name, species, hat, ownerId) {
   const ammo = {}; WEAPONS.forEach(w => ammo[w.id] = w.ammo);
   return { i, ctrl, isHuman: ctrl === 'local', ownerId: ownerId || null, name, species, hat, color: SLOT_COLORS[i], x: 0, y: 0, tx: 0, ty: 0, vx: 0, vy: 0, hp: 100, dead: false, gone: false,
-    facing: 1, elev: .5, onGround: false, ammo, score: 0, kills: 0, fuel: 0, snack: false, rage: 0, shield: 0, hurtT: 0, fireAnim: 0, walking: false, deathOrder: 0, lastHitBy: null, say: null };
+    facing: 1, elev: .5, onGround: false, ammo, score: 0, kills: 0, fuel: 0, snack: false, rage: 0, shield: 0, crates: 0, hurtT: 0, fireAnim: 0, walking: false, deathOrder: 0, lastHitBy: null, say: null };
 }
 
 function updatePet(p) {
@@ -1214,6 +1920,7 @@ function updatePet(p) {
     for (let yy = Math.ceil(p.y); yy <= Math.floor(ny); yy++) {
       if (feetSolid(p.x, yy)) {
         if (p.vy > 11 && !p.onGround) damage(p, (p.vy - 11) * 5, null);
+        if (!p.onGround && p.vy > 3) p.squash = Math.min(1, p.vy / 9);
         p.y = yy; p.vy = 0; landed = true;
         p.vx *= .82; if (Math.abs(p.vx) < .25) p.vx = 0;
         break;
@@ -1271,7 +1978,7 @@ function updateCrate(c) {
   if (c.y > G.water) { c.gone = true; splashFx(c.x); }
 }
 function collectCrate(p, c) {
-  c.gone = true;
+  c.gone = true; p.crates = (p.crates || 0) + 1;
   const t = c.type;
   let msg;
   if (t === 'health') { const h = Math.min(30, 100 - p.hp); p.hp += h; msg = '+' + h + ' HP'; }
@@ -1284,7 +1991,7 @@ function collectCrate(p, c) {
 }
 
 // ================= PROJECTILES =================
-function addProj(o) { G.projs.push(Object.assign({ vx: 0, vy: 0, grav: GRAV, windK: 1, age: 0, safe: 3, rot: 0 }, o)); }
+function addProj(o) { G.projs.push(Object.assign({ vx: 0, vy: 0, grav: GRAV, windK: 1, age: 0, safe: 3, rot: 0, wid: G.fireWid, oi: o.owner ? o.owner.i : -1 }, o)); }
 
 function canUse(p, w) { return p.ammo[w.id] > 0 && (!w.rage || p.rage >= 100); }
 
@@ -1299,6 +2006,7 @@ function fire() {
     return;
   }
   p.ammo[w.id]--;
+  G.fireWid = w.id;
   if (w.rage) { p.rage = 0; sfx('siren'); banner('☢️ NUKE LAUNCHED!'); }
   const a = aimAngle(p), c = Math.cos(a), s = Math.sin(a);
   const mx = p.x + c * 28, my = p.y - 16 + s * 28, sp = 3 + G.power * 19;
@@ -1335,7 +2043,7 @@ function useTarget(wx, wy) {
     return;
   }
   if (w.id === 'airstrike') {
-    for (let i = 0; i < 5; i++) addProj({ kind: 'rocket', x: wx + (i - 2) * 42, y: -60 - i * 30, vx: 0, vy: 7, windK: .5, owner: p, dmg: w.dmg, r: w.r, safe: 0 });
+    for (let i = 0; i < 5; i++) addProj({ kind: 'rocket', x: wx + (i - 2) * 42, y: -60 - i * 30, vx: 0, vy: 7, windK: .5, owner: p, dmg: w.dmg, r: w.r, safe: 0, wid: 'airstrike' });
     banner('AIR STRIKE!'); sfx('plane');
   } else if (w.id === 'teleport') {
     starBurst(p.x, p.y - 16, '#b388ff', 20);
@@ -1382,7 +2090,7 @@ function detonate(o) {
   o.dead = true;
   explode(o.x, o.y, o.r, o.dmg, o.owner, o.kind === 'nuke');
   if (o.kind === 'cluster') {
-    for (let i = 0; i < 5; i++) addProj({ kind: 'bomblet', x: o.x, y: o.y - 6, vx: rand(-4.5, 4.5), vy: rand(-8, -4), windK: .3, owner: o.owner, dmg: 17, r: 26, safe: 12 });
+    for (let i = 0; i < 5; i++) addProj({ kind: 'bomblet', x: o.x, y: o.y - 6, vx: rand(-4.5, 4.5), vy: rand(-8, -4), windK: .3, owner: o.owner, dmg: 17, r: 26, safe: 12, wid: 'cluster' });
   }
 }
 
@@ -1456,11 +2164,11 @@ function projTrail(o) {
 }
 // ================= MATCH FLOW =================
 function botSlot(names) {
-  return { ctrl: 'bot', name: (pick(TAGS) + ' ' + names.pop()).trim(), pet: pick(PETS), hat: randomLook() };
+  return { ctrl: 'bot', name: (pick(TAGS) + ' ' + names.pop()).trim(), pet: randomPetSpec(), hat: randomLook() };
 }
 function startOffline() {
   const names = [...BOT_NAMES].sort(() => Math.random() - .5);
-  const slots = [{ ctrl: 'local', name: profile.username.toUpperCase(), pet: profile.pet, hat: profile.hat }];
+  const slots = [{ ctrl: 'local', name: profile.username.toUpperCase(), pet: mySpec(), hat: profile.hat }];
   for (let i = 0; i < settings.bots; i++) slots.push(botSlot(names));
   startMatch({ online: false, seed: Math.random() * 2 ** 31 | 0, map: settings.map === 'random' ? pick(Object.keys(THEMES)) : settings.map,
     slots, turn: settings.turn, mins: settings.mins, diff: settings.diff, first: irand(0, slots.length - 1) });
@@ -1552,14 +2260,18 @@ function showResults(orderIdx) {
   G.over = true; G.state = 'over';
   const order = orderIdx.map(i => G.pets[i]);
   const me = G.me, n = order.length, place = order.indexOf(me) + 1;
-  let coins = Math.round(15 + me.score / 4 + me.kills * 10 + (place === 1 ? 50 : 0));
-  if (G.online) coins = Math.round(coins * 1.5);
-  const tro = place === 1 ? (G.online ? 18 : 12) : place === 2 ? 5 : place === 3 ? 1 : -3;
-  profile.coins += coins; profile.trophies = Math.max(0, profile.trophies + tro);
-  profile.games++; profile.kills += me.kills; if (place === 1) profile.wins++;
-  saveProfile();
   G.endOrder = order;
   if (G.online) netTrackStatus('idle');
+  const reward = Econ.matchResult({ place, players: n, score: me.score, kills: me.kills, online: G.online, crates: me.crates })
+    .catch(e => { toast('⚠️ ' + e.message); return null; });
+  $('#rwCoins').textContent = '…'; $('#rwTro').textContent = '…'; $('#rwXp').textContent = '…';
+  reward.then(r => {
+    $('#rwCoins').textContent = r ? r.coins : 0;
+    $('#rwTro').textContent = r ? (r.trophies >= 0 ? '+' : '') + r.trophies : '±0';
+    $('#rwXp').textContent = r ? r.xp : 0;
+    const done = claimableMissions().length + claimableTiers().length;
+    $('#rwNote').textContent = done ? '🎁 You have ' + done + ' reward' + (done > 1 ? 's' : '') + ' to claim in the lobby!' : '';
+  });
   setTimeout(() => {
     $('#endOv').hidden = false;
     $('#congrats').textContent = place === 1 ? '¡CONGRATULATIONS!' : place === 2 ? 'SO CLOSE!' : 'MATCH OVER';
@@ -1570,7 +2282,6 @@ function showResults(orderIdx) {
       li.innerHTML = '<span class="n">#' + (i + 1) + '</span><span class="u"></span><span>' + (p.ctrl === 'bot' ? '🤖 ' : '') + '💥 ' + p.score + ' · K.O. ' + p.kills + '</span>';
       li.querySelector('.u').textContent = p.name; ul.appendChild(li);
     });
-    $('#rwCoins').textContent = coins; $('#rwTro').textContent = (tro >= 0 ? '+' : '') + tro;
     $('#againBtn').textContent = G.online ? 'FIND NEW MATCH' : 'PLAY AGAIN';
     place === 1 ? Snd.win() : Snd.lose();
   }, 1400);
@@ -1836,7 +2547,7 @@ function leaveMatch() {
 }
 $('#exitBtn').onclick = () => {
   if (G.over || confirm('Leave this match? It counts as a loss (-3 🏆).')) {
-    if (!G.over) { profile.games++; profile.trophies = Math.max(0, profile.trophies - 3); saveProfile(); }
+    if (!G.over) Econ.forfeit().catch(e => toast('⚠️ ' + e.message));
     leaveMatch();
   }
 };
@@ -1942,7 +2653,12 @@ function step() {
   if (G.parts.length > 1100) G.parts.splice(0, G.parts.length - 1100);
   for (const f of G.floats) { f.y -= .6; f.life--; }
   G.floats = G.floats.filter(f => f.life > 0);
-  for (const q of G.pets) if (q.say && --q.say.life <= 0) q.say = null;
+  for (const q of G.pets) {
+    if (q.say && --q.say.life <= 0) q.say = null;
+    if (q.squash) { q.squash *= .82; if (q.squash < .03) q.squash = 0; }
+    if (q.walking && q.onGround && !q.dead && G.frame % 7 === 0)
+      spawnParts({ t: 'smoke', x: q.x - q.facing * 6, y: q.y - 2, vx: -q.facing * rand(.2, .6), vy: rand(-.5, -.1), life: 26, size: 3.5 });
+  }
   for (const c of G.clouds) { c.x += .15 + G.wind * 6; if (c.x > W + 150) c.x = -150; if (c.x < -150) c.x = W + 150; }
   if (G.water < G.waterT) G.water = Math.min(G.waterT, G.water + .5);
   let tx, ty;
@@ -2016,7 +2732,8 @@ function render() {
     if (!p.dead && (p.rage >= 100 || (rk.get(p) === 0 && p.score > 0) || p.score >= 60))
       drawAura(g, p.x, p.y, p.rage >= 100 ? '#ff3a1a' : rk.get(p) === 0 ? '#ffc21e' : p.color, T + p.i);
     drawPet(g, p.species, { x: p.x, y: p.y, t: T + p.i * 1.3, facing: p.facing, elev: p.elev, hat: p.hat, walking: p.walking && p.onGround,
-      hurt: p.hurtT > 0, dead: p.dead, onGround: p.onGround, fireAnim: p.fireAnim, weapon: isCur ? G.weapon.id : (p.dead ? null : 'bazooka') });
+      hurt: p.hurtT > 0, dead: p.dead, onGround: p.onGround, fireAnim: p.fireAnim, weapon: isCur ? G.weapon.id : (p.dead ? null : 'bazooka'),
+      vy: p.vy, squash: p.squash, sad: p.hp < 30 });
     if (p.dead) continue;
     if (p.shield > 0) {
       g.save();
@@ -2085,24 +2802,25 @@ function drawAim(g, p) {
   outlineText(g, Math.round(p.elev * 180 / Math.PI) + '°', p.x + p.facing * 44, p.y + 14, '#fff', 15);
 }
 
-function drawRocketBody(g, s, nose, fin) {
+function drawRocketBody(g, s, nose, fin, skin, t) {
   g.save(); g.scale(s, s);
   g.globalCompositeOperation = 'lighter'; g.fillStyle = '#ffae00'; ell(g, -14, 0, 8 + Math.random() * 4, 4); g.fill(); g.globalCompositeOperation = 'source-over';
-  g.beginPath(); g.moveTo(-10, -5); g.lineTo(4, -5); g.quadraticCurveTo(14, -4, 16, 0); g.quadraticCurveTo(14, 4, 4, 5); g.lineTo(-10, 5); g.closePath(); fs(g, '#e8e2d0');
+  g.beginPath(); g.moveTo(-10, -5); g.lineTo(4, -5); g.quadraticCurveTo(14, -4, 16, 0); g.quadraticCurveTo(14, 4, 4, 5); g.lineTo(-10, 5); g.closePath(); skinFill(g, skin, -10, -5, 26, 10, t || 0, "#e8e2d0");
   g.beginPath(); g.moveTo(4, -5); g.quadraticCurveTo(14, -4, 16, 0); g.quadraticCurveTo(14, 4, 4, 5); g.closePath(); fs(g, nose);
   g.beginPath(); g.moveTo(-10, -5); g.lineTo(-14, -9); g.lineTo(-6, -5); g.moveTo(-10, 5); g.lineTo(-14, 9); g.lineTo(-6, 5); fs(g, fin);
   g.restore();
 }
 function drawProj(g, o, T) {
+  const sk = projSkin(o);
   g.save(); g.translate(o.x, o.y); g.lineWidth = 2; g.strokeStyle = OUT;
   if (o.kind === 'rocket' || o.kind === 'pellet' || o.kind === 'nuke' || o.kind === 'homing' || o.kind === 'drill') {
     g.rotate(Math.atan2(o.vy, o.vx));
     if (o.kind === 'pellet') { g.fillStyle = '#ffe14d'; g.fillRect(-6, -1.5, 10, 3); }
     else if (o.kind === 'homing') {
-      drawRocketBody(g, 1.2, '#ff3ab4', '#7a2cff');
+      drawRocketBody(g, 1.2, '#ff3ab4', '#7a2cff', sk, T);
       g.fillStyle = (G.frame >> 3) % 2 ? '#fff' : '#ff3ab4'; g.beginPath(); g.arc(4, 0, 2.2, 0, 7); g.fill();
     } else if (o.kind === 'drill') {
-      drawRocketBody(g, 1.2, '#9aa3b5', '#e0902a');
+      drawRocketBody(g, 1.2, '#9aa3b5', '#e0902a', sk, T);
       g.fillStyle = '#c9d1de'; g.strokeStyle = OUT; g.lineWidth = 1.5;
       g.save(); g.translate(20, 0); g.beginPath(); g.moveTo(0, -6); g.lineTo(14, 0); g.lineTo(0, 6); g.closePath(); g.fill(); g.stroke();
       g.strokeStyle = '#555'; const sp = (G.frame % 4) * 2;
@@ -2110,19 +2828,19 @@ function drawProj(g, o, T) {
       g.restore();
     }
     else if (o.kind === 'nuke') {
-      drawRocketBody(g, 2, '#2b2b2b', '#ffd21e');
+      drawRocketBody(g, 2, '#2b2b2b', '#ffd21e', sk, T);
       g.fillStyle = '#ffd21e'; g.beginPath(); g.arc(-2, 0, 5, 0, 7); g.fill();
       g.fillStyle = '#111'; for (let i = 0; i < 3; i++) { g.beginPath(); g.moveTo(-2, 0); g.arc(-2, 0, 5, i * 2.09, i * 2.09 + 1); g.fill(); }
-    } else drawRocketBody(g, 1, '#e0302a', '#e0302a');
+    } else drawRocketBody(g, 1, '#e0302a', '#e0302a', sk, T);
   } else if (o.kind === 'grenade') {
-    g.rotate(o.rot); ell(g, 0, 0, 6, 6); fs(g, '#3c6b2a'); g.beginPath(); g.rect(-2, -9, 4, 3); fs(g, '#888');
+    g.rotate(o.rot); ell(g, 0, 0, 6, 6); skinFill(g, sk, -6, -6, 12, 12, T, '#3c6b2a'); g.beginPath(); g.rect(-2, -9, 4, 3); fs(g, '#888');
     g.rotate(-o.rot);
     if ((o.fuse / 6 | 0) % 2) { g.globalCompositeOperation = 'lighter'; g.fillStyle = '#ffd24a'; ell(g, 0, -11, 3, 3); g.fill(); g.globalCompositeOperation = 'source-over'; }
     outlineText(g, Math.max(1, Math.ceil(o.fuse / 60)), 0, -22, '#fff', 14);
   } else if (o.kind === 'cluster' || o.kind === 'bomblet') {
     const r = o.kind === 'cluster' ? 8 : 4.5;
-    g.rotate(o.rot); ell(g, 0, 0, r, r); fs(g, '#9b7fd8');
-    g.fillStyle = '#fff'; for (let i = 0; i < 5; i++) { const a = i * 1.26; ell(g, Math.cos(a) * r * .55, Math.sin(a) * r * .55, r * .2, r * .2); g.fill(); }
+    g.rotate(o.rot); ell(g, 0, 0, r, r); skinFill(g, sk, -r, -r, r * 2, r * 2, T, '#9b7fd8');
+    if (!sk) { g.fillStyle = '#fff'; for (let i = 0; i < 5; i++) { const a = i * 1.26; ell(g, Math.cos(a) * r * .55, Math.sin(a) * r * .55, r * .2, r * .2); g.fill(); } }
   } else if (o.kind === 'bone') {
     g.rotate(o.rot); g.scale(1.6, 1.6); drawBone(g, 1);
   }
@@ -2198,7 +2916,7 @@ function updateHUD() {
     if (G.frame % 2 === 0) {
       const c = p.cardCtx; c.setTransform(1, 0, 0, 1, 0, 0); c.clearRect(0, 0, 144, 144);
       if (!p.dead && (p.score >= 60 || p.rage >= 100)) drawAura(c, 72, 136, p.rage >= 100 ? '#ff3a1a' : rk.get(p) === 0 ? '#ffc21e' : p.color, T + p.i, 2.6);
-      drawPet(c, p.species, { x: 64, y: 136, t: T + p.i * 1.3, scale: 2.6, facing: 1, elev: 0, hat: p.hat, hurt: p.hurtT > 0 || p.dead, onGround: true });
+      drawPet(c, p.species, { x: 64, y: 136, t: T + p.i * 1.3, scale: 2.6, facing: 1, elev: 0, hat: p.hat, hurt: p.hurtT > 0 || p.dead, onGround: true, sad: p.hp < 30 && !p.dead });
     }
   }
   const tl = G.state === 'aim' ? Math.max(0, Math.ceil(G.turnT / 60)) : 0;
@@ -2226,7 +2944,7 @@ function renderWinner(t) {
   c.beginPath(); c.ellipse(300, 470, 150, 36, 0, 0, 7); c.fillStyle = '#3a8cff'; c.fill(); c.stroke();
   outlineText(c, '🏆 #1  ' + p.name, 300, 515, '#ffe14d', 30);
   drawAura(c, 300, 470, '#ffc21e', t, 5.2);
-  drawPet(c, p.species, { x: 300, y: 470, t, scale: 5.2, facing: 1, elev: .3, hat: p.hat, onGround: true, weapon: 'bazooka' });
+  drawPet(c, p.species, { x: 300, y: 470, t, scale: 5.2, facing: 1, elev: .3, hat: p.hat, onGround: true, dance: true, happy: true });
 }
 // ================= ONLINE (Supabase Realtime) =================
 // Matchmaking uses Presence on a shared lobby channel. The longest-waiting player in a queue
@@ -2273,7 +2991,7 @@ function netDisconnect() {
 }
 function netTrackStatus(status, extra) {
   if (!NET.lobby || !NET.lobbyReady || !profile) return;
-  const me = { id: NET.myId, name: profile.username, pet: profile.pet, hat: profile.hat, tr: profile.trophies, status, at: Date.now() };
+  const me = { id: NET.myId, name: profile.username, pet: mySpec(), hat: profile.hat, tr: profile.trophies, status, at: Date.now() };
   NET.lobby.track(Object.assign(me, extra || {}));
 }
 function lobbyPlayers() {
@@ -2439,8 +3157,8 @@ function netSendSnap() {
     wp: G.weapon.id, pw: r2(G.power), ch: G.charging ? 1 : 0, wt: Math.round(G.waterT), sd: G.sudden ? 1 : 0,
     p: G.pets.map(p => [r1(p.x), r1(p.y), p.hp, (p.dead ? 1 : 0) | (p.gone ? 2 : 0) | (p.onGround ? 4 : 0) | (p.walking ? 8 : 0) | (p.snack ? 16 : 0),
       p.facing, r2(p.elev), p.score, p.kills, p.fuel, Math.round(p.rage), p.hurtT, p.fireAnim,
-      WEAPONS.map(w => p.ammo[w.id] === Infinity ? -1 : p.ammo[w.id]), p.ctrl === 'bot' ? 1 : 0, p.shield]),
-    o: G.projs.map(o => [PKINDS.indexOf(o.kind), r1(o.x), r1(o.y), r2(o.vx), r2(o.vy), o.fuse | 0, r2(o.windK), r2(o.grav)]),
+      WEAPONS.map(w => p.ammo[w.id] === Infinity ? -1 : p.ammo[w.id]), p.ctrl === 'bot' ? 1 : 0, p.shield, p.crates || 0]),
+    o: G.projs.map(o => [PKINDS.indexOf(o.kind), r1(o.x), r1(o.y), r2(o.vx), r2(o.vy), o.fuse | 0, r2(o.windK), r2(o.grav), o.oi, o.wid || '']),
     k: G.crates.map(c => [r1(c.x), r1(c.y), c.type, c.para ? 1 : 0])
   });
 }
@@ -2466,7 +3184,9 @@ function onSnap(d) {
   d.p.forEach((a, i) => {
     const p = G.pets[i]; if (!p) return;
     p.tx = a[0]; p.ty = a[1]; p.hp = a[2];
+    const wasAir = !p.onGround;
     p.dead = !!(a[3] & 1); p.gone = !!(a[3] & 2); p.onGround = !!(a[3] & 4);
+    if (wasAir && p.onGround && !p.dead) p.squash = .7;
     if (!(p === me && myTurn && st === 'aim')) { p.walking = !!(a[3] & 8); p.facing = a[4]; p.elev = a[5]; }
     p.snack = p.snack || !!(a[3] & 16);
     p.score = a[6]; p.kills = a[7]; p.fuel = a[8]; p.rage = a[9];
@@ -2474,10 +3194,10 @@ function onSnap(d) {
     if (a[11] > p.fireAnim) p.fireAnim = a[11];
     WEAPONS.forEach((w, j) => p.ammo[w.id] = a[12][j] < 0 ? Infinity : a[12][j]);
     if (a[13] && p.ctrl !== 'bot') { p.ctrl = 'bot'; p.isHuman = false; }
-    p.shield = a[14] | 0;
+    p.shield = a[14] | 0; p.crates = a[15] | 0;
   });
   const old = G.projs;
-  G.projs = d.o.map((a, i) => ({ kind: PKINDS[a[0]], x: a[1], y: a[2], vx: a[3], vy: a[4], fuse: a[5], windK: a[6], grav: a[7], rot: old[i] && old[i].kind === PKINDS[a[0]] ? old[i].rot : 0 }));
+  G.projs = d.o.map((a, i) => ({ kind: PKINDS[a[0]], x: a[1], y: a[2], vx: a[3], vy: a[4], fuse: a[5], windK: a[6], grav: a[7], oi: a[8], wid: SKIN_WEAPONS[a[9]] ? a[9] : null, rot: old[i] && old[i].kind === PKINDS[a[0]] ? old[i].rot : 0 }));
   G.crates = d.k.map(a => ({ x: a[0], y: a[1], type: a[2], para: !!a[3] }));
 }
 function onFx(d) {
@@ -2587,7 +3307,8 @@ function onInput(d) {
   }
 }
 // ================= COSTUME SHOP =================
-// A "look" is stored in profile.hat as "hat:crown.3|fur:12|eye:shades.5|neck:cape.2|wsk:camo.7"
+// A "look" is stored in profile.hat, e.g. "hat:crown.3|fur:12|eye:shades.5|neck:cape.2|wsk:camo.7|wsk-grenade:lava.4"
+// Prices are mirrored by wj_item_price() in supabase-setup.sql — keep both in sync.
 const PAL = [['Classic', null], ['Red', '#e0302a'], ['Orange', '#ff8a1e'], ['Gold', '#ffc21e'], ['Lime', '#9be22d'], ['Green', '#2fae4a'],
   ['Mint', '#5fe0b0'], ['Teal', '#16a29a'], ['Cyan', '#26d7ff'], ['Sky', '#6fb8ff'], ['Blue', '#2f6fe0'], ['Navy', '#1c2f7a'],
   ['Purple', '#7a4bd6'], ['Violet', '#b06bff'], ['Pink', '#ff7ab8'], ['Hot Pink', '#ff2d95'], ['Rose', '#c2185b'], ['Brown', '#8a5a2b'],
@@ -2599,41 +3320,58 @@ const HAT_SHAPES = {
   chef: ['Chef Hat', '#f4f4f4'], helmet: ['Army Helmet', '#3c6b2a'], headphones: ['Headphones', '#e0302a'], flower: ['Flower Crown', '#ff7ab8'],
   horns: ['Devil Horns', '#c81d12'], propeller: ['Propeller Cap', '#2fb3e0']
 };
+const HAT_PASS = { laurel: ['Champion Laurel', '#ffc21e'] };
 const EYE_SHAPES = { round: 'Round Specs', shades: 'Cool Shades', star: 'Star Glasses', heart: 'Heart Glasses', visor: 'Cyber Visor', monocle: 'Monocle' };
 const NECK_SHAPES = { scarf: ['Scarf', '#e0302a'], cape: ['Hero Cape', '#7a1fa0'], bowtie: ['Bow Tie', '#222222'], medal: ['Gold Medal', '#ffc21e'] };
-const PATTERNS = { solid: 'Solid', stripes: 'Striped', camo: 'Camo', tiger: 'Tiger', dots: 'Polka', checker: 'Checker', flames: 'Flame', neon: 'Neon', galaxy: 'Galaxy', gold: 'Golden' };
+const NECK_PASS = { wings: ['Angel Wings', '#ffffff'] };
+const PATTERNS = { solid: 'Solid', stripes: 'Striped', camo: 'Camo', tiger: 'Tiger', dots: 'Polka', checker: 'Checker', flames: 'Flame', neon: 'Neon',
+  galaxy: 'Galaxy', gold: 'Golden', rainbow: 'Rainbow', carbon: 'Carbon', lava: 'Molten', ice: 'Frozen', pixel: 'Pixel', hearts: 'Lovely' };
+const PATTERN_PASS = { prism: 'Prism', plasma: 'Plasma' };
+const SKIN_WEAPONS = { bazooka: 'Bazooka', triple: 'Triple Rocket', homing: 'Homing', drill: 'Drill Rocket', grenade: 'Grenade', cluster: 'Cluster', shotgun: 'Shotgun', nuke: 'Nuke' };
+const skinKey = w => w === 'bazooka' ? 'wsk' : 'wsk-' + w;
+const LOOK_KEYS = ['hat', 'fur', 'eye', 'neck', ...Object.keys(SKIN_WEAPONS).map(skinKey)];
 const FUR_HUES = [['Crimson', 355], ['Coral', 12], ['Amber', 32], ['Honey', 45], ['Lemon', 56], ['Olive', 70], ['Lime', 90], ['Jade', 130], ['Emerald', 150],
   ['Seafoam', 165], ['Aqua', 180], ['Azure', 200], ['Cobalt', 218], ['Indigo', 235], ['Iris', 255], ['Plum', 275], ['Magenta', 300], ['Bubblegum', 320], ['Ruby', 340], ['Cocoa', 25]];
 const FUR_TONES = [['Pastel', 70, 80], ['Bright', 75, 58], ['Deep', 50, 36]];
-const RARITY = { common: ['COMMON', '#b8c4d8'], rare: ['RARE', '#4fa0ff'], epic: ['EPIC', '#b06bff'], legendary: ['LEGENDARY', '#ffb21e'] };
-const CAT_NAME = { hat: '🎩 Hats', fur: '🎨 Fur', eye: '🕶️ Glasses', neck: '🧣 Neckwear', wsk: '🚀 Bazooka Skins' };
+const RARITY = { common: ['COMMON', '#b8c4d8'], rare: ['RARE', '#4fa0ff'], epic: ['EPIC', '#b06bff'], legendary: ['LEGENDARY', '#ffb21e'], pass: ['BATTLE PASS', '#ff5ad2'] };
+const CAT_NAME = { hat: '🎩 Hats', fur: '🎨 Fur', eye: '🕶️ Glasses', neck: '🧣 Neckwear', wsk: '🔫 Weapon Skins' };
 
 function hashStr(s) { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
 function wskColors(k) { const a = 1 + k % 23; let b = 1 + (k * 7 + 3) % 23; if (b === a) b = 1 + (b % 23); return [PAL[a], PAL[b]]; }
 function furColor(i) {
+  if (i === 60) return { name: 'Rainbow', rainbow: true, body: '#ff7ab8', leg: '#e0609a' };
   const [hn, h] = FUR_HUES[Math.floor(i / 3) % 20], [tn, s, l] = FUR_TONES[i % 3];
   return { name: tn + ' ' + hn, body: `hsl(${h},${s}%,${l}%)`, leg: `hsl(${h},${s}%,${l - 8}%)` };
 }
 
 const CATALOG = [];
 (function buildCatalog() {
-  const add = (id, cat, name, boost) => {
+  const add = (id, cat, name, boost, extra) => {
     const h = hashStr(id), r = (h % 100) + (boost || 0);
     const rarity = r >= 96 ? 'legendary' : r >= 83 ? 'epic' : r >= 55 ? 'rare' : 'common';
     const base = { common: [40, 80], rare: [150, 150], epic: [400, 400], legendary: [1000, 1500] }[rarity];
-    CATALOG.push({ id, cat, name, rarity, price: Math.round((base[0] + (h >>> 8) % base[1]) / 5) * 5 });
+    CATALOG.push(Object.assign({ id, cat, key: cat, name, rarity, price: Math.round((base[0] + (h >>> 8) % base[1]) / 5) * 5 }, extra));
   };
+  const addPass = (id, cat, name, extra) => CATALOG.push(Object.assign({ id, cat, key: cat, name, rarity: 'pass', price: 0, pass: true }, extra));
   for (const s in HAT_SHAPES) PAL.forEach((c, i) => add('hat:' + s + '.' + i, 'hat', (i ? c[0] + ' ' : '') + HAT_SHAPES[s][0], (s === 'crown' || s === 'halo' || s === 'wizard') ? 12 : 0));
   for (let i = 0; i < 60; i++) add('fur:' + i, 'fur', furColor(i).name + ' Fur', i % 3 === 2 ? 5 : 0);
   for (const s in EYE_SHAPES) for (let i = 1; i <= 20; i++) add('eye:' + s + '.' + i, 'eye', PAL[i][0] + ' ' + EYE_SHAPES[s], s === 'visor' ? 8 : 0);
   for (const s in NECK_SHAPES) PAL.forEach((c, i) => add('neck:' + s + '.' + i, 'neck', (i ? c[0] + ' ' : '') + NECK_SHAPES[s][0], s === 'cape' ? 8 : 0));
-  for (const p in PATTERNS) for (let k = 0; k < 36; k++) {
+  for (const w in SKIN_WEAPONS) for (const p in PATTERNS) for (let k = 0; k < 36; k++) {
     const [a, b] = wskColors(k);
-    add('wsk:' + p + '.' + k, 'wsk', PATTERNS[p] + ' ' + a[0] + (k >= 23 ? '/' + b[0] : '') + ' Bazooka', (p === 'gold' || p === 'galaxy' || p === 'neon') ? 15 : 0);
+    const boost = ((p === 'gold' || p === 'galaxy' || p === 'neon' || p === 'rainbow' || p === 'lava') ? 15 : 0) + (w === 'nuke' ? 10 : 0);
+    add(skinKey(w) + ':' + p + '.' + k, 'wsk', PATTERNS[p] + ' ' + a[0] + (k >= 23 ? '/' + b[0] : '') + ' ' + SKIN_WEAPONS[w], boost, { key: skinKey(w), w });
   }
+  // battle pass exclusives (see wj_tier_reward in supabase-setup.sql)
+  addPass('wsk:prism.0', 'wsk', 'Prism Bazooka', { key: 'wsk', w: 'bazooka' });
+  addPass('hat:laurel.0', 'hat', 'Champion Laurel');
+  addPass('wsk-grenade:plasma.3', 'wsk', 'Plasma Grenade', { key: 'wsk-grenade', w: 'grenade' });
+  addPass('fur:60', 'fur', 'Rainbow Fur');
+  addPass('wsk-nuke:prism.7', 'wsk', 'Prism Nuke', { key: 'wsk-nuke', w: 'nuke' });
+  addPass('neck:wings.0', 'neck', 'Angel Wings');
 })();
 const CAT_BY_ID = new Map(CATALOG.map(it => [it.id, it]));
-const PET_OF_CAT = { hat: 'hat', fur: 'fur', eye: 'eye', neck: 'neck', wsk: 'wsk' };
+const BUYABLE_COUNT = CATALOG.filter(i => !i.pass).length;
 
 // ---------- looks ----------
 const lookCache = new Map();
@@ -2641,49 +3379,65 @@ function getLook(str) {
   str = String(str || '');
   let L = lookCache.get(str);
   if (L) return L;
-  L = {};
+  L = { skins: {} };
   if (str && !str.includes(':')) { if (HAT_SHAPES[str]) L.hat = { s: str, c: 0 }; }
   else for (const part of str.split('|')) {
     const [cat, v] = part.split(':'); if (!v) continue;
-    if (cat === 'fur') { const i = v | 0; if (i >= 0 && i < 60) L.fur = furColor(i); continue; }
+    if (cat === 'fur') { const i = v | 0; if (i >= 0 && i <= 60) L.fur = furColor(i); continue; }
     const [s, n] = v.split('.'), i = n | 0;
-    if (cat === 'hat' && HAT_SHAPES[s] && i >= 0 && i < PAL.length) L.hat = { s, c: i };
+    if (cat === 'hat' && (HAT_SHAPES[s] || HAT_PASS[s]) && i >= 0 && i < PAL.length) L.hat = { s, c: i };
     else if (cat === 'eye' && EYE_SHAPES[s] && i >= 1 && i <= 20) L.eye = { s, c: i };
-    else if (cat === 'neck' && NECK_SHAPES[s] && i >= 0 && i < PAL.length) L.neck = { s, c: i };
-    else if (cat === 'wsk' && PATTERNS[s] && i >= 0 && i < 36) L.wsk = { p: s, k: i };
+    else if (cat === 'neck' && (NECK_SHAPES[s] || NECK_PASS[s]) && i >= 0 && i < PAL.length) L.neck = { s, c: i };
+    else if (cat.startsWith('wsk') && (PATTERNS[s] || PATTERN_PASS[s]) && i >= 0 && i < 36) {
+      const w = cat === 'wsk' ? 'bazooka' : cat.slice(4);
+      if (SKIN_WEAPONS[w]) L.skins[w] = { p: s, k: i };
+    }
   }
-  if (lookCache.size > 300) lookCache.clear();
+  if (lookCache.size > 400) lookCache.clear();
   lookCache.set(str, L);
   return L;
 }
 function lookParts(str) {
   const out = {};
-  const L = getLook(str);
-  if (L.hat) out.hat = 'hat:' + L.hat.s + '.' + L.hat.c;
-  for (const part of String(str || '').split('|')) { const [cat] = part.split(':'); if (cat === 'fur' || cat === 'eye' || cat === 'neck' || cat === 'wsk') out[cat] = part; }
+  str = String(str || '');
+  if (str && !str.includes(':')) { if (HAT_SHAPES[str]) out.hat = 'hat:' + str + '.0'; return out; }
+  for (const part of str.split('|')) { const cat = part.split(':')[0]; if (LOOK_KEYS.includes(cat)) out[cat] = part; }
   return out;
 }
-function lookString(parts) { return ['hat', 'fur', 'eye', 'neck', 'wsk'].filter(k => parts[k]).map(k => parts[k]).join('|') || 'none'; }
+function lookString(parts) { return LOOK_KEYS.filter(k => parts[k]).map(k => parts[k]).join('|') || 'none'; }
 function ownsItem(id) {
   const u = profile.unlocks;
   if (u.includes(id)) return true;
   const m = /^hat:(\w+)\.0$/.exec(id);
   return !!(m && u.includes(m[1]));
 }
+const SHOP_ITEMS = CATALOG.filter(i => !i.pass);
 function randomLook() {
-  const parts = {}, pickCat = c => { const list = CATALOG.filter(i => i.cat === c); return pick(list).id; };
-  if (Math.random() < .75) parts.hat = pickCat('hat');
-  if (Math.random() < .4) parts.fur = pickCat('fur');
-  if (Math.random() < .35) parts.eye = pickCat('eye');
-  if (Math.random() < .35) parts.neck = pickCat('neck');
-  if (Math.random() < .5) parts.wsk = pickCat('wsk');
+  const parts = {}, pickCat = c => pick(SHOP_ITEMS.filter(i => i.cat === c));
+  if (Math.random() < .75) parts.hat = pickCat('hat').id;
+  if (Math.random() < .4) parts.fur = pickCat('fur').id;
+  if (Math.random() < .35) parts.eye = pickCat('eye').id;
+  if (Math.random() < .35) parts.neck = pickCat('neck').id;
+  for (let i = 0; i < 3; i++) if (Math.random() < .6) { const it = pickCat('wsk'); parts[it.key] = it.id; }
   return lookString(parts);
 }
 function colorOf(i, fallback) { return (PAL[i] && PAL[i][1]) || fallback; }
 
+
 // ---------- costume art ----------
 function drawHat(g, shape, hx, hy, t, ci) {
-  const c = colorOf(ci, HAT_SHAPES[shape] ? HAT_SHAPES[shape][1] : '#888');
+  const c = colorOf(ci, (HAT_SHAPES[shape] || HAT_PASS[shape] || [0, '#888'])[1]);
+  if (shape === 'laurel') {
+    g.save();
+    g.shadowColor = '#fff3a8'; g.shadowBlur = 8 + Math.sin(t * 4) * 4;
+    for (let side = -1; side <= 1; side += 2) for (let i = 0; i < 5; i++) {
+      g.fillStyle = i % 2 ? '#ffd84a' : c;
+      g.beginPath(); g.ellipse(hx + side * (4 + i * 2.6), hy - 14 + i * 1.6, 3.6, 1.7, side * (.6 + i * .15), 0, 7); g.fill(); g.stroke();
+    }
+    g.fillStyle = '#ff3a3a'; g.beginPath(); g.arc(hx, hy - 16, 2.2, 0, 7); g.fill(); g.stroke();
+    g.restore(); g.lineWidth = 2.2; g.strokeStyle = OUT;
+    return;
+  }
   g.lineWidth = 2; g.strokeStyle = OUT;
   switch (shape) {
     case 'cap':
@@ -2793,11 +3547,27 @@ function drawGlasses(g, e, hx, hy) {
 }
 
 function drawCape(g, n, bob, t) {
+  if (n.s === 'wings') { drawWings(g, bob, t); return; }
   const c = colorOf(n.c, NECK_SHAPES.cape[1]);
   const w = Math.sin(t * 5) * 3;
   g.beginPath(); g.moveTo(-2, -24 + bob); g.quadraticCurveTo(-16, -14 + bob, -20 + w, 0); g.lineTo(-6 + w * .5, -1); g.quadraticCurveTo(-4, -12 + bob, 4, -22 + bob); g.closePath(); fs(g, c);
 }
+function drawWings(g, bob, t) {
+  const flap = Math.sin(t * 6) * .25;
+  g.save();
+  g.shadowColor = '#fff6c0'; g.shadowBlur = 8;
+  for (const s of [1, -.7]) {
+    g.save(); g.translate(-4, -20 + bob); g.rotate(-.5 + flap * s); g.scale(1, s > 0 ? 1 : .85);
+    for (let i = 0; i < 4; i++) {
+      g.fillStyle = i % 2 ? '#ffffff' : '#eaf4ff';
+      g.beginPath(); g.ellipse(-6 - i * 4, -2 - i * 3, 9 - i, 3.2, -.5 - i * .15, 0, 7); g.fill(); g.stroke();
+    }
+    g.restore();
+  }
+  g.restore();
+}
 function drawNeck(g, n, hx, hy, t) {
+  if (n.s === 'wings') return;
   const c = colorOf(n.c, NECK_SHAPES[n.s][1]);
   if (n.s === 'scarf') {
     g.beginPath(); g.roundRect(hx - 10, hy + 8, 20, 5, 2.5); fs(g, c);
@@ -2818,48 +3588,162 @@ function drawNeck(g, n, hx, hy, t) {
   g.lineWidth = 2.2; g.strokeStyle = OUT;
 }
 
+// fills the CURRENT path with a skin pattern (clipped), inside the box x,y,w,h
 function paintSkin(g, sk, x, y, w, h, t) {
-  const [[, a0], [, b0]] = wskColors(sk.k);
-  const a = a0, b = b0;
+  const [[, a], [, b]] = wskColors(sk.k);
   g.save(); g.clip();
   g.fillStyle = a; g.fillRect(x, y, w, h);
   switch (sk.p) {
     case 'stripes': g.fillStyle = b; for (let i = 0; i < w; i += 6) g.fillRect(x + i, y, 3, h); break;
-    case 'camo': g.fillStyle = b; [[3, 2, 4], [12, 7, 5], [21, 1, 4], [30, 6, 3], [8, 9, 3]].forEach(([px, py, r]) => { g.beginPath(); g.ellipse(x + px, y + py, r, r * .7, .5, 0, 7); g.fill(); }); break;
+    case 'camo': g.fillStyle = b; [[3, 2, 4], [12, 7, 5], [21, 1, 4], [30, 6, 3], [8, 9, 3], [36, 2, 4]].forEach(([px, py, r]) => { g.beginPath(); g.ellipse(x + px % (w + 4), y + py % (h + 2), r, r * .7, .5, 0, 7); g.fill(); }); break;
     case 'tiger': g.strokeStyle = b; g.lineWidth = 2; for (let i = 2; i < w; i += 5) { g.beginPath(); g.moveTo(x + i, y); g.quadraticCurveTo(x + i + 3, y + h / 2, x + i - 1, y + h); g.stroke(); } break;
     case 'dots': g.fillStyle = b; for (let i = 3; i < w; i += 6) for (let j = 2; j < h; j += 5) { g.beginPath(); g.arc(x + i + (j % 2) * 3, y + j, 1.4, 0, 7); g.fill(); } break;
     case 'checker': g.fillStyle = b; for (let i = 0; i < w; i += 4) for (let j = 0; j < h; j += 4) if (((i + j) / 4) % 2 === 0) g.fillRect(x + i, y + j, 4, 4); break;
     case 'flames': {
       g.fillStyle = b; g.beginPath(); g.moveTo(x, y + h);
-      for (let i = 0; i <= w; i += 4) g.lineTo(x + i, y + h * (.2 + .5 * ((i / 4) % 2)) + Math.sin(t * 8 + i) * 1);
+      for (let i = 0; i <= w; i += 4) g.lineTo(x + i, y + h * (.2 + .5 * ((i / 4) % 2)) + Math.sin(t * 8 + i));
       g.lineTo(x + w, y + h); g.fill(); break;
     }
-    case 'neon': g.fillStyle = '#10101e'; g.fillRect(x, y, w, h); g.shadowColor = a; g.shadowBlur = 6; g.strokeStyle = a; g.lineWidth = 1.5; g.strokeRect(x + 2, y + 2, w - 4, h - 4); g.strokeStyle = b; g.beginPath(); g.moveTo(x + 4, y + h / 2); g.lineTo(x + w - 4, y + h / 2); g.stroke(); break;
+    case 'neon':
+      g.fillStyle = '#10101e'; g.fillRect(x, y, w, h);
+      g.shadowColor = a; g.shadowBlur = 6; g.strokeStyle = a; g.lineWidth = 1.5; g.strokeRect(x + 2, y + 2, w - 4, h - 4);
+      g.strokeStyle = b; g.beginPath(); g.moveTo(x + 4, y + h / 2); g.lineTo(x + w - 4, y + h / 2); g.stroke(); break;
     case 'galaxy': {
       const gr = g.createLinearGradient(x, y, x + w, y + h); gr.addColorStop(0, '#12082e'); gr.addColorStop(.5, a); gr.addColorStop(1, '#12082e');
       g.fillStyle = gr; g.fillRect(x, y, w, h);
-      g.fillStyle = '#fff'; [[4, 3], [11, 7], [17, 2], [24, 6], [30, 3], [8, 8]].forEach(([px, py], i) => { g.globalAlpha = .5 + .5 * Math.sin(t * 4 + i); g.fillRect(x + px, y + py, 1.2, 1.2); }); break;
+      g.fillStyle = '#fff';
+      [[4, 3], [11, 7], [17, 2], [24, 6], [30, 3], [8, 8], [35, 9]].forEach(([px, py], i) => { g.globalAlpha = .5 + .5 * Math.sin(t * 4 + i); g.fillRect(x + px % w, y + py % h, 1.2, 1.2); }); break;
     }
     case 'gold': {
       const gr = g.createLinearGradient(x, y, x, y + h); gr.addColorStop(0, '#fff3a8'); gr.addColorStop(.5, '#ffc21e'); gr.addColorStop(1, '#b37400');
       g.fillStyle = gr; g.fillRect(x, y, w, h);
-      g.fillStyle = 'rgba(255,255,255,.8)'; const sx = ((t * 20) % (w + 10)) - 5; g.fillRect(x + sx, y, 2, h);
+      g.fillStyle = 'rgba(255,255,255,.8)'; g.fillRect(x + ((t * 20) % (w + 10)) - 5, y, 2, h);
       g.fillStyle = b; g.fillRect(x + w - 8, y, 2, h); break;
     }
+    case 'rainbow': {
+      const cols = ['#ff3a3a', '#ff9a1e', '#ffe14d', '#4fd35a', '#26b7ff', '#8a5aff'];
+      const bh = h / cols.length;
+      cols.forEach((c, i) => { g.fillStyle = c; g.fillRect(x, y + i * bh, w, bh + .5); });
+      g.fillStyle = b; g.globalAlpha = .35; g.fillRect(x, y, 3, h); g.fillRect(x + w - 3, y, 3, h); break;
+    }
+    case 'carbon':
+      g.fillStyle = '#1b1d22'; g.fillRect(x, y, w, h);
+      g.fillStyle = '#34373f'; for (let i = 0; i < w; i += 3) for (let j = 0; j < h; j += 3) if ((i + j) % 6 === 0) g.fillRect(x + i, y + j, 2, 2);
+      g.fillStyle = a; g.fillRect(x, y + h - 2, w, 2); break;
+    case 'lava': {
+      g.fillStyle = '#2a0f08'; g.fillRect(x, y, w, h);
+      g.strokeStyle = b === '#222222' ? '#ff6a1e' : b; g.lineWidth = 1.4; g.shadowColor = '#ff6a1e'; g.shadowBlur = 5 + Math.sin(t * 5) * 3;
+      g.beginPath(); for (let i = 0; i < w; i += 7) { g.moveTo(x + i, y); g.lineTo(x + i + 3, y + h * .5); g.lineTo(x + i + 1, y + h); } g.stroke();
+      g.strokeStyle = a; g.beginPath(); g.moveTo(x, y + h * .5); for (let i = 0; i <= w; i += 5) g.lineTo(x + i, y + h * .5 + Math.sin(i + t * 3) * 1.5); g.stroke(); break;
+    }
+    case 'ice': {
+      const gr = g.createLinearGradient(x, y, x + w, y + h); gr.addColorStop(0, '#e6f9ff'); gr.addColorStop(1, a);
+      g.fillStyle = gr; g.fillRect(x, y, w, h);
+      g.strokeStyle = 'rgba(255,255,255,.9)'; g.lineWidth = 1;
+      g.beginPath(); for (let i = 3; i < w; i += 8) { g.moveTo(x + i, y); g.lineTo(x + i + 4, y + h); g.moveTo(x + i + 4, y + h * .3); g.lineTo(x + i + 8, y + h * .1); } g.stroke(); break;
+    }
+    case 'pixel':
+      for (let i = 0; i < w; i += 3) for (let j = 0; j < h; j += 3) {
+        const v = hashStr(sk.k + ':' + i + ':' + j) % 3;
+        g.fillStyle = v === 0 ? a : v === 1 ? b : '#ffffff';
+        g.fillRect(x + i, y + j, 3, 3);
+      } break;
+    case 'hearts':
+      g.fillStyle = b; g.font = '5px sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
+      for (let i = 3; i < w; i += 7) for (let j = 3; j < h + 2; j += 6) g.fillText('❤', x + i + (j % 2) * 3, y + j); break;
+    case 'prism': {
+      const hue = (t * 90) % 360;
+      const gr = g.createLinearGradient(x, y, x + w, y);
+      for (let i = 0; i <= 4; i++) gr.addColorStop(i / 4, `hsl(${(hue + i * 72) % 360},90%,62%)`);
+      g.fillStyle = gr; g.fillRect(x, y, w, h);
+      g.fillStyle = 'rgba(255,255,255,.55)'; g.fillRect(x + ((t * 30) % (w + 10)) - 5, y, 3, h); break;
+    }
+    case 'plasma':
+      g.fillStyle = '#0a0526'; g.fillRect(x, y, w, h);
+      g.shadowColor = '#7af4ff'; g.shadowBlur = 8; g.strokeStyle = '#9ff8ff'; g.lineWidth = 1.2;
+      for (let n = 0; n < 2; n++) {
+        g.beginPath(); g.moveTo(x, y + h / 2);
+        for (let i = 0; i <= w; i += 3) g.lineTo(x + i, y + h / 2 + Math.sin(i * .9 + t * 20 + n * 2) * h * .35);
+        g.stroke();
+      }
+      g.strokeStyle = '#ff5ad2'; g.strokeRect(x + 1, y + 1, w - 2, h - 2); break;
   }
   g.restore();
 }
+function skinFill(g, skin, x, y, w, h, t, fallback) {
+  if (skin) paintSkin(g, skin, x, y, w, h, t); else { g.fillStyle = fallback; g.fill(); }
+  g.stroke();
+}
+
+// held weapon models (local space, pointing along +x)
+function drawWeaponModel(g, weapon, skin, t) {
+  switch (weapon) {
+    case 'grenade': ell(g, 13, 0, 5.5, 5.5); skinFill(g, skin, 7.5, -5.5, 11, 11, t, '#3c6b2a'); g.beginPath(); g.rect(11, -8, 4, 3); fs(g, '#888'); break;
+    case 'cluster':
+      ell(g, 13, 0, 6, 6); skinFill(g, skin, 7, -6, 12, 12, t, '#9b7fd8');
+      if (!skin) { g.fillStyle = '#fff'; g.fillRect(11, -3, 2, 2); g.fillRect(14, 1, 2, 2); } break;
+    case 'bone': g.save(); g.translate(14, 0); g.rotate(t * 2); drawBone(g, 1); g.restore(); break;
+    case 'shotgun':
+      g.beginPath(); g.roundRect(-4, -3, 12, 7, 2); skinFill(g, skin, -4, -3, 12, 7, t, '#7a4a22');
+      g.beginPath(); g.rect(6, -3, 22, 4); skinFill(g, skin, 6, -3, 22, 4, t, '#555c66');
+      g.beginPath(); g.rect(10, 1, 12, 3); fs(g, '#3a3f46'); break;
+    case 'teleport':
+      g.beginPath(); g.rect(0, -1.5, 20, 3); fs(g, '#6b3fa0');
+      g.save(); g.globalCompositeOperation = 'lighter'; ell(g, 22, 0, 5 + Math.sin(t * 12), 5 + Math.sin(t * 12)); g.fillStyle = '#b388ff'; g.fill(); g.restore(); break;
+    case 'airstrike':
+      g.beginPath(); g.roundRect(0, -4, 16, 8, 2); fs(g, '#444'); ell(g, 16, 0, 3, 3); g.fillStyle = (t * 4 | 0) % 2 ? '#ff3030' : '#600'; g.fill(); break;
+    case 'triple':
+      g.beginPath(); g.roundRect(-8, -8, 34, 16, 3); skinFill(g, skin, -8, -8, 34, 16, t, '#5d6b33');
+      g.fillStyle = '#1a1a1a'; for (let i = -1; i <= 1; i++) { g.beginPath(); g.arc(25, i * 5, 2.2, 0, 7); g.fill(); }
+      g.beginPath(); g.rect(-10, -5, 4, 10); fs(g, '#3d4720');
+      g.beginPath(); g.rect(4, -12, 7, 4); fs(g, '#333'); break;
+    case 'homing':
+      g.beginPath(); g.moveTo(-8, -4); g.lineTo(24, -4); g.quadraticCurveTo(33, 0, 24, 4); g.lineTo(-8, 4); g.closePath();
+      skinFill(g, skin, -8, -4, 41, 8, t, '#8a93a6');
+      g.beginPath(); g.moveTo(-6, -4); g.lineTo(-10, -9); g.lineTo(0, -4); g.moveTo(-6, 4); g.lineTo(-10, 9); g.lineTo(0, 4); fs(g, '#ff3ab4');
+      g.beginPath(); g.rect(4, -9, 8, 4); fs(g, '#333');
+      g.fillStyle = (t * 3 | 0) % 2 ? '#ff2020' : '#ffb0b0'; g.beginPath(); g.arc(27, 0, 1.8, 0, 7); g.fill(); break;
+    case 'drill': {
+      g.beginPath(); g.roundRect(-8, -5, 28, 10, 3); skinFill(g, skin, -8, -5, 28, 10, t, '#9aa3b5');
+      g.beginPath(); g.moveTo(20, -6); g.lineTo(34, 0); g.lineTo(20, 6); g.closePath(); fs(g, '#c9d1de');
+      g.strokeStyle = '#555'; g.lineWidth = 1.2; const sp = (t * 20) % 4;
+      for (let i = 0; i < 3; i++) { const xx = 21 + sp + i * 4; g.beginPath(); g.moveTo(xx, -5 + (xx - 20) * .4); g.lineTo(xx + 2, 5 - (xx - 20) * .4); g.stroke(); }
+      g.strokeStyle = OUT; g.lineWidth = 2.2; break;
+    }
+    case 'nuke':
+      g.beginPath(); g.roundRect(-10, -7, 40, 14, 4); skinFill(g, skin, -10, -7, 40, 14, t, '#3a3a3a');
+      g.beginPath(); g.rect(18, -7, 4, 14); fs(g, '#ffd21e');
+      g.beginPath(); g.rect(30, -8, 5, 16); fs(g, '#222');
+      g.fillStyle = '#ffd21e'; g.beginPath(); g.arc(6, 0, 4.5, 0, 7); g.fill();
+      g.fillStyle = '#111'; for (let i = 0; i < 3; i++) { g.beginPath(); g.moveTo(6, 0); g.arc(6, 0, 4.5, i * 2.09 - .5, i * 2.09 + .5); g.fill(); } break;
+    default: // bazooka
+      g.beginPath(); g.roundRect(-8, -5, 36, 10, 3); skinFill(g, skin, -8, -5, 36, 10, t, '#6b7a3a');
+      g.beginPath(); g.rect(24, -6, 6, 12); fs(g, '#4d5a28');
+      g.beginPath(); g.rect(-10, -4, 4, 8); fs(g, '#4d5a28');
+      g.beginPath(); g.rect(6, -9, 6, 4); fs(g, '#333');
+  }
+}
+function drawWeaponArm(g, S, weapon, t, fireAnim, skins) {
+  g.translate(fireAnim ? -fireAnim * .6 : 0, 0);
+  drawWeaponModel(g, weapon, skins && skins[weapon], t);
+  ell(g, 6, 3, 4, 3.6); fs(g, S.body);
+}
+function projSkin(o) {
+  const p = G.pets[o.oi];
+  return p && o.wid ? getLook(p.hat).skins[o.wid] : null;
+}
 
 // ---------- shop UI ----------
-const SHOP = { tab: 'hat', page: 0, per: 36, sel: null, list: [] };
+const SHOP = { tab: 'hat', weapon: 'bazooka', page: 0, per: 36, sel: null, list: [] };
 function shopLook() {
   const parts = lookParts(profile.hat);
-  if (SHOP.sel) parts[SHOP.sel.cat] = SHOP.sel.id;
+  if (SHOP.sel) parts[SHOP.sel.key] = SHOP.sel.id;
   return lookString(parts);
 }
-function openShop(owned) {
+function openShop(owned, tab) {
   Snd.click();
   SHOP.sel = null; SHOP.page = 0;
+  if (tab) SHOP.tab = tab;
   $('#shopOwned').checked = !!owned;
   $('#shopOv').hidden = false;
   renderShopTabs(); refreshShop();
@@ -2869,52 +3753,67 @@ function renderShopTabs() {
   const box = $('#shopTabs'); box.innerHTML = '';
   for (const c in CAT_NAME) {
     const b = document.createElement('button'); b.type = 'button'; b.className = c === SHOP.tab ? 'on' : '';
-    const owned = CATALOG.filter(i => i.cat === c && ownsItem(i.id)).length, total = CATALOG.filter(i => i.cat === c).length;
-    b.innerHTML = CAT_NAME[c] + ' <small>' + owned + '/' + total + '</small>';
-    b.onclick = () => { SHOP.tab = c; SHOP.page = 0; renderShopTabs(); refreshShop(); Snd.click(); };
+    const owned = CATALOG.filter(i => i.cat === c && ownsItem(i.id)).length, total = SHOP_ITEMS.filter(i => i.cat === c).length;
+    b.innerHTML = CAT_NAME[c] + ' <small>' + owned + '/' + total.toLocaleString() + '</small>';
+    b.onclick = () => { SHOP.tab = c; SHOP.page = 0; SHOP.sel = null; renderShopTabs(); refreshShop(); Snd.click(); };
     box.appendChild(b);
+  }
+  const wb = $('#shopWeapons'); wb.innerHTML = '';
+  wb.hidden = SHOP.tab !== 'wsk';
+  for (const w in SKIN_WEAPONS) {
+    const b = document.createElement('button'); b.type = 'button'; b.className = w === SHOP.weapon ? 'on' : '';
+    const owned = CATALOG.filter(i => i.w === w && ownsItem(i.id)).length;
+    b.textContent = (WMAP[w] ? WMAP[w].icon + ' ' : '') + SKIN_WEAPONS[w] + (owned ? ' · ' + owned : '');
+    b.onclick = () => { SHOP.weapon = w; SHOP.page = 0; SHOP.sel = null; renderShopTabs(); refreshShop(); Snd.click(); };
+    wb.appendChild(b);
   }
 }
 function refreshShop() {
   const q = $('#shopSearch').value.trim().toLowerCase(), rar = $('#shopRarity').value, sort = $('#shopSort').value, own = $('#shopOwned').checked;
-  let list = CATALOG.filter(i => i.cat === SHOP.tab && (!q || i.name.toLowerCase().includes(q)) && (!rar || i.rarity === rar) && (!own || ownsItem(i.id)));
+  let list = CATALOG.filter(i => i.cat === SHOP.tab && (SHOP.tab !== 'wsk' || i.w === SHOP.weapon)
+    && (!q || i.name.toLowerCase().includes(q)) && (!rar || i.rarity === rar) && (!own || ownsItem(i.id)));
   if (sort === 'low') list.sort((a, b) => a.price - b.price);
   else if (sort === 'high') list.sort((a, b) => b.price - a.price);
   else if (sort === 'name') list.sort((a, b) => a.name.localeCompare(b.name));
+  else list.sort((a, b) => (b.pass ? 1 : 0) - (a.pass ? 1 : 0));
   SHOP.list = list;
   const pages = Math.max(1, Math.ceil(list.length / SHOP.per));
   SHOP.page = clamp(SHOP.page, 0, pages - 1);
-  $('#shopPage').textContent = 'Page ' + (SHOP.page + 1) + ' / ' + pages + ' · ' + list.length + ' items';
+  $('#shopPage').textContent = 'Page ' + (SHOP.page + 1) + ' / ' + pages + ' · ' + list.length.toLocaleString() + ' items';
   $('#shopCoins').textContent = profile.coins;
   const grid = $('#shopGrid'); grid.innerHTML = '';
+  if (!list.length) grid.innerHTML = '<p class="note">Nothing here yet. ' + (own ? 'Buy items to fill your wardrobe!' : 'Try another search.') + '</p>';
   const eq = lookParts(profile.hat);
   list.slice(SHOP.page * SHOP.per, (SHOP.page + 1) * SHOP.per).forEach(it => {
     const card = document.createElement('button'); card.type = 'button';
-    const owned = ownsItem(it.id), equipped = eq[it.cat] === it.id;
+    const owned = ownsItem(it.id), equipped = eq[it.key] === it.id;
     card.className = 'scard' + (SHOP.sel && SHOP.sel.id === it.id ? ' sel' : '') + (equipped ? ' eq' : '');
     card.style.setProperty('--r', RARITY[it.rarity][1]);
     const cvs = document.createElement('canvas'); cvs.width = 128; cvs.height = 110;
     const nm = document.createElement('span'); nm.className = 'sn'; nm.textContent = it.name;
     const rr = document.createElement('span'); rr.className = 'sr'; rr.textContent = RARITY[it.rarity][0];
-    const pr = document.createElement('span'); pr.className = 'sp'; pr.textContent = equipped ? '✔ EQUIPPED' : owned ? 'OWNED' : '🪙 ' + it.price;
+    const pr = document.createElement('span'); pr.className = 'sp';
+    pr.textContent = equipped ? '✔ EQUIPPED' : owned ? 'OWNED' : it.pass ? '🎖️ PASS' : '🪙 ' + it.price;
     card.append(cvs, rr, nm, pr);
     card.onclick = () => { SHOP.sel = it; Snd.click(); refreshShop(); };
     grid.appendChild(card);
-    drawThumb(cvs.getContext('2d'), it);
+    drawThumb(cvs.getContext('2d'), it, 0);
   });
   renderShopSel();
 }
-function drawThumb(g, it) {
-  g.clearRect(0, 0, 128, 110);
+function drawThumb(g, it, t) {
+  g.save(); g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, g.canvas.width, g.canvas.height);
+  const k = g.canvas.width / 128;
+  g.scale(k, k);
+  g.lineWidth = 2; g.strokeStyle = OUT; g.lineJoin = 'round';
   if (it.cat === 'wsk') {
-    g.save(); g.translate(40, 58); g.scale(2.6, 2.6); g.lineWidth = 2; g.strokeStyle = OUT;
-    g.beginPath(); g.roundRect(-8, -5, 36, 10, 3); paintSkin(g, getLook(it.id).wsk, -8, -5, 36, 10, 0);
-    g.beginPath(); g.roundRect(-8, -5, 36, 10, 3); g.stroke();
-    g.beginPath(); g.rect(24, -6, 6, 12); fs(g, '#4d5a28'); g.beginPath(); g.rect(-10, -4, 4, 8); fs(g, '#4d5a28');
-    g.restore(); return;
+    g.translate(it.w === 'nuke' ? 38 : 42, 58); g.scale(2.3, 2.3);
+    drawWeaponModel(g, it.w, getLook(it.id).skins[it.w], t);
+  } else {
+    const zoom = { fur: 2, hat: 1.9, neck: 2.6, eye: 2.7 }[it.cat], y = { fur: 102, hat: 146, neck: 116, eye: 150 }[it.cat];
+    drawPet(g, mySpec(), { x: 58, y: it.id === 'neck:wings.0' ? 100 : y, t, scale: it.id === 'neck:wings.0' ? 2 : zoom, facing: 1, elev: 0, hat: it.id, onGround: true });
   }
-  const zoom = { fur: 2, hat: 1.9, neck: 2.6, eye: 2.7 }[it.cat], y = { fur: 102, hat: 146, neck: 116, eye: 150 }[it.cat];
-  drawPet(g, profile.pet, { x: 58, y, t: 0, scale: zoom, facing: 1, elev: 0, hat: it.id, onGround: true });
+  g.restore();
 }
 function renderShopSel() {
   const box = $('#shopSel'), acts = $('#shopActs'); acts.innerHTML = '';
@@ -2922,40 +3821,48 @@ function renderShopSel() {
   if (!it) { box.innerHTML = '<b>Your look</b><small>Tap an item to try it on</small>'; return; }
   box.innerHTML = '';
   const b = document.createElement('b'); b.textContent = it.name;
-  const s = document.createElement('small'); s.textContent = RARITY[it.rarity][0] + ' · ' + CAT_NAME[it.cat].replace(/^\S+\s/, '');
+  const s = document.createElement('small');
+  s.textContent = RARITY[it.rarity][0] + ' · ' + (it.cat === 'wsk' ? SKIN_WEAPONS[it.w] + ' skin' : CAT_NAME[it.cat].replace(/^\S+\s/, ''));
   s.style.color = RARITY[it.rarity][1];
   box.append(b, s);
   const eq = lookParts(profile.hat), owned = ownsItem(it.id);
   const btn = document.createElement('button'); btn.type = 'button';
-  if (!owned) {
+  if (!owned && it.pass) {
+    btn.className = 'btn orange'; btn.textContent = '🎖️ GET IT IN THE BATTLE PASS';
+    btn.onclick = () => { closeShop(); openPass(); };
+  } else if (!owned) {
     btn.className = 'btn orange'; btn.textContent = 'BUY · 🪙 ' + it.price;
     btn.disabled = profile.coins < it.price;
-    if (btn.disabled) btn.title = 'Not enough coins — win matches to earn more!';
-    btn.onclick = () => buyItem(it);
-  } else if (eq[it.cat] === it.id) {
+    btn.onclick = () => buyItem(it, btn);
+  } else if (eq[it.key] === it.id) {
     btn.className = 'btn blue'; btn.textContent = 'TAKE OFF';
-    btn.onclick = () => { delete eq[it.cat]; setLook(eq); };
+    btn.onclick = () => { delete eq[it.key]; setLook(eq); };
   } else {
     btn.className = 'btn'; btn.textContent = 'EQUIP';
-    btn.onclick = () => { eq[it.cat] = it.id; setLook(eq); };
+    btn.onclick = () => { eq[it.key] = it.id; setLook(eq); };
   }
   acts.appendChild(btn);
-  if (!owned && profile.coins < it.price) { const n = document.createElement('small'); n.textContent = 'Need ' + (it.price - profile.coins) + ' more coins'; acts.appendChild(n); }
+  if (!owned && !it.pass && profile.coins < it.price) {
+    const n = document.createElement('small'); n.textContent = 'Need ' + (it.price - profile.coins) + ' more coins — win matches & finish missions!'; acts.appendChild(n);
+  }
 }
-async function buyItem(it) {
+async function buyItem(it, btn) {
   if (ownsItem(it.id) || profile.coins < it.price) return;
-  profile.coins -= it.price;
-  profile.unlocks.push(it.id);
-  const eq = lookParts(profile.hat); eq[it.cat] = it.id;
-  profile.hat = lookString(eq);
+  if (btn) { btn.disabled = true; btn.textContent = 'BUYING…'; }
+  try {
+    await Econ.buy(it.id);
+  } catch (e) { toast('❌ ' + e.message); refreshShop(); return; }
   Snd.coin(); toast('🛍️ Bought ' + it.name + '!' + (profile.guest ? ' (guest items are not saved)' : ''));
-  renderShopTabs(); refreshShop();
-  await saveProfile();
+  const eq = lookParts(profile.hat); eq[it.key] = it.id;
+  await setLook(eq);
+  renderShopTabs();
 }
 async function setLook(parts) {
+  const prev = profile.hat;
   profile.hat = lookString(parts);
   Snd.click(); refreshShop();
-  await saveProfile();
+  try { await saveProfile(true); }
+  catch (e) { profile.hat = prev; toast('❌ ' + e.message); refreshShop(); return; }
   if (NET.lobbyReady && !NET.q && !NET.match) netTrackStatus('idle');
 }
 function renderShopPreview(t) {
@@ -2968,8 +3875,9 @@ function renderShopPreview(t) {
   g.fillStyle = '#3a8cff'; g.beginPath(); g.ellipse(cx, by, 28 * s, 7 * s, 0, 0, 7); g.fill();
   g.strokeStyle = '#0a2a6b'; g.lineWidth = 3; g.stroke();
   const it = SHOP.sel;
-  if (it) drawAura(g, cx, by, RARITY[it.rarity][1].length === 7 ? RARITY[it.rarity][1] : '#ffc21e', t, s);
-  drawPet(g, profile.pet, { x: cx, y: by, t, scale: s, facing: 1, elev: Math.sin(t) * .25 + .15, hat: shopLook(), onGround: true, weapon: 'bazooka' });
+  if (it) drawAura(g, cx, by, RARITY[it.rarity][1], t, s);
+  const weapon = it && it.cat === 'wsk' ? it.w : SHOP.tab === 'wsk' ? SHOP.weapon : 'bazooka';
+  drawPet(g, mySpec(), { x: cx, y: by, t, scale: s, facing: 1, elev: Math.sin(t) * .25 + .15, hat: shopLook(), onGround: true, weapon });
 }
 $('#shopClose').onclick = closeShop;
 $('#shopOv').addEventListener('pointerdown', e => { if (e.target.id === 'shopOv') closeShop(); });
@@ -2979,7 +3887,637 @@ $('#shopNext').onclick = () => { SHOP.page++; refreshShop(); $('#shopGrid').scro
 $('#shopReset').onclick = () => { SHOP.sel = null; setLook({}); };
 $('#shopBtn').onclick = () => openShop(false);
 $('#wardrobeBtn').onclick = () => openShop(true);
-$('#shopCount').textContent = CATALOG.length.toLocaleString() + ' costumes & weapon skins';
+$('#skinBtn').onclick = () => openShop(false, 'wsk');
+$('#shopCount').textContent = BUYABLE_COUNT.toLocaleString() + ' costumes & weapon skins';
+// ================= ECONOMY (server-checked when logged in) =================
+// Rules mirror supabase-setup.sql. Registered players go through Supabase RPCs; guests / offline mode run the same rules locally.
+const MISSIONS = [
+  ['games', 3, 60, 'Play 3 matches'], ['wins', 1, 100, 'Win a match'], ['kills', 3, 80, 'Get 3 K.O.s'], ['damage', 400, 80, 'Deal 400 damage'],
+  ['owins', 1, 150, 'Win an online match'], ['ogames', 2, 100, 'Play 2 online matches'], ['crates', 3, 70, 'Grab 3 supply crates'], ['damage', 1000, 150, 'Deal 1,000 damage']
+];
+const MISSION_OFFS = [0, 3, 5];
+const XP_PER_TIER = 250, PASS_TIERS = 30;
+const PASS_ITEMS = { 5: 'wsk:prism.0', 10: 'hat:laurel.0', 15: 'wsk-grenade:plasma.3', 20: 'fur:60', 25: 'wsk-nuke:prism.7', 28: 'neck:wings.0', 30: 'pet:phoenix' };
+const passReward = t => PASS_ITEMS[t] || 'coins:' + (40 + t * 5);
+const utcDay = () => Math.floor(Date.now() / 86400000) - 19723; // days since 2024-01-01
+const utcDate = () => new Date().toISOString().slice(0, 10);
+const seasonId = () => new Date().toISOString().slice(0, 7);
+function missionDef(slot, d) { const m = MISSIONS[(d + MISSION_OFFS[slot]) % 8]; return { key: m[0], goal: m[1], reward: m[2], text: m[3] }; }
+function itemPrice(id) {
+  const sh = /^shiny:(\w+)$/.exec(id);
+  if (sh) return PET_BY_ID[sh[1]] && ownsPet(sh[1]) ? shinyPrice(sh[1]) : null;
+  const m = /^pet:(\w+)$/.exec(id);
+  if (m) return PET_PRICE[m[1]] || null;
+  const it = CAT_BY_ID.get(id);
+  return it && !it.pass ? it.price : null;
+}
+function matchRewards(r) {
+  const players = clamp(r.players | 0, 2, 4), place = clamp(r.place | 0, 1, players);
+  const sc = clamp(Math.round(r.score) || 0, 0, 150 * (players - 1)), k = clamp(r.kills | 0, 0, players - 1), cr = clamp(r.crates | 0, 0, 8);
+  const win = place === 1;
+  return {
+    sc, k, cr, win, online: !!r.online,
+    coins: Math.round((15 + sc / 4 + k * 10 + (win ? 50 : 0)) * (r.online ? 1.5 : 1)),
+    trophies: win ? (r.online ? 18 : 12) : place === players ? -3 : place === 2 ? 5 : 1,
+    xp: 40 + 10 * k + (win ? 60 : 0) + (r.online ? 20 : 0)
+  };
+}
+
+const Econ = {
+  server() { return USE_SB && !!sb && !!profile && !profile.guest; },
+  async rpc(fn, args) {
+    const { data, error } = await sb.rpc(fn, args || {});
+    if (error) {
+      if (/function .* does not exist|Could not find the function/i.test(error.message)) throw new Error('Server not updated yet — run supabase-setup.sql in Supabase.');
+      throw new Error(error.message);
+    }
+    return data;
+  },
+  apply(row) { if (row) { const keep = { guest: profile.guest, gid: profile.gid }; Object.assign(profile, normalize(row), keep); } },
+  localRoll() {
+    const p = profile;
+    if (p.pass_season !== seasonId()) { p.pass_season = seasonId(); p.xp = 0; p.pass_claimed = []; }
+    const d = utcDay();
+    if (!p.missions || p.missions.d !== d) p.missions = { d, prog: {}, claimed: [] };
+  },
+  async refresh() {
+    if (this.server()) { try { this.apply(await this.rpc('wj_state')); } catch (e) { console.warn(e); } }
+    else this.localRoll();
+  },
+  async buy(id) {
+    if (this.server()) { this.apply(await this.rpc('wj_buy', { item: id })); return; }
+    const price = itemPrice(id);
+    if (price == null) throw new Error('This item cannot be bought');
+    const key = id.startsWith('pet:') ? id.slice(4) : id;
+    if (profile.unlocks.includes(key)) throw new Error('You already own this');
+    if (profile.coins < price) throw new Error('Not enough coins');
+    profile.coins -= price; profile.unlocks.push(key);
+    await saveProfile();
+  },
+  async matchResult(r) {
+    if (this.server()) {
+      const d = await this.rpc('wj_match_result', { p_place: r.place, p_players: r.players, p_score: Math.round(r.score), p_kills: r.kills, p_online: !!r.online, p_crates: r.crates | 0 });
+      this.apply(d.profile);
+      return { coins: d.coins, trophies: d.trophies, xp: d.xp };
+    }
+    this.localRoll();
+    const x = matchRewards(r), p = profile, pr = p.missions.prog;
+    p.coins += x.coins; p.trophies = Math.max(0, p.trophies + x.trophies);
+    p.games++; if (x.win) p.wins++; p.kills += x.k; p.xp += x.xp;
+    const pid = petBase(), ps = p.pet_stats[pid] || { m: 0, w: 0, k: 0 };
+    p.pet_stats[pid] = { m: ps.m + 1, w: ps.w + (x.win ? 1 : 0), k: ps.k + x.k };
+    const inc = (k, v) => pr[k] = (pr[k] || 0) + v;
+    inc('games', 1); inc('wins', x.win ? 1 : 0); inc('kills', x.k); inc('damage', x.sc);
+    inc('owins', x.win && x.online ? 1 : 0); inc('ogames', x.online ? 1 : 0); inc('crates', x.cr);
+    await saveProfile();
+    return { coins: x.coins, trophies: x.trophies, xp: x.xp };
+  },
+  async forfeit() {
+    if (this.server()) { this.apply(await this.rpc('wj_forfeit')); return; }
+    profile.games++; profile.trophies = Math.max(0, profile.trophies - 3);
+    await saveProfile();
+  },
+  async daily() {
+    if (this.server()) { this.apply(await this.rpc('wj_claim_daily')); return; }
+    if (profile.last_daily === utcDate()) throw new Error('Daily gift already claimed today');
+    profile.coins += 100; profile.last_daily = utcDate();
+    await saveProfile();
+  },
+  async claimMission(slot) {
+    if (this.server()) { this.apply(await this.rpc('wj_claim_mission', { p_slot: slot })); return; }
+    this.localRoll();
+    const m = profile.missions, def = missionDef(slot, m.d);
+    if (m.claimed.includes(slot)) throw new Error('Mission already claimed');
+    if ((m.prog[def.key] || 0) < def.goal) throw new Error('Mission not complete yet');
+    m.claimed.push(slot); profile.coins += def.reward; profile.xp += 50;
+    await saveProfile();
+  },
+  async claimTier(t) {
+    if (this.server()) { this.apply(await this.rpc('wj_claim_tier', { p_tier: t })); return; }
+    this.localRoll();
+    if (profile.xp < t * XP_PER_TIER) throw new Error('Tier not reached yet');
+    if (profile.pass_claimed.includes(t)) throw new Error('Tier already claimed');
+    const r = passReward(t);
+    if (r.startsWith('pet:')) grantReward(r);
+    else if (r.startsWith('coins:')) profile.coins += +r.slice(6);
+    else if (profile.unlocks.includes(r)) profile.coins += 300;
+    else profile.unlocks.push(r);
+    profile.pass_claimed.push(t);
+    await saveProfile();
+  }
+};
+
+// ================= MISSIONS & BATTLE PASS UI =================
+function missionState() {
+  const m = profile.missions || {};
+  return { d: m.d != null ? +m.d : utcDay(), prog: m.prog || {}, claimed: (m.claimed || []).map(Number) };
+}
+function passTier() { return Math.min(PASS_TIERS, Math.floor((profile.xp || 0) / XP_PER_TIER)); }
+function claimableTiers() {
+  const got = (profile.pass_claimed || []).map(Number), out = [];
+  for (let t = 1; t <= passTier(); t++) if (!got.includes(t)) out.push(t);
+  return out;
+}
+function claimableMissions() {
+  const s = missionState(), out = [];
+  for (let i = 0; i < 3; i++) { const d = missionDef(i, s.d); if (!s.claimed.includes(i) && (s.prog[d.key] || 0) >= d.goal) out.push(i); }
+  return out;
+}
+function dailyReady() { return !!profile && profile.last_daily !== utcDate(); }
+function fmtLeft(ms) {
+  const h = Math.floor(ms / 3600000), m = Math.floor(ms % 3600000 / 60000);
+  return h >= 24 ? Math.floor(h / 24) + 'd ' + (h % 24) + 'h' : h + 'h ' + m + 'm';
+}
+function updateMetaButtons() {
+  if (!profile) return;
+  const nm = claimableMissions().length + (dailyReady() ? 1 : 0), nt = claimableTiers().length;
+  $('#missionBadge').textContent = nm; $('#missionBadge').hidden = !nm;
+  $('#passBadge').textContent = nt; $('#passBadge').hidden = !nt;
+  $('#passLabel').textContent = 'PASS · T' + passTier();
+  $('#dailyBtn').hidden = !dailyReady();
+  const np = claimableAch().length + claimableGroups().length;
+  $('#petsBadge').textContent = np; $('#petsBadge').hidden = !np;
+}
+async function econAction(btn, fn, okMsg) {
+  if (btn) btn.disabled = true;
+  try { await fn(); if (okMsg) toast(okMsg); Snd.coin(); }
+  catch (e) { toast('❌ ' + e.message); }
+  if (btn) btn.disabled = false;
+  renderLobby(); renderMissions(); renderPass(); renderPets();
+}
+
+function openMissions() { Snd.click(); $('#missionOv').hidden = false; renderMissions(); Econ.refresh().then(renderMissions); }
+function renderMissions() {
+  if (!profile || $('#missionOv').hidden) return;
+  const s = missionState(), box = $('#missionList'); box.innerHTML = '';
+  for (let i = 0; i < 3; i++) {
+    const d = missionDef(i, s.d), cur = Math.min(d.goal, s.prog[d.key] || 0), done = cur >= d.goal, claimed = s.claimed.includes(i);
+    const row = document.createElement('div'); row.className = 'mrow' + (claimed ? ' done' : '');
+    const info = document.createElement('div'); info.className = 'minfo';
+    const t = document.createElement('b'); t.textContent = d.text;
+    const bar = document.createElement('div'); bar.className = 'xpbar'; const fill = document.createElement('i'); fill.style.width = (cur / d.goal * 100) + '%'; bar.appendChild(fill);
+    const sm = document.createElement('small'); sm.textContent = cur.toLocaleString() + ' / ' + d.goal.toLocaleString() + ' · 🪙 ' + d.reward + ' + 50 XP';
+    info.append(t, bar, sm);
+    const btn = document.createElement('button'); btn.type = 'button';
+    btn.className = 'btn ' + (claimed ? 'blue' : done ? '' : 'blue');
+    btn.textContent = claimed ? '✔ DONE' : done ? 'CLAIM' : 'IN PROGRESS';
+    btn.disabled = claimed || !done;
+    btn.onclick = () => econAction(btn, () => Econ.claimMission(i), '🎯 Mission complete! +' + d.reward + ' coins, +50 XP');
+    row.append(info, btn);
+    box.appendChild(row);
+  }
+  const next = new Date(); next.setUTCHours(24, 0, 0, 0);
+  $('#missionReset').textContent = '⏳ New missions in ' + fmtLeft(next - Date.now());
+  const dbtn = $('#dailyClaim'), ready = dailyReady();
+  dbtn.disabled = !ready; dbtn.textContent = ready ? 'CLAIM +100' : '✔ CLAIMED';
+  $('#missionGuest').hidden = !profile.guest;
+}
+$('#dailyClaim').onclick = () => econAction($('#dailyClaim'), () => Econ.daily(), '🎁 Daily gift: +100 coins! Come back tomorrow.');
+$('#dailyBtn').onclick = () => econAction($('#dailyBtn'), () => Econ.daily(), '🎁 Daily gift: +100 coins! Come back tomorrow.');
+$('#missionBtn').onclick = openMissions;
+$('#missionClose').onclick = () => { $('#missionOv').hidden = true; };
+$('#missionOv').addEventListener('pointerdown', e => { if (e.target.id === 'missionOv') $('#missionOv').hidden = true; });
+
+function openPass() { Snd.click(); $('#passOv').hidden = false; renderPass(); Econ.refresh().then(renderPass); }
+function renderPass() {
+  if (!profile || $('#passOv').hidden) return;
+  const xp = profile.xp || 0, tier = passTier(), got = (profile.pass_claimed || []).map(Number);
+  const now = new Date(), end = Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1);
+  $('#passSeason').textContent = 'Season ' + seasonId() + ' · ends in ' + fmtLeft(end - Date.now());
+  $('#passTier').textContent = tier >= PASS_TIERS ? 'MAX TIER!' : 'TIER ' + tier;
+  const into = tier >= PASS_TIERS ? XP_PER_TIER : xp - tier * XP_PER_TIER;
+  $('#passBar').style.width = (into / XP_PER_TIER * 100) + '%';
+  $('#passXp').textContent = tier >= PASS_TIERS ? xp.toLocaleString() + ' XP' : into + ' / ' + XP_PER_TIER + ' XP to tier ' + (tier + 1);
+  const grid = $('#passGrid'); grid.innerHTML = '';
+  for (let t = 1; t <= PASS_TIERS; t++) {
+    const r = passReward(t), petR = r.startsWith('pet:') ? PET_BY_ID[r.slice(4)] : null;
+    const item = r.startsWith('coins:') || petR ? null : CAT_BY_ID.get(r);
+    const reached = tier >= t, claimed = got.includes(t);
+    const card = document.createElement('div'); card.className = 'pcell' + (item || petR ? ' big' : '') + (claimed ? ' claimed' : reached ? ' ready' : '');
+    const num = document.createElement('span'); num.className = 'pn'; num.textContent = t;
+    card.appendChild(num);
+    if (petR) {
+      const cvs = document.createElement('canvas'); cvs.width = 128; cvs.height = 110;
+      card.appendChild(cvs); drawPetThumb(cvs.getContext('2d'), petR.id + '|0|3', false);
+      const nm = document.createElement('small'); nm.textContent = '🐾 ' + petR.name + ' pet' + (ownsPet(petR.id) && !claimed ? ' (owned → 300🪙)' : ''); card.appendChild(nm);
+    } else if (item) {
+      const cvs = document.createElement('canvas'); cvs.width = 128; cvs.height = 110;
+      card.appendChild(cvs); drawThumb(cvs.getContext('2d'), item, 0);
+      const nm = document.createElement('small'); nm.textContent = item.name + (ownsItem(item.id) && !claimed ? ' (owned → 300🪙)' : ''); card.appendChild(nm);
+    } else {
+      const c = document.createElement('div'); c.className = 'pcoin'; c.textContent = '🪙 ' + r.slice(6); card.appendChild(c);
+    }
+    const btn = document.createElement('button'); btn.type = 'button';
+    btn.className = 'btn small ' + (claimed ? 'blue' : reached ? 'orange' : 'blue');
+    btn.textContent = claimed ? '✔' : reached ? 'CLAIM' : '🔒';
+    btn.disabled = claimed || !reached;
+    btn.onclick = () => econAction(btn, () => Econ.claimTier(t), petR ? '🎖️ ' + petR.name + ' joined your team!' : item ? '🎖️ Unlocked ' + item.name + '!' : '🎖️ +' + r.slice(6) + ' coins!');
+    card.appendChild(btn);
+    grid.appendChild(card);
+  }
+  $('#passGuest').hidden = !profile.guest;
+}
+$('#passBtn').onclick = openPass;
+$('#passClose').onclick = () => { $('#passOv').hidden = true; };
+$('#passOv').addEventListener('pointerdown', e => { if (e.target.id === 'passOv') $('#passOv').hidden = true; });
+$('#passClaimAll').onclick = async () => {
+  const list = claimableTiers();
+  if (!list.length) { toast('Nothing to claim yet — play matches to earn XP!'); return; }
+  const btn = $('#passClaimAll'); btn.disabled = true;
+  for (const t of list) { try { await Econ.claimTier(t); } catch (e) { toast('❌ ' + e.message); break; } }
+  btn.disabled = false; Snd.win(); toast('🎖️ Claimed ' + list.length + ' tier' + (list.length > 1 ? 's' : '') + '!');
+  renderLobby(); renderPass();
+};
+
+// ================= INSTALLABLE APP (PWA) =================
+let installEvt = null;
+const isStandalone = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+const isIOS = () => /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+function updateInstallBtn() { $('#installBtn').hidden = isStandalone() || !(installEvt || isIOS()); }
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; updateInstallBtn(); });
+window.addEventListener('appinstalled', () => { installEvt = null; updateInstallBtn(); toast('📲 Wild Jans installed! Open it from your home screen.'); });
+$('#installBtn').onclick = async () => {
+  if (installEvt) {
+    installEvt.prompt();
+    const { outcome } = await installEvt.userChoice;
+    if (outcome === 'accepted') installEvt = null;
+    updateInstallBtn();
+  } else if (isIOS()) {
+    toast('📲 On iPhone/iPad: tap Share ⬆️ then "Add to Home Screen".');
+  }
+};
+if ('serviceWorker' in navigator && location.protocol === 'https:') {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').then(reg => {
+      reg.addEventListener('updatefound', () => {
+        const nw = reg.installing;
+        if (nw) nw.addEventListener('statechange', () => {
+          if (nw.state === 'installed' && navigator.serviceWorker.controller) toast('✨ A new version of Wild Jans is ready — reopen the app to update.');
+        });
+      });
+    }).catch(() => {});
+  });
+}
+updateInstallBtn();
+// ================= PETS: collection, eggs, achievements =================
+// Rules mirror supabase-setup.sql (wj_hatch_egg, wj_claim_ach, wj_claim_group, wj_buy 'shiny:').
+const EGGS = {
+  basic: { name: 'Pet Egg', icon: '🥚', price: 300, odds: { common: 70, rare: 25, epic: 5 }, shiny: 5 },
+  premium: { name: 'Golden Egg', icon: '🌟', price: 900, odds: { rare: 55, epic: 37, legendary: 8 }, shiny: 12 }
+};
+const EGG_REFUND = { common: 80, rare: 200, epic: 400, legendary: 800 };
+const GROUP_REWARD = 500;
+const ACHIEVEMENTS = [
+  { id: 'first_win', name: 'First Victory', desc: 'Win 1 match', stat: 'wins', goal: 1, reward: 'coins:100' },
+  { id: 'ko10', name: 'Sharpshooter', desc: 'Get 10 K.O.s', stat: 'kills', goal: 10, reward: 'coins:150' },
+  { id: 'games10', name: 'Getting Started', desc: 'Play 10 matches', stat: 'games', goal: 10, reward: 'coins:200' },
+  { id: 'wins10', name: 'Champion', desc: 'Win 10 matches', stat: 'wins', goal: 10, reward: 'coins:300' },
+  { id: 'shiny1', name: 'Shiny Hunter', desc: 'Own 1 shiny pet', stat: 'shinies', goal: 1, reward: 'coins:300' },
+  { id: 'pets10', name: 'Pet Lover', desc: 'Own 10 pets', stat: 'pets', goal: 10, reward: 'coins:400' },
+  { id: 'games25', name: 'Snow Friend', desc: 'Play 25 matches', stat: 'games', goal: 25, reward: 'pet:yeti' },
+  { id: 'ko50', name: 'Dino Might', desc: 'Get 50 K.O.s', stat: 'kills', goal: 50, reward: 'pet:dino' },
+  { id: 'pets25', name: 'Zoo Keeper', desc: 'Own 25 pets', stat: 'pets', goal: 25, reward: 'coins:1000' },
+  { id: 'wins50', name: 'Dragon Tamer', desc: 'Win 50 matches', stat: 'wins', goal: 50, reward: 'pet:dragon' },
+  { id: 'tro500', name: 'Legend', desc: 'Reach 500 trophies', stat: 'trophies', goal: 500, reward: 'pet:unicorn' },
+  { id: 'games100', name: 'Veteran', desc: 'Play 100 matches', stat: 'games', goal: 100, reward: 'coins:1500' }
+];
+const ACH_BY_ID = Object.fromEntries(ACHIEVEMENTS.map(a => [a.id, a]));
+
+const ownsPet = id => FREE_PETS.includes(id) || profile.unlocks.includes(id);
+const ownsShiny = id => profile.unlocks.includes('shiny:' + id);
+const ownedPets = () => PETS.filter(ownsPet);
+const petBase = () => String(profile.pet || 'dog').split(':')[0];
+const petIsShiny = () => /:shiny$/.test(profile.pet || '');
+const petStats = id => (profile.pet_stats && profile.pet_stats[id]) || { m: 0, w: 0, k: 0 };
+function mySpec() { const id = petBase(); return id + '|' + (petIsShiny() && ownsShiny(id) ? 1 : 0) + '|' + petStage(petStats(id).m); }
+function randomPetSpec() {
+  const d = pick(PET_DEFS);
+  return d.id + '|' + (Math.random() < .06 ? 1 : 0) + '|' + irand(1, 3);
+}
+function achStat(stat) {
+  if (stat === 'pets') return ownedPets().length;
+  if (stat === 'shinies') return profile.unlocks.filter(u => u.startsWith('shiny:')).length;
+  return profile[stat] || 0;
+}
+function shinyPrice(id) { const d = PET_BY_ID[id]; return d ? SHINY_PRICE[d.rar] : null; }
+function claimableAch() { return ACHIEVEMENTS.filter(a => !profile.unlocks.includes('ach:' + a.id) && achStat(a.stat) >= a.goal); }
+function claimableGroups() { return Object.keys(PET_GROUPS).filter(gp => !profile.unlocks.includes('col:' + gp) && PET_DEFS.filter(d => d.grp === gp).every(d => ownsPet(d.id))); }
+
+// ---------- economy (server when logged in, local for guests) ----------
+function grantReward(r) {
+  if (r.startsWith('coins:')) { profile.coins += +r.slice(6); return; }
+  const id = r.slice(4);
+  if (ownsPet(id)) profile.coins += 300; else profile.unlocks.push(id);
+}
+Object.assign(Econ, {
+  async hatch(egg) {
+    const E = EGGS[egg]; if (!E) throw new Error('Unknown egg');
+    if (this.server()) {
+      const d = await this.rpc('wj_hatch_egg', { p_egg: egg });
+      this.apply(d.profile);
+      return { pet: d.pet, shiny: d.shiny, isNew: d.is_new, refund: d.refund };
+    }
+    if (profile.coins < E.price) throw new Error('Not enough coins');
+    profile.coins -= E.price;
+    let roll = Math.random() * 100, rar = 'common';
+    for (const [k, v] of Object.entries(E.odds)) { if (roll < v) { rar = k; break; } roll -= v; }
+    const pool = PET_DEFS.filter(d => d.src === 'egg' && d.rar === rar);
+    const pet = pick(pool).id;
+    const shiny = Math.random() * 100 < E.shiny;
+    const isNew = !ownsPet(pet);
+    let refund = 0;
+    if (isNew) profile.unlocks.push(pet);
+    if (shiny && !ownsShiny(pet)) profile.unlocks.push('shiny:' + pet);
+    else if (!isNew) { refund = EGG_REFUND[rar]; profile.coins += refund; }
+    await saveProfile();
+    return { pet, shiny: shiny && (isNew || !refund), isNew, refund };
+  },
+  async claimAch(id) {
+    if (this.server()) { this.apply(await this.rpc('wj_claim_ach', { p_id: id })); return; }
+    const a = ACH_BY_ID[id];
+    if (!a || profile.unlocks.includes('ach:' + id)) throw new Error('Already claimed');
+    if (achStat(a.stat) < a.goal) throw new Error('Not complete yet');
+    profile.unlocks.push('ach:' + id); grantReward(a.reward);
+    await saveProfile();
+  },
+  async claimGroup(gp) {
+    if (this.server()) { this.apply(await this.rpc('wj_claim_group', { p_grp: gp })); return; }
+    if (!claimableGroups().includes(gp)) throw new Error('Collect every pet in this group first');
+    profile.unlocks.push('col:' + gp); profile.coins += GROUP_REWARD;
+    await saveProfile();
+  }
+});
+
+async function equipPet(id, shiny) {
+  const prev = profile.pet;
+  profile.pet = id + (shiny ? ':shiny' : '');
+  try { await saveProfile(true); }
+  catch (e) { profile.pet = prev; toast('❌ ' + e.message); return; }
+  Snd.click();
+  if (NET.lobbyReady && !NET.q && !NET.match) netTrackStatus('idle');
+  renderLobby(); renderPets();
+}
+
+// ---------- UI ----------
+const PETUI = { tab: 'col', grp: 'all', sel: null, previewShiny: false, hatching: null };
+function openPets(tab) {
+  Snd.click();
+  PETUI.tab = tab || 'col'; PETUI.sel = PETUI.sel || petBase(); PETUI.previewShiny = false;
+  $('#petOv').hidden = false;
+  renderPets();
+  Econ.refresh().then(renderPets);
+}
+function closePets() { $('#petOv').hidden = true; PETUI.hatching = null; renderLobby(); }
+function renderPets() {
+  if (!profile || $('#petOv').hidden) return;
+  $('#petCoins').textContent = profile.coins;
+  const tabs = $('#petTabs'); tabs.innerHTML = '';
+  const na = claimableAch().length;
+  [['col', '🐾 Collection ' + ownedPets().length + '/' + PETS.length], ['eggs', '🥚 Eggs'], ['ach', '🏆 Achievements' + (na ? ' (' + na + ')' : '')]].forEach(([k, label]) => {
+    const b = document.createElement('button'); b.type = 'button'; b.className = PETUI.tab === k ? 'on' : ''; b.textContent = label;
+    b.onclick = () => { PETUI.tab = k; Snd.click(); renderPets(); };
+    tabs.appendChild(b);
+  });
+  $('#petCol').hidden = PETUI.tab !== 'col';
+  $('#petEggs').hidden = PETUI.tab !== 'eggs';
+  $('#petAch').hidden = PETUI.tab !== 'ach';
+  if (PETUI.tab === 'col') renderCollection();
+  else if (PETUI.tab === 'eggs') renderEggs();
+  else renderAchievements();
+}
+
+function petStatusText(d) {
+  if (petBase() === d.id) return '✔ EQUIPPED';
+  if (ownsPet(d.id)) return ownsShiny(d.id) ? 'OWNED ✨' : 'OWNED';
+  if (d.src === 'shop') return '🪙 ' + d.price;
+  if (d.src === 'egg') return '🥚 EGG';
+  if (d.src === 'pass') return '🎖️ PASS';
+  if (d.src === 'ach') return '🏆 ' + (ACH_BY_ID[d.ach] ? ACH_BY_ID[d.ach].desc : 'Achievement');
+  return '';
+}
+function drawPetThumb(g, spec, locked, t) {
+  g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, g.canvas.width, g.canvas.height);
+  const k = g.canvas.width / 128;
+  g.save(); g.scale(k, k);
+  drawPet(g, spec, { x: 60, y: 100, t: t || 0, scale: 1.75, facing: 1, elev: 0, onGround: true, happy: true });
+  g.restore();
+  if (locked) {
+    g.save(); g.globalCompositeOperation = 'source-atop'; g.fillStyle = 'rgba(10,20,60,.72)'; g.fillRect(0, 0, g.canvas.width, g.canvas.height); g.restore();
+    g.font = (22 * k) + 'px sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('🔒', 64 * k, 55 * k);
+  }
+}
+function renderCollection() {
+  const gb = $('#petGroups'); gb.innerHTML = '';
+  [['all', '🐾 All'], ['owned', '✔ Owned'], ...Object.entries(PET_GROUPS)].forEach(([k, label]) => {
+    const b = document.createElement('button'); b.type = 'button'; b.className = PETUI.grp === k ? 'on' : '';
+    const list = PET_DEFS.filter(d => d.grp === k);
+    b.textContent = label + (list.length ? ' ' + list.filter(d => ownsPet(d.id)).length + '/' + list.length : '');
+    b.onclick = () => { PETUI.grp = k; Snd.click(); renderCollection(); };
+    gb.appendChild(b);
+  });
+  // group completion bar
+  const bar = $('#groupBar'); bar.innerHTML = '';
+  if (PET_GROUPS[PETUI.grp]) {
+    const list = PET_DEFS.filter(d => d.grp === PETUI.grp), have = list.filter(d => ownsPet(d.id)).length;
+    const claimed = profile.unlocks.includes('col:' + PETUI.grp);
+    const txt = document.createElement('div'); txt.className = 'minfo';
+    const b = document.createElement('b'); b.textContent = 'Complete ' + PET_GROUPS[PETUI.grp] + ': ' + have + '/' + list.length;
+    const xb = document.createElement('div'); xb.className = 'xpbar'; const i = document.createElement('i'); i.style.width = (have / list.length * 100) + '%'; xb.appendChild(i);
+    txt.append(b, xb);
+    const btn = document.createElement('button'); btn.type = 'button'; btn.className = 'btn small ' + (claimed ? 'blue' : 'orange');
+    btn.textContent = claimed ? '✔ CLAIMED' : 'CLAIM 🪙 ' + GROUP_REWARD;
+    btn.disabled = claimed || have < list.length;
+    btn.onclick = () => econAction(btn, () => Econ.claimGroup(PETUI.grp), '🏅 Group complete! +' + GROUP_REWARD + ' coins').then(renderPets);
+    bar.append(txt, btn);
+  }
+  bar.hidden = !PET_GROUPS[PETUI.grp];
+  const grid = $('#petGrid'); grid.innerHTML = '';
+  const list = PET_DEFS.filter(d => PETUI.grp === 'all' || (PETUI.grp === 'owned' ? ownsPet(d.id) : d.grp === PETUI.grp));
+  list.forEach(d => {
+    const card = document.createElement('button'); card.type = 'button';
+    const owned = ownsPet(d.id);
+    card.className = 'scard' + (PETUI.sel === d.id ? ' sel' : '') + (petBase() === d.id ? ' eq' : '');
+    card.style.setProperty('--r', PET_RARITY[d.rar][1]);
+    const cvs = document.createElement('canvas'); cvs.width = 128; cvs.height = 110;
+    const rr = document.createElement('span'); rr.className = 'sr'; rr.textContent = PET_RARITY[d.rar][0];
+    const nm = document.createElement('span'); nm.className = 'sn'; nm.textContent = d.name + (ownsShiny(d.id) ? ' ✨' : '');
+    const pr = document.createElement('span'); pr.className = 'sp small'; pr.textContent = petStatusText(d);
+    card.append(cvs, rr, nm, pr);
+    card.onclick = () => { PETUI.sel = d.id; PETUI.previewShiny = false; Snd.click(); renderCollection(); };
+    grid.appendChild(card);
+    drawPetThumb(cvs.getContext('2d'), d.id + '|' + (ownsShiny(d.id) ? 1 : 0) + '|' + petStage(petStats(d.id).m), !owned);
+  });
+  renderPetDetail();
+}
+function renderPetDetail() {
+  const d = PET_BY_ID[PETUI.sel] || PET_BY_ID[petBase()];
+  const owned = ownsPet(d.id), shinyOwned = ownsShiny(d.id), st = petStats(d.id), stage = petStage(st.m);
+  const sel = $('#petSel'); sel.innerHTML = '';
+  const b = document.createElement('b'); b.textContent = d.name + (PETUI.previewShiny ? ' ✨' : '');
+  const s = document.createElement('small'); s.textContent = PET_RARITY[d.rar][0] + ' · ' + PET_GROUPS[d.grp]; s.style.color = PET_RARITY[d.rar][1];
+  sel.append(b, s);
+  const stats = $('#petStats'); stats.innerHTML = '';
+  if (owned) {
+    const next = stage === 1 ? 10 : stage === 2 ? 30 : null;
+    const row = document.createElement('div'); row.className = 'pstat';
+    row.textContent = '🎮 ' + st.m + '  🏆 ' + st.w + '  💥 ' + st.k;
+    const evo = document.createElement('div'); evo.className = 'pstat';
+    evo.textContent = '🧬 ' + STAGE_NAME[stage] + (next ? ' · ' + st.m + '/' + next + ' matches to evolve' : ' · MAX');
+    const xb = document.createElement('div'); xb.className = 'xpbar'; const i = document.createElement('i');
+    i.style.width = (next ? Math.min(100, st.m / next * 100) : 100) + '%'; xb.appendChild(i);
+    stats.append(row, evo, xb);
+  } else {
+    const how = document.createElement('div'); how.className = 'pstat';
+    how.textContent = d.src === 'shop' ? 'Buy it for 🪙 ' + d.price : d.src === 'egg' ? 'Hatch it from a 🥚 Pet Egg or 🌟 Golden Egg' : d.src === 'pass' ? 'Battle Pass tier 30 reward' : '🏆 Achievement: ' + ACH_BY_ID[d.ach].desc;
+    stats.append(how);
+  }
+  const acts = $('#petActs'); acts.innerHTML = '';
+  const add = (cls, text, fn, disabled) => { const x = document.createElement('button'); x.type = 'button'; x.className = 'btn ' + cls; x.textContent = text; x.disabled = !!disabled; x.onclick = fn; acts.appendChild(x); return x; };
+  if (owned) {
+    const equipped = petBase() === d.id;
+    if (!equipped || petIsShiny()) add('', 'EQUIP', () => equipPet(d.id, false));
+    else add('blue', '✔ EQUIPPED', null, true);
+    if (shinyOwned) {
+      if (!(equipped && petIsShiny())) add('orange', '✨ EQUIP SHINY', () => equipPet(d.id, true));
+    } else {
+      const price = shinyPrice(d.id);
+      const x = add('orange', '✨ BUY SHINY · 🪙 ' + price, null, profile.coins < price);
+      x.onclick = () => econAction(x, () => Econ.buy('shiny:' + d.id), '✨ Shiny ' + d.name + ' unlocked!').then(renderPets);
+    }
+  } else if (d.src === 'shop') {
+    const x = add('orange', 'BUY · 🪙 ' + d.price, null, profile.coins < d.price);
+    x.onclick = async () => {
+      x.disabled = true;
+      try { await Econ.buy('pet:' + d.id); } catch (e) { toast('❌ ' + e.message); renderPets(); return; }
+      Snd.win(); toast('🐾 ' + d.name + ' joined your team!');
+      await equipPet(d.id, false);
+    };
+  } else if (d.src === 'egg') add('orange', '🥚 GO TO EGGS', () => { PETUI.tab = 'eggs'; renderPets(); });
+  else if (d.src === 'pass') add('orange', '🎖️ OPEN BATTLE PASS', () => { closePets(); openPass(); });
+  else add('orange', '🏆 SEE ACHIEVEMENTS', () => { PETUI.tab = 'ach'; renderPets(); });
+  add('blue small', PETUI.previewShiny ? '👀 NORMAL' : '👀 PREVIEW SHINY', () => { PETUI.previewShiny = !PETUI.previewShiny; renderPetDetail(); });
+}
+
+function renderEggs() {
+  const box = $('#eggList'); box.innerHTML = '';
+  for (const [k, E] of Object.entries(EGGS)) {
+    const card = document.createElement('div'); card.className = 'eggcard';
+    const icon = document.createElement('div'); icon.className = 'eggicon'; icon.textContent = E.icon;
+    const info = document.createElement('div'); info.className = 'minfo';
+    const b = document.createElement('b'); b.textContent = E.name + ' · 🪙 ' + E.price;
+    const odds = document.createElement('small');
+    odds.textContent = Object.entries(E.odds).map(([r, v]) => PET_RARITY[r][0] + ' ' + v + '%').join(' · ') + ' · ✨ Shiny ' + E.shiny + '%';
+    const pool = document.createElement('small');
+    pool.textContent = 'Can hatch: ' + PET_DEFS.filter(d => d.src === 'egg' && E.odds[d.rar]).map(d => d.name + (ownsPet(d.id) ? '✔' : '')).join(', ');
+    info.append(b, odds, pool);
+    const btn = document.createElement('button'); btn.type = 'button'; btn.className = 'btn orange';
+    btn.textContent = 'HATCH'; btn.disabled = profile.coins < E.price || !!PETUI.hatching;
+    btn.onclick = () => hatchEgg(k);
+    card.append(icon, info, btn);
+    box.appendChild(card);
+  }
+  $('#eggNote').textContent = 'Duplicates turn into coins (' + Object.entries(EGG_REFUND).map(([r, v]) => PET_RARITY[r][0].toLowerCase() + ' ' + v).join(', ') + '). Eggs only cost coins — never real money.';
+}
+async function hatchEgg(k) {
+  if (PETUI.hatching) return;
+  PETUI.hatching = { egg: k, start: performance.now(), result: null, error: null };
+  $('#hatchStage').hidden = false; $('#hatchText').textContent = 'Hatching…';
+  renderEggs();
+  Snd.tone(300, 600, .4, 'triangle', .08);
+  try { PETUI.hatching.result = await Econ.hatch(k); }
+  catch (e) { PETUI.hatching.error = e.message; }
+  const wait = Math.max(0, 1600 - (performance.now() - PETUI.hatching.start));
+  setTimeout(() => {
+    const h = PETUI.hatching; if (!h) return;
+    h.revealed = performance.now();
+    if (h.error) { $('#hatchText').textContent = '❌ ' + h.error; Snd.lose(); }
+    else {
+      const r = h.result, d = PET_BY_ID[r.pet];
+      Snd.win();
+      $('#hatchText').textContent = r.isNew ? '🎉 NEW PET: ' + d.name + (r.shiny ? ' ✨ SHINY!' : '') + '!'
+        : r.shiny ? '✨ SHINY ' + d.name + ' unlocked!' : 'Duplicate ' + d.name + ' → +' + r.refund + ' coins';
+      PETUI.sel = r.pet;
+    }
+    setTimeout(() => { PETUI.hatching = null; if (!$('#petOv').hidden) { renderPets(); } }, 2600);
+    renderLobby();
+  }, wait);
+}
+function renderHatch(t) {
+  const h = PETUI.hatching, c = $('#hatchCv');
+  if (!h || !c || $('#hatchStage').hidden) return;
+  const w = c.width, hh = c.height, g = c.getContext('2d');
+  g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, w, hh);
+  const cx = w / 2, cy = hh * .62, s = hh / 160;
+  if (!h.revealed || h.error) {
+    const el = (performance.now() - h.start) / 1000, wob = Math.sin(el * (8 + el * 10)) * Math.min(.35, el * .25);
+    g.save(); g.translate(cx, cy + 30 * s); g.rotate(wob); g.scale(s, s);
+    const gold = h.egg === 'premium';
+    const gr = g.createLinearGradient(-30, -80, 30, 0); gr.addColorStop(0, gold ? '#fff3a8' : '#ffffff'); gr.addColorStop(1, gold ? '#ffb21e' : '#cfe0ff');
+    g.fillStyle = gr; g.strokeStyle = OUT; g.lineWidth = 3;
+    g.beginPath(); g.ellipse(0, -40, 30, 40, 0, 0, 7); g.fill(); g.stroke();
+    g.fillStyle = gold ? '#ff8a00' : '#8fc3ff'; [[-12, -52, 5], [10, -30, 6], [4, -62, 4]].forEach(([x, y, r]) => { g.beginPath(); g.arc(x, y, r, 0, 7); g.fill(); });
+    if (el > .9) { g.lineWidth = 2; g.beginPath(); g.moveTo(-26, -40); g.lineTo(-14, -48); g.lineTo(-4, -38); g.lineTo(8, -48); g.lineTo(18, -38); g.lineTo(27, -44); g.stroke(); }
+    g.restore();
+    return;
+  }
+  const r = h.result, el = (performance.now() - h.revealed) / 1000;
+  const spec = r.pet + '|' + (r.shiny ? 1 : 0) + '|2';
+  drawAura(g, cx, cy + 30 * s, r.shiny ? '#ffe14d' : PET_RARITY[PET_BY_ID[r.pet].rar][1], t, s * 2.4);
+  drawPet(g, spec, { x: cx, y: cy + 30 * s, t, scale: s * 2.4 * Math.min(1, .3 + el * 2), facing: 1, elev: 0, onGround: true, dance: true, happy: true });
+  for (let i = 0; i < 24; i++) {
+    const a = i * .26 + el, d = el * 90 * s;
+    g.fillStyle = ['#ff5a5a', '#ffe14d', '#5ad86a', '#4aa8ff', '#ff7ad8'][i % 5];
+    g.globalAlpha = Math.max(0, 1 - el / 2.2);
+    g.fillRect(cx + Math.cos(a) * d, cy - 20 * s + Math.sin(a) * d + el * el * 20 * s, 4 * s, 4 * s);
+  }
+  g.globalAlpha = 1;
+}
+
+function renderAchievements() {
+  const box = $('#achList'); box.innerHTML = '';
+  ACHIEVEMENTS.forEach(a => {
+    const cur = Math.min(a.goal, achStat(a.stat)), done = cur >= a.goal, claimed = profile.unlocks.includes('ach:' + a.id);
+    const row = document.createElement('div'); row.className = 'mrow' + (claimed ? ' done' : '');
+    let thumb;
+    if (a.reward.startsWith('pet:')) {
+      thumb = document.createElement('canvas'); thumb.width = 96; thumb.height = 82; thumb.className = 'achpet';
+      drawPetThumb(thumb.getContext('2d'), a.reward.slice(4) + '|0|2', !claimed && !ownsPet(a.reward.slice(4)));
+    } else { thumb = document.createElement('div'); thumb.className = 'achcoin'; thumb.textContent = '🪙'; }
+    const info = document.createElement('div'); info.className = 'minfo';
+    const b = document.createElement('b'); b.textContent = a.name;
+    const xb = document.createElement('div'); xb.className = 'xpbar'; const i = document.createElement('i'); i.style.width = (cur / a.goal * 100) + '%'; xb.appendChild(i);
+    const sm = document.createElement('small'); sm.textContent = a.desc + ' · ' + cur + '/' + a.goal + ' · Reward: ' + (a.reward.startsWith('pet:') ? '🐾 ' + petName(a.reward.slice(4)) : '🪙 ' + a.reward.slice(6));
+    info.append(b, xb, sm);
+    const btn = document.createElement('button'); btn.type = 'button'; btn.className = 'btn ' + (done && !claimed ? '' : 'blue');
+    btn.textContent = claimed ? '✔ DONE' : done ? 'CLAIM' : '🔒';
+    btn.disabled = claimed || !done;
+    btn.onclick = () => econAction(btn, () => Econ.claimAch(a.id), '🏆 ' + a.name + ' complete!').then(renderPets);
+    row.append(thumb, info, btn);
+    box.appendChild(row);
+  });
+}
+
+function renderPetPreview(t) {
+  const c = $('#petCv'); if (!c || $('#petOv').hidden) return;
+  const dpr = Math.min(2, devicePixelRatio || 1), w = c.clientWidth * dpr | 0, h = c.clientHeight * dpr | 0;
+  if (w && h && PETUI.tab === 'col') {
+    if (c.width !== w || c.height !== h) { c.width = w; c.height = h; }
+    const g = c.getContext('2d'); g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, w, h);
+    const d = PET_BY_ID[PETUI.sel] || PET_BY_ID[petBase()];
+    const shiny = PETUI.previewShiny || (petBase() === d.id && petIsShiny() && ownsShiny(d.id));
+    const s = Math.min(w / 90, h / 100), cx = w / 2, by = h * .84;
+    g.fillStyle = '#3a8cff'; g.beginPath(); g.ellipse(cx, by, 26 * s, 6.5 * s, 0, 0, 7); g.fill();
+    const spec = d.id + '|' + (shiny ? 1 : 0) + '|' + petStage(petStats(d.id).m);
+    drawPet(g, spec, { x: cx, y: by, t, scale: s, facing: 1, elev: 0, onGround: true, wave: (t % 5) < 1.4, happy: true, walking: (t % 5) > 3.5 });
+    if (!ownsPet(d.id)) { g.globalAlpha = .5; g.font = (26 * s) + 'px sans-serif'; g.textAlign = 'center'; g.fillText('🔒', cx, h * .2 + 10 * s); g.globalAlpha = 1; }
+  }
+  renderHatch(t);
+}
+
+$('#petClose').onclick = closePets;
+$('#petOv').addEventListener('pointerdown', e => { if (e.target.id === 'petOv') closePets(); });
+$('#petsBtn').onclick = () => openPets('col');
+$('#petName').onclick = () => openPets('col');
 // ================= LOGIN =================
 let regMode = false;
 function setAuthMode(reg) {
@@ -3036,11 +4574,10 @@ $('#guestBtn').onclick = () => {
 };
 
 // ================= LOBBY =================
-let selPet = 'dog', selMode = 'duel';
+let selMode = 'duel';
 function level(p) { return 1 + Math.floor((p.games * 10 + p.wins * 30 + p.kills * 8) / 120); }
 function openLobby() {
   show('lobby');
-  selPet = profile.pet;
   try { Object.assign(settings, JSON.parse(localStorage.getItem('wildjans_settings')) || {}); } catch (e) {}
   try { selMode = localStorage.getItem('wildjans_mode') || selMode; } catch (e) {}
   if (!MODES[selMode]) selMode = 'duel';
@@ -3052,39 +4589,25 @@ function openLobby() {
   if (!USE_SB) $('#lbOnline').textContent = '—';
   renderLobby(); loadLeaderboard(); renderLobbyChat();
   netLobbyConnect();
-}
-function dailyKey() { return 'wildjans_daily_' + profile.username.toLowerCase(); }
-function dailyReady() {
-  if (profile.guest) return false;
-  try { return localStorage.getItem(dailyKey()) !== new Date().toDateString(); } catch (e) { return false; }
+  Econ.refresh().then(() => { if (profile && !$('#lobby').hidden) renderLobby(); });
 }
 function renderLobby() {
   $('#lbCoins').textContent = profile.coins; $('#lbTrophies').textContent = profile.trophies;
   $('#meName').textContent = profile.username;
   $('#meTag').textContent = 'LV ' + level(profile) + ' · ' + (profile.guest ? 'GUEST (progress not saved)' : (USE_SB ? 'ONLINE MEMBER' : 'MEMBER'));
   $('#stWins').textContent = profile.wins; $('#stGames').textContent = profile.games; $('#stKills').textContent = profile.kills; $('#stTro').textContent = profile.trophies;
-  $('#dailyBtn').hidden = !dailyReady();
-  const petOwned = profile.unlocks.includes(selPet);
-  $('#petName').textContent = SPECIES[selPet].name;
-  $('#petLock').textContent = petOwned ? (selPet === profile.pet ? '✔ EQUIPPED' : 'OWNED') : '🔒 ' + PET_PRICE[selPet] + ' 🪙';
+  updateMetaButtons();
+  const id = petBase(), st = petStats(id), stage = petStage(st.m);
+  $('#petName').textContent = petName(id) + (petIsShiny() && ownsShiny(id) ? ' ✨' : '');
+  $('#petLock').textContent = '✔ ' + STAGE_NAME[stage] + ' · ' + PET_RARITY[PET_BY_ID[id].rar][0] + ' · TAP FOR ALL PETS';
   const owned = CATALOG.filter(i => ownsItem(i.id)).length;
-  $('#wardrobeBtn').textContent = '👕 MY WARDROBE (' + owned + ')';
-  const locked = !petOwned ? selPet : null;
-  const buy = $('#buyBtn');
-  buy.hidden = !locked;
-  if (locked) {
-    const price = PET_PRICE[selPet];
-    buy.textContent = 'BUY ' + SPECIES[selPet].name + ' — ' + price + ' 🪙';
-    buy.disabled = profile.coins < price;
-    buy.onclick = async () => {
-      if (profile.coins < price) return;
-      profile.coins -= price; profile.unlocks.push(locked); profile.pet = selPet;
-      Snd.coin(); await saveProfile(); renderLobby();
-    };
-  }
-  $('#playOnline').disabled = !!locked || !USE_SB;
-  $('#playBots').disabled = !!locked;
-  $('#roomBtn').disabled = !!locked || !USE_SB;
+  $('#wardrobeBtn').textContent = '👕 WARDROBE (' + owned + ')';
+  $('#petsCount').textContent = ownedPets().length + '/' + PETS.length;
+  $('#buyBtn').hidden = true;
+  $('#playOnline').disabled = !USE_SB;
+  $('#playBots').disabled = false;
+  $('#roomBtn').disabled = !USE_SB;
+  renderPets();
 }
 async function loadLeaderboard() {
   const ul = $('#lbList'); ul.innerHTML = '<li>Loading…</li>';
@@ -3102,13 +4625,13 @@ async function loadLeaderboard() {
   });
 }
 function cycle(list, cur, d) { return list[(list.indexOf(cur) + d + list.length) % list.length]; }
-function equipIfOwned() {
-  let ch = false;
-  if (profile.unlocks.includes(selPet) && profile.pet !== selPet) { profile.pet = selPet; ch = true; }
-  if (ch) saveProfile();
+// arrows flip through the pets you own (shiny stays on if you own that shiny)
+function stepPet(d) {
+  const list = ownedPets(), next = cycle(list, petBase(), d);
+  equipPet(next, ownsShiny(next) && petIsShiny());
 }
-$('#petPrev').onclick = () => { selPet = cycle(PETS, selPet, -1); Snd.click(); equipIfOwned(); renderLobby(); };
-$('#petNext').onclick = () => { selPet = cycle(PETS, selPet, 1); Snd.click(); equipIfOwned(); renderLobby(); };
+$('#petPrev').onclick = () => stepPet(-1);
+$('#petNext').onclick = () => stepPet(1);
 ['setBots', 'setDiff', 'setMap', 'setMins', 'setTurn'].forEach(id => $('#' + id).onchange = () => {
   settings = { bots: +$('#setBots').value, diff: $('#setDiff').value, map: $('#setMap').value, mins: +$('#setMins').value, turn: +$('#setTurn').value };
   try { localStorage.setItem('wildjans_settings', JSON.stringify(settings)); } catch (e) {}
@@ -3132,14 +4655,9 @@ $('#mmStart').onclick = () => {
   const peers = queuePeers();
   if (peers[0] && peers[0].id === NET.myId) createMatch(peers.slice(0, q.size));
 };
-$('#dailyBtn').onclick = async () => {
-  if (!dailyReady()) return;
-  try { localStorage.setItem(dailyKey(), new Date().toDateString()); } catch (e) { return; }
-  profile.coins += 100; Snd.coin(); toast('🎁 Daily reward: +100 coins! Come back tomorrow.');
-  await saveProfile(); renderLobby();
-};
 $('#logoutBtn').onclick = async () => {
   netDisconnect();
+  ['shopOv', 'missionOv', 'passOv', 'petOv'].forEach(id => $('#' + id).hidden = true);
   if (!profile.guest) await DB.logout();
   profile = null; show('login'); setAuthMode(false);
 };
@@ -3147,7 +4665,7 @@ $('#muteBtn').onclick = () => { Snd.muted = !Snd.muted; $('#muteBtn').textConten
 
 // ================= MENU BACKGROUND =================
 const mb = $('#menuBg'), mbx = mb.getContext('2d');
-const menuPets = PETS.map((sp, i) => ({ sp, x: rand(0, 1), dir: Math.random() < .5 ? 1 : -1, speed: rand(.0006, .0012), hat: randomLook(), jump: 0, vy: 0 }));
+const menuPets = Array.from({ length: 8 }, () => ({ sp: randomPetSpec(), x: rand(0, 1), dir: Math.random() < .5 ? 1 : -1, speed: rand(.0006, .0012), hat: randomLook(), jump: 0, vy: 0 }));
 function renderMenu(t) {
   const dpr = Math.min(2, devicePixelRatio || 1), w = innerWidth * dpr, h = innerHeight * dpr;
   if (mb.width !== w || mb.height !== h) { mb.width = w; mb.height = h; }
@@ -3182,10 +4700,10 @@ function renderPreview(t) {
   g.fillStyle = '#3a8cff'; g.beginPath(); g.ellipse(cx, by, 30 * s, 8 * s, 0, 0, 7); g.fill();
   g.strokeStyle = '#0a2a6b'; g.lineWidth = 3; g.stroke();
   drawAura(g, cx, by, '#ffc21e', t, s);
-  drawPet(g, selPet, { x: cx, y: by, t, scale: s, facing: 1, elev: Math.sin(t) * .3 + .2, hat: profile.hat, onGround: true, weapon: 'bazooka' });
-  if (!profile.unlocks.includes(selPet)) { g.globalAlpha = .55; g.fillStyle = '#0b2560'; g.fillRect(0, 0, w, h); g.globalAlpha = 1; outlineText(g, '🔒', cx, h * .4, '#fff', 60 * dpr); }
+  const waving = (t % 7) < 1.6;
+  drawPet(g, mySpec(), { x: cx, y: by, t, scale: s, facing: 1, elev: Math.sin(t) * .3 + .2, hat: profile.hat, onGround: true, weapon: 'bazooka', wave: waving, happy: waving });
   const me = $('#meCv').getContext('2d'); me.setTransform(1, 0, 0, 1, 0, 0); me.clearRect(0, 0, 112, 112);
-  drawPet(me, profile.pet, { x: 52, y: 106, t, scale: 2.1, facing: 1, elev: 0, hat: profile.hat, onGround: true });
+  drawPet(me, mySpec(), { x: 52, y: 106, t, scale: 2.1, facing: 1, elev: 0, hat: profile.hat, onGround: true });
 }
 
 // ================= MAIN LOOP =================
@@ -3204,7 +4722,8 @@ function frame(ts) {
   } else {
     renderMenu(t);
     if (!$('#lobby').hidden && profile) {
-      if ($('#shopOv').hidden) renderPreview(t); else renderShopPreview(t);
+      if (!$('#petOv').hidden) renderPetPreview(t);
+      else if ($('#shopOv').hidden) renderPreview(t); else renderShopPreview(t);
     }
   }
 }
